@@ -45,6 +45,11 @@ body {
   margin: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* -----------------------CONTEÚDO ------------------- */
 a {
   text-decoration: none;
   color: white;
@@ -65,17 +70,17 @@ body {
   line-height: 1.4em;
 }
 
-/* Conteúdo */
-
 .content {
   background-color: black;
   display: flex;
   flex-direction: row;
   height: 100vh;
 }
-.button {
-  background-color: var(--primary);
-  padding: 20px;
+.contact-button {
+  background-color: #00000050;
+  border: #333333 solid 1px;
+  padding: 15px;
+  padding-bottom: 10px;
   width: fit-content;
   position: fixed;
   right: 0;
@@ -83,12 +88,17 @@ body {
   margin: 20px;
   z-index: 2;
   font-weight: 500;
-  border: none;
+  box-sizing: border-box;
+  transform: translateX(80px);
+  animation: slideContato 0.5s ease forwards 1s;
 }
-.button:hover {
-  background-color: white;
-  border: none;
+
+
+.contact-button:hover {
+  background-color: var(--primary);
+  border: var(--primary) solid 1px;
   color: black;
+  box-sizing: border-box;
 }
 .right {
   color: white;
@@ -121,42 +131,8 @@ body {
   animation: slideImage 1s ease forwards 0.5s;
 }
 
-@keyframes slideImage {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(0%);
-  }
-}
 
-@media screen and (max-width: 1023px) {
-  .left {
-    display: none;
-  }
-  .left-space {
-    display: none;
-  }
-  .right {
-    width: 100%;
-    padding: 0 50px;
-  }
-}
-@media screen and (max-width: 600px) {
-  .right {
-    width: 100%;
-    padding: 0 25px;
-  }
-  .footer h1 {
-    font-size: 35px !important;
-    display: block;
-    font-weight: 400;
-    padding: 30px 0;
-  }
-  .right .header {
-    padding: 0px !important;
-  }
-}
+
 .right .header {
   height: 100vh;
   padding: 0 30px;
@@ -175,14 +151,7 @@ body {
   animation: slideLogo 0.5s ease forwards 0.2s;
 }
 
-@keyframes slideLogo {
-  0% {
-    transform: translateY(100%);
-  }
-  100% {
-    transform: translateY(0%);
-  }
-}
+
 .right .title {
   font-size: 50px;
   text-align: left;
@@ -215,7 +184,7 @@ body {
   animation: slideUp 1s ease forwards 0.2s;
 }
 .portfolio-title {
-  text-align: left;
+  text-align: center;
   font-size: 30px;
   color: var(--primary);
   font-weight: 400;
@@ -276,20 +245,21 @@ body {
   display: flex;
   flex-direction: column;
   margin: 20px 0;
-  height: 300px;
 }
 .footer .email {
-  /* background-color: aquamarine; */
-  padding: 50px 0 30px 0;
-  width: 100%;
-  text-align: left;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+  padding: 60px 0;
 }
-.footer h1 {
+.footer a {
   font-size: 45px;
-  display: block;
   font-weight: 600;
-  padding: 30px 0;
+  border: none;
 }
+
 .footer p {
   font-size: 26px;
 }
@@ -316,13 +286,69 @@ body {
 
 .footer .social p {
   display: inline;
+  font-weight: 200;
+}
+.footer .social a {
+  border: none;
 }
 
+
+/* ----------------------- ANIMAÇÕES ------------------- */
 @keyframes slideUp {
   0% {
     transform: translateY(400px);
   }
   100% {
     transform: translateY(0px);
+  }
+}
+@keyframes slideLogo {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+@keyframes slideImage {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+@keyframes slideContato {
+  0% {
+    transform: translateX(80px);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+/* -----------------------AJUSTES PARA OUTRAS TELAS ------------------- */
+
+@media screen and (max-width: 1023px) {
+  .left {
+    display: none;
+  }
+  .left-space {
+    display: none;
+  }
+  .right {
+    width: 100%;
+    padding: 0 50px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .right {
+    width: 100%;
+    padding: 0 25px;
+  }
+  .footer .email a {
+    font-size: 35px !important;
+  }
+  .right .header {
+    padding: 0px !important;
   }
 }
