@@ -5,35 +5,35 @@
 @font-face {
   font-family: "Alliance";
   src: local("Alliance-Light"),
-    url("/fonts/Alliance-Light.otf") format("opentype");
+    url("./fonts/Alliance-Light.otf") format("opentype");
   font-weight: 200;
   font-style: normal;
 }
 @font-face {
   font-family: "Alliance";
   src: local("Alliance-Regular"),
-    url("/fonts/Alliance-Regular.otf") format("opentype");
+    url("./fonts/Alliance-Regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: "Alliance";
   src: local("Alliance-Medium"),
-    url("/fonts/Alliance-Medium.otf") format("opentype");
+    url("./fonts/Alliance-Medium.otf") format("opentype");
   font-weight: 600;
   font-style: normal;
 }
 @font-face {
   font-family: "Alliance";
   src: local("Alliance-SemiBold"),
-    url("/fonts/Alliance-SemiBold.otf") format("opentype");
+    url("./fonts/Alliance-SemiBold.otf") format("opentype");
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
   font-family: "Alliance";
   src: local("Alliance-Bold"),
-    url("/fonts/Alliance-Bold.otf") format("opentype");
+    url("./fonts/Alliance-Bold.otf") format("opentype");
   font-weight: 900;
   font-style: normal;
 }
@@ -122,7 +122,7 @@ body {
 }
 
 .left .image {
-  background-image: url("/imagens/bg.jpg");
+  background-image: url("./imagens/bg.jpg");
   background-size: cover;
   background-position: center;
   width: 100%;
