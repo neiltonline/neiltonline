@@ -5,89 +5,74 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <title>Neilton Silva - Portfolio</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Albert+Sans" />
     <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
+    <script>
+        var cursor = new MouseFollower();
+    </script>
 </head>
 
 <body>
     <div class="content">
-        <a class="contact-button" href="#contact"><img src="./imagens/chat.svg" width="30px" height="30px" /></a>
-        <div class="left">
-            <div class="image"></div>
-        </div>
-        <div class="left-space"></div>
-        <div class="right">
-            <div class="header">
-                <div class="logo"><img src="./imagens/logo.svg" /></div>
-                <div class="title">
-                    <p>Hello. I am Neilton Silva, designer currently working at <a href="https://capitual.com" target="_blank">Capitual</a></p>
-                </div>
-                <div class="subtitle">
-                    <p>I help to evolve user experiences through effective solutions, building digital products, brands, and experiences.</p>
-                </div>
-            </div>
-
-
-            <div class="portfolio">
-                <p class="section-title">Last Projects</p>
-                <div class="item" style="background: url(./imagens/portfolio/01.jpeg)">
-                    <a class="title" href="https://google.com.br" target="_blank">
-                        <p><span>Ekvilibro Landing</span> — Redesigning new ICO/IEO website for sustainable token project.</p>
-                    </a>
-                </div>
-                <div class="item" style="background: url(./imagens/portfolio/capitual-app.png)">
-                    <a class="title" href="https://google.com.br" target="_blank">
-                        <p><span>Capitual App</span> — Redesigning new app for multicurrency bank.</p>
-                    </a>
-                </div>
-                <div class="item" style="background: url(./imagens/portfolio/03.jpeg)">
-                    <a class="title" href="https://google.com.br" target="_blank">
-                        <p><span>Business Platform</span> — Building digital products, brands, and experiences.</p>
-                    </a>
-                </div>
-                <div class="item" style="background: url(./imagens/portfolio/04.jpeg)">
-                    <a class="title" href="https://google.com.br" target="_blank">
-                        <p><span>Capitual Website</span> — Building digital products, brands, and experiences.</p>
-                    </a>
-                </div>
-            </div>
-            <div class="footer" id="contact">
-                <div class="email">
-                    <div>
-                        <p>Have an idea? </p>
-                        <p>I can help you bring it to life!</p>
-                    </div>
-                    <a href="mailto:neiltonline@gmail.com">neiltonline@gmail.com</a>
-                </div>
-                <div class="social">
-                    <div class="item">
-                        <span class="fa fa-linkedin"></span>
-                        <a href="#" target="_blank">
-                            <p>Linkedin</p>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <span class="fa fa-behance"></span>
-                        <a href="#" target="_blank">
-                            <p>Behance</p>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <span class="fa fa-instagram"></span>
-                        <a href="#" target="_blank">
-                            <p>Instagram</p>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <span class="fa fa-facebook"></span>
-                        <a href="#" target="_blank">
-                            <p>Facebook</p>
-                        </a>
-                    </div>
-                </div>
+        <div class="menu">
+            <a href="#"><img src="./imagens/logo.svg" alt="neiltonline" width="40px"></a>
+            <div class="nav">
+                <nav role="navigation">
+                    <a href="#" class="nav-item">Work</a>
+                    <a href="#" class="nav-item">About</a>
+                    <a href="#" class="nav-item">Contact</a>
+                </nav>
             </div>
         </div>
+
+        <div class="hero">
+            <h1 class="bold">Hey! I'm <a href="#" target="_blank">Neilton</a>, a product designer passionate in create effective solutions.</h1>
+            <p>I'm currently working at <a href="#" target="_blank">Capitual</a>, designing features that evolve user experiences through effective solutions.</p>
+        </div>
+
+        <div class="portfolio" style="background-image: url(./imagens/portfolio/01.jpeg); background-color:#E9DEE4;">
+            <h3>— Capitual</h3>
+            <h2 class="bold">Redesigning new app for multicurrency bank.</h2>
+        </div>
+
+        <div class="portfolio" style="background-image: url(./imagens/portfolio/02.jpeg); background-color: #CBCFE3;">
+            <h3>— CapBusiness</h3>
+            <h2 class="bold">Building digital products, brands.
+        </div>
+
+        <div class="portfolio" style="background-image: url(./imagens/portfolio/03.jpeg); background-color:#C0D6DB;">
+            <h3>— Ekvilibro</h3>
+            <h2 class="bold">Redesigning new ICO/IEO website for sustainable token project.</h2>
+        </div>
+
+        <div class="portfolio" style="background-image: url(./imagens/portfolio/04.jpeg); background-color:#F6E9EC;">
+            <h3>— Settle KYC</h3>
+            <h2 class="bold">Know Your Customer flow to international crypto-exchanges.</h2>
+        </div>
+    </div>
+    </div>
+    <div class="footer">
+        <h2 class="title bold">Let's making something together, <a href="">say hi</a>!</h2>
+        <nav>
+            <a href="#">Behance</a>
+            <a href="#">Linkedin</a>
+        </nav>
+    </div>
 </body>
+
+<script>
+    const cursor = new MouseFollower();
+    const box = document.querySelector('.my-fixed-box');
+    const el = document.querySelector('.my-fixed-element');
+
+    box.addEventListener('mouseenter', () => {
+        cursor.setStick(el);
+    });
+
+    box.addEventListener('mouseleave', () => {
+        cursor.removeStick();
+    });
+</script>
 
 </html>

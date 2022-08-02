@@ -1,41 +1,43 @@
 :root {
   --primary: #5b3fe3;
+  --black: #000000;
+  --white: #ffffff;
 }
 
 @font-face {
-  font-family: "Alliance";
-  src: local("Alliance-Light"),
-    url("./fonts/Alliance-Light.otf") format("opentype");
-  font-weight: 200;
+  font-family: "Syne";
+  src: local("Syne-Regular"), url("./fonts/Syne-Regular.ttf") format("truetype");
+  font-weight: 300;
   font-style: normal;
 }
 @font-face {
-  font-family: "Alliance";
-  src: local("Alliance-Regular"),
-    url("./fonts/Alliance-Regular.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Alliance";
-  src: local("Alliance-Medium"),
-    url("./fonts/Alliance-Medium.otf") format("opentype");
+  font-family: "Syne";
+  src: local("Syne-Bold"), url("./fonts/Syne-Bold.ttf") format("opentype");
   font-weight: 600;
   font-style: normal;
 }
 @font-face {
-  font-family: "Alliance";
-  src: local("Alliance-SemiBold"),
-    url("./fonts/Alliance-SemiBold.otf") format("opentype");
-  font-weight: 800;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Alliance";
-  src: local("Alliance-Bold"),
-    url("./fonts/Alliance-Bold.otf") format("opentype");
+  font-family: "Syne";
+  src: local("Syne-Bold"), url("./fonts/Syne-Bold.ttf") format("opentype");
   font-weight: 900;
   font-style: normal;
+}
+h1 a,
+h2 a {
+  font-weight: 600;
+  text-decoration: underline;
+}
+h2 {
+  font-size: 43px;
+  margin: 0 100px 70px 0;
+  max-width: 570px;
+}
+a {
+  font-weight: 300;
+  text-decoration: none;
+}
+.bold {
+  font-weight: 600;
 }
 
 *,
@@ -43,324 +45,114 @@ html,
 body {
   padding: 0;
   margin: 0;
+  font-family: "Syne", Arial, Helvetica, sans-serif;
+  font-weight: 300;
+  line-height: 120%;
+  box-sizing: border-box;
+  z-index: 1;
+  color: var(--white);
+}
+img {
+  min-width: 100%;
 }
 
 html {
   scroll-behavior: smooth;
+  background-color: var(--black);
 }
 
-/* -----------------------CONTEÚDO ------------------- */
-a {
-  text-decoration: none;
-  color: white;
-  transition: 0.3s ease;
-  border-bottom: 1.5px var(--primary) solid;
-}
-
-a:hover {
-  color: var(--primary);
-  border-bottom: 1.5px var(--primary) solid;
-}
-
-body {
-  background: black;
-  color: white;
-  font-family: "Alliance" !important;
-  font-weight: 200;
-  line-height: 1.4em;
+@media screen and (max-width: 768px) {
+  .nav {
+    display: none !important;
+  }
+  .hero h1 {
+    font-size: 50px !important;
+    /* padding: 10% 40px; */
+  }
 }
 
 .content {
-  background-color: black;
+  position: relative;
+}
+
+.menu {
+  width: 100%;
   display: flex;
   flex-direction: row;
-  height: 100vh;
-}
-.contact-button {
-  background-color: #00000080;
-  border: #333333 solid 1px;
-  padding: 15px;
-  padding-bottom: 10px;
-  width: fit-content;
+  justify-content: space-between;
   position: fixed;
-  right: 0;
   top: 0;
-  margin: 26px;
+  padding: 12px 35px;
+  place-items: center;
   z-index: 2;
-  font-weight: 500;
-  box-sizing: border-box;
-  transform: translateX(80px);
-  animation: slideContato 0.5s ease forwards 1s;
+}
+.menu img {
+  margin: 15px 0;
 }
 
-.contact-button:hover {
-  background-color: var(--primary);
-  border: var(--primary) solid 1px;
-  color: black;
-  box-sizing: border-box;
-}
-.right {
-  color: white;
-  font-size: 17px;
-  padding: 0 75px;
-  width: 65%;
-  max-width: 800px;
-  margin: 0 auto;
-}
-.left-space {
-  height: 100vh;
-  width: 35%;
-  min-width: 470px;
-}
-.left {
-  height: 100vh;
-  width: 35%;
-  min-width: 470px;
-  position: fixed;
-  overflow: hidden;
-}
-
-.left .image {
-  background-image: url("./imagens/bg.jpg");
-  background-size: cover;
-  background-position: center;
-  width: 100%;
+.menu .nav {
+  width: auto;
   height: 100%;
-  transform: translate(-100%, 0);
-  animation: slideImage 1s ease forwards 0.5s;
 }
 
-.right .header {
-  height: 100vh;
-  padding: 0 30px;
+.menu .nav .nav-item {
+  padding: 15px 25px;
+  text-decoration: none;
+}
+
+.hero {
   display: flex;
-  gap: 20px;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-}
-.right .logo {
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
-}
-.right .logo img {
-  transform: translate(0, 60px);
-  animation: slideLogo 0.5s ease forwards 0.2s;
+  min-height: 85vh;
+  position: sticky;
+  top: 0;
+  padding: 10% 40px;
+  z-index: -1;
 }
 
-.right .title {
+.hero h1 {
+  max-width: 1000px;
+  text-align: center;
   font-size: 60px;
-  text-align: left;
-  font-weight: 600;
-  line-height: 120%;
-  overflow: hidden;
-  height: auto;
-}
-.right .title p {
-  margin: 0;
-  padding: 0;
-  transform: translate(0, 400px);
-  animation: slideUp 0.8s ease forwards 0.2s;
+  padding-bottom: 30px;
 }
 
-.right .subtitle {
-  text-align: left;
-  font-size: 25px;
-  color: white;
-  font-weight: 200;
-  line-height: 160%;
-  margin-top: 20px;
-  overflow: hidden;
-  height: auto;
-}
-.right .subtitle p {
-  margin: 0;
-  padding: 0;
-  transform: translate(0, 400px);
-  animation: slideUp 1s ease forwards 0.2s;
-}
-.portfolio .section-title {
-  font-size: 30px;
-  color: white;
-  font-weight: 400;
-  line-height: 160%;
-  padding-left: 30px;
-  transform: translateY(10px);
-  border-left: 1.5px #5b3fe3 solid;
+.hero p {
+  text-align: center;
+  font-size: 20px;
+  max-width: 500px;
+  line-height: 170%;
 }
 
 .portfolio {
-  display: grid;
-  gap: 60px;
-  padding: 20px 0;
+  height: 100vh;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  padding: 100px 100px;
+  background-position: 100% 50%;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
-.portfolio .item {
-  height: 400px;
-  background-position: center !important;
-  background-size: cover !important;
-  color: white;
-  text-align: center;
-  border: 2px solid black;
-  box-sizing: border-box;
-  transition: 0.3s;
-}
-
-.portfolio .item:hover {
-  cursor: pointer;
-  border: 20px solid black;
-  box-sizing: border-box;
-}
-.portfolio .item:hover .title {
-  opacity: 1;
-  transition: 0.3s;
-}
-.portfolio .title {
-  opacity: 0;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: grid;
-  place-items: center;
-  font-size: 22px;
-  font-weight: 200;
-  text-align: center;
-  line-height: 1.5em;
-  color: white;
-  border-bottom: none;
-}
-
-.portfolio .title span {
-  font-weight: 600;
-}
-
-.portfolio .title:hover p,
-.portfolio .title p {
-  width: 75%;
+.portfolio h2,
+h3 {
+  color: var(--black);
+  margin-bottom: 10px;
 }
 
 .footer {
-  border-top: 2px solid #333333;
+  height: 570px;
+  padding: 80px 15%;
+  color: var(--black);
   display: flex;
   flex-direction: column;
-  margin: 20px 0;
-}
-.footer .email {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 30px;
-  padding: 60px 0;
-}
-.footer a {
-  font-size: 45px;
-  font-weight: 600;
-  border: none;
+  justify-content: center;
 }
 
-.footer p {
-  font-size: 26px;
-  line-height: 130%;
-}
-.footer .social {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding-bottom: 60px;
-}
-.footer .social .item {
-  padding: 20px 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.footer .social .item span {
-  width: 45px;
-  height: 45px;
-  background-color: #333333;
-  margin-right: 15px;
-  display: grid;
-  place-items: center;
-}
-
-.footer .social p {
-  display: inline;
-  font-weight: 200;
-}
-.footer .social a {
-  border: none;
-}
-
-/* ----------------------- ANIMAÇÕES ------------------- */
-@keyframes slideUp {
-  0% {
-    transform: translateY(400px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-@keyframes slideLogo {
-  0% {
-    transform: translateY(100%);
-  }
-  100% {
-    transform: translateY(0%);
-  }
-}
-@keyframes slideImage {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(0%);
-  }
-}
-@keyframes slideContato {
-  0% {
-    transform: translateX(80px);
-  }
-  100% {
-    transform: translateX(0px);
-  }
-}
-/* -----------------------AJUSTES PARA OUTRAS TELAS ------------------- */
-
-@media screen and (max-width: 1023px) {
-  .left {
-    display: none;
-  }
-  .left-space {
-    display: none;
-  }
-  .right {
-    width: 100%;
-    padding: 0 50px;
-  }
-  .right .title {
-    font-size: 60px;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .right .header {
-    padding: 0px;
-  }
-  .right {
-    padding: 0 50px;
-  }
-}
-@media screen and (max-width: 575px) {
-  .right {
-    width: 100%;
-    padding: 0 25px;
-  }
-  .footer .email a {
-    font-size: 35px !important;
-  }
-  .right .header {
-    padding: 0px !important;
-  }
-  .right .title {
-    font-size: 45px;
-  }
+.footer nav a {
+  font-size: 18px;
+  text-decoration: none;
+  margin-right: 45px;
 }
