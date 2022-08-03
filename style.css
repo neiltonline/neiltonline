@@ -154,6 +154,13 @@ h3 {
   .hero h1 {
     font-size: 50px;
   }
+  .portfolio {
+    padding: 10% 8%;
+  }
+  .portfolio h2 {
+    font-size: 43px;
+    max-width: 50%;
+  }
 }
 
 @media screen and (max-width: 768px) {
