@@ -1,1 +1,6 @@
-neiltonline.com
+www.neiltonline.com.		IN	A
+www.neiltonline.com.	3600	IN	CNAME	neiltonline.github.io.
+neiltonline.github.io.	3600	IN	A	185.199.110.153
+neiltonline.github.io.	3600	IN	A	185.199.111.153
+neiltonline.github.io.	3600	IN	A	185.199.108.153
+neiltonline.github.io.	3600	IN	A	185.199.109.153
