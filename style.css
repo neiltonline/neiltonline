@@ -61,14 +61,8 @@ html {
   background-color: var(--black);
 }
 
-@media screen and (max-width: 768px) {
-  .nav {
-    display: none !important;
-  }
-  .hero h1 {
-    font-size: 50px !important;
-    /* padding: 10% 40px; */
-  }
+.nav-mobile {
+  display: none;
 }
 
 .content {
@@ -155,4 +149,49 @@ h3 {
   font-size: 18px;
   text-decoration: none;
   margin-right: 45px;
+}
+@media screen and (max-width: 1024px) {
+  .hero h1 {
+    font-size: 50px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .nav {
+    display: none;
+  }
+  .hero h1 {
+    font-size: 45px;
+    padding-top: 60px;
+    /* padding: 10% 40px; */
+  }
+  .nav-mobile {
+    display: block;
+    background: url("./imagens/menu.svg");
+    width: 50px;
+    height: 50px;
+  }
+
+  .menu {
+    padding: 12px 20px;
+  }
+
+  .portfolio {
+    padding: 20% 8%;
+    background-position: 100% 150%;
+  }
+
+  .portfolio h2 {
+    font-size: 40px;
+  }
+
+  .footer {
+    padding: 80px 8%;
+  }
+}
+
+@media screen and (max-height: 650px) {
+  .hero p {
+    display: none;
+  }
 }
