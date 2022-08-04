@@ -115,11 +115,12 @@ html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 85vh;
+  min-height: 80vh;
   position: sticky;
   top: 0;
-  padding: 10% 40px;
+  padding: 8% 40px;
   z-index: -1;
+  transform: translateY(50px);
 }
 
 .hero h1 {
@@ -147,7 +148,14 @@ html {
   background-repeat: no-repeat;
   transform: scaleX(0.9) scaleY(0.9) translateY(50px);
   border-radius: 10px;
+  cursor: pointer;
+  /* transition: ease 1s; */
 }
+
+/* .portfolio:hover {
+  transform: scaleX(0.85) scaleY(0.85) translateY(50px);
+} */
+
 .portfolio h2,
 h3 {
   color: var(--black);
@@ -185,24 +193,30 @@ h3 {
   .nav {
     display: none;
   }
+  .hero {
+    transform: translateY(70px);
+    padding: 8% 40px 18% 40px;
+  }
   .hero h1 {
     font-size: 45px;
-    padding-top: 60px;
-    /* padding: 10% 40px; */
   }
   .nav-mobile {
     display: block;
     background: url("./imagens/menu.svg");
-    width: 50px;
-    height: 50px;
+    width: 65px;
+    height: 65px;
+    background-color: #00000080;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
   }
 
   .menu {
-    padding: 12px 20px;
+    padding: 12px 12px 20px 20px;
   }
 
   .portfolio {
-    padding: 20% 8%;
+    padding: 12% 8%;
     background-position: 100% 150%;
   }
 
