@@ -69,6 +69,22 @@ html {
   position: relative;
 }
 
+.video {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  z-index: -2;
+}
+
+.video video {
+  object-fit: cover;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.3;
+}
+
 .menu {
   width: 100%;
   display: flex;
@@ -153,6 +169,13 @@ h3 {
 @media screen and (max-width: 1024px) {
   .hero h1 {
     font-size: 50px;
+  }
+  .portfolio {
+    padding: 10% 8%;
+  }
+  .portfolio h2 {
+    font-size: 43px;
+    max-width: 50%;
   }
 }
 
