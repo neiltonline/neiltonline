@@ -145,6 +145,8 @@ html {
   background-position: 100% 50%;
   background-size: contain;
   background-repeat: no-repeat;
+  transform: scaleX(0.9) scaleY(0.9) translateY(50px);
+  border-radius: 10px;
 }
 .portfolio h2,
 h3 {
