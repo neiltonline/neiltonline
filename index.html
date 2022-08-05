@@ -5,18 +5,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <title>Neilton Silva - Portfolio</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/cursor.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
 <body>
     <div class="content">
         <div class="menu">
-            <a href="#"><img src="./imagens/logo.svg" alt="neiltonline" width="37px"></a>
+            <a href="#"><img src="./imagens/logo.svg" alt="neiltonline" width="37px" class="logo"></a>
             <div class="nav">
                 <nav role="navigation">
-                    <a href="#work" class="nav-item">Work</a>
-                    <a href="#" class="nav-item">About</a>
-                    <a href="#" class="nav-item">Contact</a>
+                    <a href="#work" class="nav-item exclusion" data-cursor-stick>Work</a>
+                    <a href="#" class="nav-item exclusion" data-cursor-stick>About</a>
+                    <a href="#" class="nav-item exclusion" data-cursor-stick>Contact</a>
                 </nav>
             </div>
             <a class="nav-mobile" href="#">
@@ -24,33 +26,34 @@
         </div>
 
         <div class="hero">
-            <h1 class="bold">Hey! I'm <a href="#" target="_blank">Neilton</a>, a product designer passionate in create effective solutions.</h1>
-            <p>I'm currently working at <a href="#" target="_blank">Capitual</a>, designing features that evolve user experiences through effective solutions.</p>
+            <h1 class="bold">Hey! I'm <a href="#" data-cursor-img="./imagens/me.png" target="_blank">Neilton</a>, a product designer passionate about the crypto world.</h1>
+            <p>I'm currently working at <a href="#" target="_blank" class="exclusion">Capitual</a> as creative director and manager of the UI/UX team.</p>
         </div>
-        <div class="video">
+        <!-- <div class="video">
             <video src="./imagens/bg.mp4" type="video/mp4" autoplay loop muted defaultMuted playsinline oncontextmenu="return false;" preload="auto"></video>
+        </div> -->
+        <div class="portfolio" id="work" style="background-image: url(./imagens/portfolio/capitual.png); background-color:#026FF4;">
+            <a href="#" data-cursor-text="View case" class="hidden-link"></a>
+            <h3 style="color: white">— Capitual</h3>
+            <h2 class="bold" style="color: white">Redesigning new app for multicurrency bank.</h2>
         </div>
-        <div class="portfolio" id="work" style="background-image: url(./imagens/portfolio/01.jpeg); background-color:#E9DEE4;">
-            <h3>— Capitual</h3>
-            <h2 class="bold">Redesigning new app for multicurrency bank.</h2>
-        </div>
-
         <div class="portfolio" style="background-image: url(./imagens/portfolio/02.jpeg); background-color: #CBCFE3;">
+            <a href="#" data-cursor-text="View case" class="hidden-link"></a>
             <h3>— CapBusiness</h3>
             <h2 class="bold">Building digital products, brands and dreams.
         </div>
-
-        <div class="portfolio" style="background-image: url(./imagens/portfolio/03.jpeg); background-color:#C0D6DB;">
-            <h3>— Ekvilibro</h3>
-            <h2 class="bold">ICO/IEO website for sustainable token project.</h2>
+        <div class="portfolio" style="background-image: url(./imagens/portfolio/ekvilibro.png); background-color:#96a3ac;">
+            <a href="#" data-cursor-text="View case" class="hidden-link"></a>
+            <h3 style="color: white">— Ekvilibro</h3>
+            <h2 class="bold" style="color: white">ICO/IEO website for sustainable token project.</h2>
         </div>
-
         <div class="portfolio" style="background-image: url(./imagens/portfolio/04.jpeg); background-color:#F6E9EC;">
+            <a href="#" data-cursor-text="View case" class="hidden-link"></a>
             <h3>— Settle KYC</h3>
             <h2 class="bold">KYC flow to international crypto-exchanges.</h2>
         </div>
-
         <div class="portfolio" style="background-image: url(./imagens/portfolio/01.jpeg); background-color:#E9DEE4;">
+            <a href="#" data-cursor-text="View case" class="hidden-link"></a>
             <h3>— Bruno Diniz</h3>
             <h2 class="bold">Personal Page for especialist in financial market innovation.</h2>
         </div>
@@ -58,12 +61,59 @@
     </div>
     </div>
     <div class="footer">
-        <h2 class="title bold">Let's making something together, <a href="">say hi</a>!</h2>
+        <h2 class="title bold">Let's making something together, <a href="" class="exclusion">say hi</a>!</h2>
         <nav>
-            <a href="https://www.behance.net/neiltonsilva" target="_blank">Behance</a>
-            <a href="https://www.linkedin.com/in/neiltonline/" target="_blank">Linkedin</a>
+            <a href="https://www.behance.net/neiltonsilva" target="_blank" class="exclusion">Behance</a>
+            <a href="https://www.linkedin.com/in/neiltonline/" target="_blank" class="exclusion">Linkedin</a>
         </nav>
     </div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+<script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
+<script>
+    const cursor = new MouseFollower({
+        el: null,
+        container: document.body,
+        className: 'cursor',
+        innerClassName: 'cursor-inner',
+        textClassName: 'cursor-text',
+        mediaClassName: 'cursor-media',
+        mediaBoxClassName: 'cursor-media-box',
+        iconSvgClassName: 'mf-svgsprite',
+        iconSvgNamePrefix: '-',
+        iconSvgSrc: '',
+        dataAttr: 'cursor',
+        hiddenState: '-hidden',
+        textState: '-text',
+        iconState: '-icon',
+        activeState: '-active',
+        mediaState: '-media',
+        stateDetection: {
+            '-pointer': 'a,button',
+            '-hidden': 'iframe'
+        },
+        visible: true,
+        visibleOnState: false,
+        speed: 0.55,
+        ease: 'expo.out',
+        overwrite: true,
+        skewing: 2,
+        skewingText: 1,
+        skewingIcon: 2,
+        skewingMedia: 2,
+        skewingDelta: 0.001,
+        skewingDeltaMax: 0.15,
+        stickDelta: 0.15,
+        showTimeout: 20,
+        hideOnLeave: true,
+        hideTimeout: 300,
+        hideMediaTimeout: 300,
+        stateDetection: {
+            '-pointer': 'a',
+            '-exclusion': '.exclusion, .nav-mobile',
+            '-logo': '.logo',
+        }
+    });
+</script>
 
 </html>
