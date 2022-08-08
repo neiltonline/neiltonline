@@ -27,7 +27,7 @@
 
         <div class="portfolio" style="background-image: url(./imagens/portfolio/capitual.png); background-color:#026FF4;">
 
-            <div data-cursor-text="View case" class="hidden-link" id="project-capitual"></div>
+            <div data-cursor-text="View case" class="hidden-link" id="project-capitual" onclick="iniciaModal('.modal','project-capitual')"></div>
 
             <h3>— Capitual</h3>
             <h2 class="bold" style="color: white">Redesigning new app for multicurrency bank.</h2>
@@ -36,7 +36,7 @@
 
         <div class="portfolio" id="work" style="background-image: url(./imagens/portfolio/02.jpeg); background-color: #CBCFE3;">
 
-            <a href="#" data-cursor-text="View case" class="hidden-link" id="project-capbusiness"></a>
+            <a data-cursor-text="View case" class="hidden-link" id="project-capbusiness" onclick="iniciaModal('.modal','project-capbusiness')"></a>
 
             <h3 style="color: black">— CapBusiness</h3>
             <h2 class="bold">Building digital products, brands and dreams.
@@ -45,7 +45,7 @@
 
         <div class="portfolio" style="background-image: url(./imagens/portfolio/ekvilibro.png); background-color:#96a3ac;">
 
-            <a href="#" data-cursor-text="View case" class="hidden-link" id="project-ekvilibro"></a>
+            <a data-cursor-text="View case" class="hidden-link" id="project-ekvilibro" onclick="iniciaModal('.modal','project-ekvilibro')"></a>
 
             <h3>— Ekvilibro</h3>
             <h2 class="bold" style="color: white">ICO/IEO website for sustainable token project.</h2>
@@ -54,7 +54,7 @@
 
         <div class="portfolio" style="background-image: url(./imagens/portfolio/04.jpeg); background-color:#F6E9EC;">
 
-            <a href="#" data-cursor-text="View case" class="hidden-link" id="project-settle-kyc"></a>
+            <a data-cursor-text="View case" class="hidden-link" id="project-settle-kyc" onclick="iniciaModal('.modal','project-settle-kyc')"></a>
 
             <h3 style="color: black">— Settle KYC</h3>
             <h2 class="bold">KYC flow to international crypto-exchanges.</h2>
@@ -63,7 +63,7 @@
 
         <div class="portfolio" style="background-image: url(./imagens/portfolio/01.jpeg); background-color:#E9DEE4;">
 
-            <a href="#" data-cursor-text="View case" class="hidden-link" id="project-bruno-diniz"></a>
+            <a data-cursor-text="View case" class="hidden-link" id="project-bruno-diniz" onclick="iniciaModal('.modal','project-bruno-diniz')"></a>
 
             <h3 style="color: black">— Bruno Diniz</h3>
             <h2 class="bold">Personal Page for especialist in financial market innovation.</h2>
@@ -78,45 +78,48 @@
 
     <!-- MODAL -->
 
-    <div class=" modal" id="modal">
+    <div class="modal" id="modal">
         <button class="close closex" data-cursor-stick>
             <img class="closex" src="./imagens/close.svg" alt="Close" width="30" height="30" id="close">
         </button>
-        <div id="project-01" w3-include-html="./portfolio/project-capitual.html"></div>
-        <div id="project-02" w3-include-html="./portfolio/project-capbusiness.html"></div>
-        <!-- <div id="project-03" w3-include-html="./portfolio/project-capitual.html"></div>
-        <div id="project-04" w3-include-html="./portfolio/project-capitual.html"></div>
-        <div id="project-05" w3-include-html="./portfolio/project-capitual.html"></div> -->
+        <div id="project-01" w3-include-html="./portfolio/project-capitual.html" style="display: none"></div>
+        <div id="project-02" w3-include-html="./portfolio/project-capbusiness.html" style="display: none"></div>
+        <div id="project-03" w3-include-html="./portfolio/project-ekvilibro.html" style="display: none"></div>
+        <div id="project-04" w3-include-html="./portfolio/project-settle-kyc.html" style="display: none"></div>
+        <div id="project-05" w3-include-html="./portfolio/project-bruno-diniz.html" style="display: none"></div>
+
     </div>
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
-<script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
 <script>
-    w3IncludeHTML();
-</script>
-<script>
-
-    function iniciaModal(modalClass) {
+    function iniciaModal(modalClass, id) {
         const modal = document.querySelector(modalClass);
+        const projectObject = {
+            "project-capitual": "project-01",
+            "project-capbusiness": "project-02",
+            "project-ekvilibro": "project-03",
+            "project-settle-kyc": "project-04",
+            "project-bruno-diniz": "project-05",
+        }
+        document.body.style.overflow = "hidden"
+        const info = document.getElementById(projectObject[id])
+        info.style.display = "block"
 
         modal.classList.add('mostrar');
         modal.addEventListener('click', (e) => {
             if (e.target.className == 'closex') {
                 modal.classList.remove('mostrar');
                 document.body.style.overflow = "auto";
+                info.style.display = "none";
             }
         })
     }
 
-    const capitual = document.getElementById('project-capitual');
-    capitual.addEventListener('click', () => {
-        document.body.style.overflow = "hidden";
-        iniciaModal('.modal')
-    }
-    )
-
 </script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+<script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
+<script>
+    w3IncludeHTML();
+</script>
 <script>
     const cursor = new MouseFollower({
         el: null,
