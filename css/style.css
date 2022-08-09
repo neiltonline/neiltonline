@@ -74,6 +74,10 @@ html {
 
 .content {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .video {
@@ -99,6 +103,7 @@ html {
   justify-content: space-between;
   position: fixed;
   top: 0;
+  left: 0;
   padding: 12px 35px;
   place-items: center;
   z-index: 2;
@@ -148,9 +153,9 @@ html {
 .hero p a {
   text-decoration: underline;
 }
-
 .portfolio {
   height: 100vh;
+  width: 100%;
   overflow: hidden;
   position: sticky;
   top: 0;
@@ -158,22 +163,18 @@ html {
   background-position: 100% 50%;
   background-size: contain;
   background-repeat: no-repeat;
-  transform: scaleX(0.9) scaleY(0.9) translateY(50px);
   border-radius: 10px;
-  /* transition: ease 1s; */
+  transform: scaleX(0.8) scaleY(0.8) translateY(0px);
 }
 
-.portfolio .hidden-link {
+.hidden-link {
   position: absolute;
+  /* background-color: red; */
   width: 60%;
   height: 100%;
   top: 0;
   right: 0;
-  /* background-color: red; */
 }
-/* .portfolio:hover {
-  transform: scaleX(0.85) scaleY(0.85) translateY(50px);
-} */
 
 .portfolio h2,
 h3 {
@@ -307,7 +308,7 @@ p {
   }
   .hero h1 {
     font-size: 45px;
-    line-height: 105%;
+    line-height: 115%;
   }
   .nav-mobile {
     display: block;
@@ -334,6 +335,8 @@ p {
 
   .portfolio h2 {
     font-size: 40px;
+    max-width: 100%;
+    margin: 0;
   }
   .portfolio .hidden-link {
     position: absolute;
