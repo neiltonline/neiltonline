@@ -1,31 +1,3 @@
-// MODAL
-
-function iniciaModal(modalClass, id) {
-  const modal = document.querySelector(modalClass);
-  const projectObject = {
-    "link-p01": "content-p01",
-    "link-p02": "content-p02",
-    "link-p03": "content-p03",
-    "link-p04": "content-p04",
-    "link-p05": "content-p05",
-  };
-  document.body.style.overflow = "hidden";
-  document.body.style.paddingRight = "15px";
-
-  const info = document.getElementById(projectObject[id]);
-  info.style.display = "block";
-
-  modal.classList.add("mostrar");
-  modal.addEventListener("click", (e) => {
-    if (e.target.className == "closex") {
-      modal.classList.remove("mostrar");
-      document.body.style.overflow = "auto";
-      document.body.style.paddingRight = "0";
-      info.style.display = "none";
-    }
-  });
-}
-
 // CURSOR
 
 const cursor = new MouseFollower({
@@ -72,10 +44,39 @@ const cursor = new MouseFollower({
   },
 });
 
-// PORTFOLIO-GRUB
+// MODAL
+
+function iniciaModal(modalClass, id) {
+  const modal = document.querySelector(modalClass);
+  const projectObject = {
+    "link-p01": "content-p01",
+    "link-p02": "content-p02",
+    "link-p03": "content-p03",
+    "link-p04": "content-p04",
+    "link-p05": "content-p05",
+  };
+  document.body.style.overflow = "hidden";
+  document.body.style.paddingRight = "15px";
+
+  const info = document.getElementById(projectObject[id]);
+  info.style.display = "block";
+
+  modal.classList.add("mostrar");
+  modal.addEventListener("click", (e) => {
+    if (e.target.className == "closex") {
+      modal.classList.remove("mostrar");
+      document.body.style.overflow = "auto";
+      document.body.style.paddingRight = "0";
+      info.style.display = "none";
+    }
+  });
+}
+
+// PORTFOLIO-GRUB-SCALE
+
 gsap.registerPlugin(ScrollTrigger);
 gsap.to(".portScroll01", {
-  scale: 0.9,
+  scale: 0.93,
   y: 50,
   // duration: 3,
   scrollTrigger: {
@@ -83,54 +84,54 @@ gsap.to(".portScroll01", {
     start: "top bottom",
     end: "bottom 80%",
     // markers: true,
-    scrub: true,
+    scrub: 0.5,
   },
 });
 gsap.to(".portScroll02", {
-  scale: 0.9,
-  y: 50,
+  scale: 0.94,
+  y: 60,
   // duration: 3,
   scrollTrigger: {
     trigger: ".portScroll02",
     start: "top bottom",
     end: "bottom 80%",
     // markers: true,
-    scrub: true,
+    scrub: 0.5,
   },
 });
 gsap.to(".portScroll03", {
-  scale: 0.9,
-  y: 50,
+  scale: 0.95,
+  y: 70,
   // duration: 3,
   scrollTrigger: {
     trigger: ".portScroll03",
     start: "top bottom",
     end: "bottom 80%",
     // markers: true,
-    scrub: true,
+    scrub: 0.5,
   },
 });
 gsap.to(".portScroll04", {
-  scale: 0.9,
-  y: 50,
+  scale: 0.96,
+  y: 80,
   // duration: 3,
   scrollTrigger: {
     trigger: ".portScroll04",
     start: "top bottom",
     end: "bottom 80%",
     // markers: true,
-    scrub: true,
+    scrub: 0.5,
   },
 });
 gsap.to(".portScroll05", {
-  scale: 0.9,
-  y: 50,
+  scale: 0.97,
+  y: 90,
   // duration: 3,
   scrollTrigger: {
     trigger: ".portScroll05",
     start: "top bottom",
     end: "bottom 80%",
     // markers: true,
-    scrub: true,
+    scrub: 0.5,
   },
 });
