@@ -1,6 +1,7 @@
 :root {
-  --primary: #5b3fe3;
-  --black: #000000;
+  --primary: #76e59f;
+  /* --primary: #5b3fe3; */
+  --black: #1c1c1c;
   --white: #ffffff;
 }
 ::selection {
@@ -45,6 +46,10 @@ a {
 
 .bold {
   font-weight: 600;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 *,
@@ -95,16 +100,25 @@ html {
   left: 0;
   padding: 12px 35px;
   place-items: center;
-  z-index: 999;
+  z-index: 99;
   user-select: none;
+  animation: menuIn 1.5s ease;
 }
+
+@keyframes menuIn {
+  0%,
+  50% {
+    transform: translateY(-100px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 .menu img {
   margin: 15px 0;
 }
-.menu a:hover {
-  color: var(--black);
-  transition: 0.3s ease;
-}
+
 .menu .nav {
   width: auto;
   height: 100%;
@@ -113,10 +127,6 @@ html {
 .menu .nav .nav-item {
   padding: 15px 25px;
   text-decoration: none;
-}
-
-.menu .nav .nav-item a:hover {
-  color: var(--black) !important;
 }
 
 .hero {
@@ -130,6 +140,18 @@ html {
   padding: 8% 40px;
   z-index: -1;
   transform: translateY(50px);
+  animation: heroIn 1.3s ease;
+}
+
+@keyframes heroIn {
+  from {
+    min-height: 110vh;
+    opacity: 0;
+  }
+  to {
+    min-height: 80vh;
+    opacity: 1;
+  }
 }
 
 .hero h1 {
@@ -148,6 +170,10 @@ html {
 
 .hero p a {
   text-decoration: underline;
+}
+
+.ovf-y-hidden {
+  overflow-y: hidden;
 }
 
 .portfolio {
@@ -181,13 +207,28 @@ h3 {
 }
 
 .footer {
-  min-height: calc(100vh + 15px);
+  min-height: 100vh;
+  width: 100%;
   padding: 80px 15%;
   color: var(--black);
   display: flex;
+  background-color: var(--black);
   flex-direction: column;
   justify-content: center;
   margin-top: 100px;
+  transform: scaleX(0.961) scaleY(0.961) translateY(20px);
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background-color: rgb(0, 0, 0, 0);
+  width: 100%;
+  height: 100px;
+  border-radius: 10px;
+  box-shadow: 0 10px 0 0 var(--black);
 }
 
 .footer nav a {
@@ -206,7 +247,7 @@ h3 {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
-  z-index: 99999;
+  z-index: 999999;
   padding: 8% 120px;
   animation: openModal 2s ease;
   overflow-x: hidden;
@@ -279,6 +320,9 @@ p {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
+.btn-menu {
+  display: none;
+}
 
 @media screen and (max-width: 1024px) {
   .hero h1 {
@@ -297,34 +341,30 @@ p {
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 768px) {
   .nav {
     display: none;
   }
 
-  @keyframes menuIn {
-    from {
-      right: -100%;
-    }
-    to {
-      right: 0%;
-    }
-  }
   .nav-mobile {
     height: 100%;
     width: 100%;
+    overflow: hidden !important;
     position: fixed;
     top: 0;
-    right: 0;
-    background-color: #00000099;
+    right: -100%;
+    background-color: #1c1c1c99;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     display: flex;
     align-items: center;
     flex-direction: row;
     padding: 15% 40px 10%;
-    animation: menuIn 1s ease;
+    transition: 0.7s ease;
     z-index: 2;
+  }
+  .nav-mobile-visible {
+    right: 0%;
   }
 
   .nav-mobile nav {
@@ -338,6 +378,7 @@ p {
     width: 100%;
     padding: 10px 0;
     display: block;
+    font-weight: 600;
   }
 
   .nav-mobile nav span:first-child {
@@ -366,7 +407,7 @@ p {
   .hero h1 {
     font-size: 45px;
   }
-  .hamburger-button {
+  .btn-menu {
     display: block;
     background: url("../imagens/menu.svg");
     width: 60px;
@@ -380,7 +421,8 @@ p {
     cursor: pointer;
     transition: 0.3s ease;
   }
-  .hamburger-button-close {
+
+  .btn-menu-icon {
     background: url("../imagens/close.svg");
     width: 60px;
     height: 60px;

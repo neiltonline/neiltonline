@@ -1,6 +1,6 @@
 :root {
-  --primary: #5b3fe3;
-  --black: #000000;
+  --primary: #76e59f;
+  --black: #1c1c1c;
   --white: #ffffff;
 }
 .cursor {
@@ -22,23 +22,24 @@
   width: 48px;
   height: 48px;
   transform: scale(0.2);
-  background: currentColor;
+  background: var(--primary);
   border-radius: 50%;
   transition: transform 0.25s ease-in-out, opacity 0.1s;
 }
 .cursor.-inverse {
-  color: #fff;
-}
-.cursor.-logo {
   color: var(--primary);
-  mix-blend-mode: difference;
 }
-@supports (mix-blend-mode: exclusion) {
+
+@supports (mix-blend-mode: lighten) {
   .cursor.-exclusion {
-    mix-blend-mode: exclusion;
+    mix-blend-mode: lighten;
+  }
+  .cursor.-logo {
+    color: var(--primary);
+    mix-blend-mode: difference;
   }
   .cursor.-exclusion:before {
-    background: #fff;
+    background: var(--primary);
   }
 }
 .cursor.-pointer:before {
@@ -46,7 +47,7 @@
 }
 
 .cursor.-text:before {
-  opacity: 0.85;
+  /* opacity: 0.85; */
   transform: scale(2);
 }
 .cursor.-text.-active:before {
@@ -75,7 +76,7 @@
   border-radius: 50%;
   opacity: 0;
   /* background-color: red; */
-  color: #000;
+  color: var(--black);
   font-size: 16px;
   line-height: 20px;
   text-align: center;

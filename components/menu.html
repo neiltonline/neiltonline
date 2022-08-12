@@ -1,16 +1,23 @@
 <div class="menu">
-    <a href="#"><img src="./imagens/logo.svg" alt="neiltonline" width="37px" class="logo"></a>
+    <a href="/" class="logo" data-cursor-stick><img src="./imagens/logo.svg" alt="neiltonline" width="37px"></a>
     <div class="nav">
         <nav>
-            <div w3-include-html="./components/menu/nav.html"></div>
+            <a href="/index.html#work" class="nav-item exclusion" data-cursor-stick>Work</a>
+            <a href="/" class="nav-item exclusion" data-cursor-stick>About</a>
+            <a href="/" class="nav-item exclusion" data-cursor-stick>Contact</a>
         </nav>
     </div>
-    <a class="hamburger-button" href="#" onclick="this.classList.toggle('hamburger-button-close')"></a>
+    <a class="btn-menu logo"></a>
 </div>
+
+<!-- MOBILE -->
+
 <div class="nav-mobile">
     <nav>
         <span>Menu</span>
-        <div w3-include-html="./components/menu/nav.html"></div>
+        <a href="/index.html#work" class="nav-item exclusion" data-cursor-stick>Work</a>
+        <a href="/" class="nav-item exclusion" data-cursor-stick>About</a>
+        <a href="/" class="nav-item exclusion" data-cursor-stick>Contact</a>
         <span>Social media</span>
         <a href="https://www.behance.net/neiltonsilva" target="_blank">
             <h3>Behance</h3>

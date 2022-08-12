@@ -13,68 +13,69 @@
     <!-- INCLUDE MENU -->
     <div w3-include-html="./components/menu.html"></div>
 
-    <main class="sticky-content">
-        <!-- <div w3-include-html="./components/menu.html"></div> -->
-
+    <div class="sticky-content">
         <!-- HERO SECTION -->
         <section class="hero">
-            <h1 class="bold">Hey! I'm <a href="#" data-cursor-img="./imagens/me.png" target="_blank">Neilton</a>, a product designer passionate about the crypto world.</h1>
+            <h1 class="bold">Hey! I'm <a href="/about" data-cursor-img="./imagens/me.png" target="_blank">Neilton</a>, a product designer passionate about the crypto world.</h1>
             <p>I'm currently working at <a href="https://capitual.com" target="_blank" class="exclusion">Capitual</a> as creative director and manager of the UI/UX team.</p>
         </section>
 
         <!-- PORTFOLIO 01 - CAPITUAL -->
-        <section class="portfolio portScroll01" style="background-image: url(./imagens/portfolio/capitual.png); background-color:#026FF4;">
+        <section class="portfolio portScroll01" id="work" style="background-image: url(./imagens/portfolio/capitual.png); background-color:#ffffff;">
             <div data-cursor-text="View case" class="hidden-link" id="link-p01" onclick="iniciaModal('.modal','link-p01')"></div>
-            <h3>— Capitual</h3>
-            <h2 class="bold" style="color: white">Redesigning new app for multicurrency bank.</h2>
+            <h3 style="color: #1c1c1c">— Capitual</h3>
+            <h2 class="bold">Redesigning new app for multicurrency bank.</h2>
         </section>
 
         <!-- PORTFOLIO 02 - CAPBUSINESS -->
-        <section class="portfolio portScroll02" id="work" style="background-image: url(./imagens/portfolio/02.jpeg); background-color: #CBCFE3;">
+        <section class="portfolio portScroll02" style="background-image: url(./imagens/portfolio/02.jpeg); background-color: #5C8CF0;">
             <a data-cursor-text="View case" class="hidden-link" id="link-p02" onclick="iniciaModal('.modal','link-p02')"></a>
-            <h3 style="color: black">— CapBusiness</h3>
-            <h2 class="bold">Building digital products, brands and dreams.
+            <h3>— CapBusiness</h3>
+            <h2 class="bold" style="color: white">Building digital products, brands and dreams.
         </section>
 
         <!-- PORTFOLIO 03 - EKVILIBRO -->
-        <section class="portfolio portScroll03" style="background-image: url(./imagens/portfolio/ekvilibro.png); background-color:#96a3ac;">
+        <section class="portfolio portScroll03" style="background-image: url(./imagens/portfolio/ekvilibro.png); background-color:#76E59F;">
             <a data-cursor-text="View case" class="hidden-link" id="link-p03" onclick="iniciaModal('.modal','link-p03')"></a>
             <h3>— Ekvilibro</h3>
             <h2 class="bold" style="color: white">ICO/IEO website for sustainable token project.</h2>
         </section>
 
-        <!-- PORTFOLIO 04 - SETTLE KYC -->
-        <section class="portfolio portScroll04" style="background-image: url(./imagens/portfolio/04.jpeg); background-color:#F6E9EC;">
+        <!-- PORTFOLIO 04 - SETTLE KYC 
+        <section class="portfolio portScroll04" style="background-image: url(./imagens/portfolio/04.jpeg); background-color:#0F90FF;">
             <a data-cursor-text="View case" class="hidden-link" id="link-p04" onclick="iniciaModal('.modal','link-p04')"></a>
-            <h3 style="color: black">— Settle KYC</h3>
+            <h3 style="color: #1c1c1c">— Settle KYC</h3>
             <h2 class="bold">KYC flow to international crypto-exchanges.</h2>
-        </section>
+        </section> -->
 
         <!-- PORTFOLIO 05 - BRUNO DINIZ -->
-        <section class="portfolio portScroll05" style="background-image: url(./imagens/portfolio/01.jpeg); background-color:#E9DEE4;">
+        <section class="portfolio portScroll05" style="background-image: url(./imagens/portfolio/01.jpeg); background-color:#46474D;">
             <a data-cursor-text="View case" class="hidden-link" id="link-p05" onclick="iniciaModal('.modal','link-p05')"></a>
-            <h3 style="color: black">— Bruno Diniz</h3>
-            <h2 class="bold">Personal Page for especialist in financial market innovation.</h2>
+            <h3>— Bruno Diniz</h3>
+            <h2 class="bold" style="color: white">Personal Page for especialist in financial market innovation.</h2>
         </section>
-    </main>
-    <!-- INCLUDE FOOTER -->
-    <footer>
-        <div w3-include-html="./components/footer.html"></div>
-    </footer>
 
+        <!-- FOOTER -->
 
+        <div class="footer">
+            <h2 class="title bold">Let's making something together, <a href="" class="exclusion">say hi</a>!</h2>
+            <nav>
+                <a href="https://www.behance.net/neiltonsilva" target="_blank" class="exclusion">Behance</a>
+                <a href="https://www.linkedin.com/in/neiltonline/" target="_blank" class="exclusion">Linkedin</a>
+            </nav>
+        </div>
+
+    </div>
     <!-- MODAL -->
     <div w3-include-html="./components/modal.html"></div>
 
+    <!-- SCRIPTS -->
+    <script src="./js/w3data.js"></script>
+    <script> w3IncludeHTML(); </script>
+    <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/ScrollTrigger.min.js"></script>
+    <script src="./js/index.js"></script>
 </body>
-<script src="./js/w3data.js"></script>
-<script> w3IncludeHTML(); </script>
-<script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/ScrollTrigger.min.js"></script>
-
-
-<script src="./js/index.js"></script>
-
 
 </html>

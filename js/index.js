@@ -43,6 +43,75 @@ const cursor = new MouseFollower({
     "-logo": ".logo",
   },
 });
+// MOBILE MENU
+const navMobile = document.querySelector(".nav-mobile");
+
+const btnMenu = document.querySelector(".btn-menu");
+
+btnMenu.addEventListener("click", function () {
+  navMobile.classList.toggle("nav-mobile-visible");
+  btnMenu.classList.toggle("btn-menu-icon");
+  document.body.classList.toggle("ovf-y-hidden");
+});
+// PORTFOLIO-GRUB-SCALE
+
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.to(".portScroll01", {
+  scale: 0.93,
+  y: 50,
+  scrollTrigger: {
+    trigger: ".portScroll01",
+    start: "top bottom",
+    end: "top 12%",
+    scrub: true,
+    // markers: true,
+  },
+});
+gsap.to(".portScroll02", {
+  scale: 0.94,
+  y: 60,
+  scrollTrigger: {
+    trigger: ".portScroll02",
+    start: "top bottom",
+    end: "top 12%",
+    scrub: true,
+    // markers: true,
+  },
+});
+gsap.to(".portScroll03", {
+  scale: 0.95,
+  y: 70,
+  scrollTrigger: {
+    trigger: ".portScroll03",
+    start: "top bottom",
+    end: "top 12%",
+    scrub: true,
+    // markers: true,
+  },
+});
+gsap.to(".portScroll04", {
+  scale: 0.96,
+  y: 80,
+  scrollTrigger: {
+    trigger: ".portScroll04",
+    start: "top bottom",
+    end: "top 12%",
+    scrub: true,
+    // markers: true,
+  },
+});
+gsap.to(".portScroll05", {
+  scale: 0.96,
+  y: 80,
+  scrollTrigger: {
+    trigger: ".portScroll05",
+    start: "top bottom",
+    end: "top 12%",
+    scrub: true,
+    // markers: true,
+  },
+});
 
 // MODAL
 
@@ -56,7 +125,7 @@ function iniciaModal(modalClass, id) {
     "link-p05": "content-p05",
   };
   document.body.style.overflow = "hidden";
-  document.body.style.paddingRight = "15px";
+  // document.body.style.paddingRight = "15px";
 
   const info = document.getElementById(projectObject[id]);
   info.style.display = "block";
@@ -66,72 +135,22 @@ function iniciaModal(modalClass, id) {
     if (e.target.className == "closex") {
       modal.classList.remove("mostrar");
       document.body.style.overflow = "auto";
-      document.body.style.paddingRight = "0";
+      // document.body.style.paddingRight = "0";
       info.style.display = "none";
     }
   });
 }
 
-// PORTFOLIO-GRUB-SCALE
+// TYPEWRITER (só funciona com texto sem links)
+function typeWriter(elemento) {
+  const textoArray = elemento.textContent.split("");
+  elemento.textContent = "";
+  textoArray.forEach((letra, i) => {
+    setTimeout(function () {
+      elemento.textContent += letra;
+    }, 50 * i);
+  });
+}
 
-gsap.registerPlugin(ScrollTrigger);
-gsap.to(".portScroll01", {
-  scale: 0.93,
-  y: 50,
-  // duration: 3,
-  scrollTrigger: {
-    trigger: ".portScroll01",
-    start: "top bottom",
-    end: "bottom 80%",
-    // markers: true,
-    scrub: 0.5,
-  },
-});
-gsap.to(".portScroll02", {
-  scale: 0.94,
-  y: 60,
-  // duration: 3,
-  scrollTrigger: {
-    trigger: ".portScroll02",
-    start: "top bottom",
-    end: "bottom 80%",
-    // markers: true,
-    scrub: 0.5,
-  },
-});
-gsap.to(".portScroll03", {
-  scale: 0.95,
-  y: 70,
-  // duration: 3,
-  scrollTrigger: {
-    trigger: ".portScroll03",
-    start: "top bottom",
-    end: "bottom 80%",
-    // markers: true,
-    scrub: 0.5,
-  },
-});
-gsap.to(".portScroll04", {
-  scale: 0.96,
-  y: 80,
-  // duration: 3,
-  scrollTrigger: {
-    trigger: ".portScroll04",
-    start: "top bottom",
-    end: "bottom 80%",
-    // markers: true,
-    scrub: 0.5,
-  },
-});
-gsap.to(".portScroll05", {
-  scale: 0.97,
-  y: 90,
-  // duration: 3,
-  scrollTrigger: {
-    trigger: ".portScroll05",
-    start: "top bottom",
-    end: "bottom 80%",
-    // markers: true,
-    scrub: 0.5,
-  },
-});
+const titulo = document.querySelector(".typewriter");
+typeWriter(titulo);
