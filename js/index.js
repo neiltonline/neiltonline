@@ -62,20 +62,16 @@ if (!isMobile) {
 const menu = document.querySelector(".menuLine");
 const menuViewBox = document.querySelector(".menuViewBox");
 const navMobile = document.querySelector(".nav-mobile");
-const windowWidth = window.innerWidth;
+function menuAtivo() {
+  menu.classList.toggle("ativo");
+  navMobile.classList.toggle("nav-mobile-visible");
+  document.body.classList.toggle("ovf-y-hidden");
+}
 
 if (isMobile) {
-  menuViewBox.addEventListener("touchstart", () => {
-    menu.classList.toggle("ativo");
-    navMobile.classList.toggle("nav-mobile-visible");
-    document.body.classList.toggle("ovf-y-hidden");
-  });
+  menuViewBox.addEventListener("touchstart", menuAtivo);
 } else {
-  menuViewBox.addEventListener("click", () => {
-    menu.classList.toggle("ativo");
-    navMobile.classList.toggle("nav-mobile-visible");
-    document.body.classList.toggle("ovf-y-hidden");
-  });
+  menuViewBox.addEventListener("click", menuAtivo);
 }
 
 // PORTFOLIO-GRUB-SCALE
