@@ -129,8 +129,3 @@
   transition-delay: 0s, 0s;
 }
 /* # sourceMappingURL=mouse-follower.min.css.map */
-@media screen and (max-width: 768px) {
-  .cursor {
-    display: none;
-  }
-}

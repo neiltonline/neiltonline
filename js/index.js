@@ -1,4 +1,4 @@
-var isMobile = false; //initiate as false
+const isMobile = false; //initiate as false
 // device detection
 if (
   /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(
@@ -12,50 +12,51 @@ if (
 }
 
 // CURSOR
-
-const cursor = new MouseFollower({
-  el: null,
-  container: document.body,
-  className: "cursor",
-  innerClassName: "cursor-inner",
-  textClassName: "cursor-text",
-  mediaClassName: "cursor-media",
-  mediaBoxClassName: "cursor-media-box",
-  iconSvgClassName: "mf-svgsprite",
-  iconSvgNamePrefix: "-",
-  iconSvgSrc: "",
-  dataAttr: "cursor",
-  hiddenState: "-hidden",
-  textState: "-text",
-  iconState: "-icon",
-  activeState: "-active",
-  mediaState: "-media",
-  stateDetection: {
-    "-pointer": "a,button",
-    "-hidden": "iframe",
-  },
-  visible: true,
-  visibleOnState: false,
-  speed: 0.55,
-  ease: "expo.out",
-  overwrite: true,
-  skewing: 2,
-  skewingText: 1,
-  skewingIcon: 2,
-  skewingMedia: 2,
-  skewingDelta: 0.001,
-  skewingDeltaMax: 0.15,
-  stickDelta: 0.15,
-  showTimeout: 20,
-  hideOnLeave: true,
-  hideTimeout: 300,
-  hideMediaTimeout: 300,
-  stateDetection: {
-    "-pointer": "a, button",
-    "-exclusion": ".exclusion, .nav-mobile, button",
-    "-logo": ".logo",
-  },
-});
+if (!isMobile) {
+  const cursor = new MouseFollower({
+    el: null,
+    container: document.body,
+    className: "cursor",
+    innerClassName: "cursor-inner",
+    textClassName: "cursor-text",
+    mediaClassName: "cursor-media",
+    mediaBoxClassName: "cursor-media-box",
+    iconSvgClassName: "mf-svgsprite",
+    iconSvgNamePrefix: "-",
+    iconSvgSrc: "",
+    dataAttr: "cursor",
+    hiddenState: "-hidden",
+    textState: "-text",
+    iconState: "-icon",
+    activeState: "-active",
+    mediaState: "-media",
+    stateDetection: {
+      "-pointer": "a,button",
+      "-hidden": "iframe",
+    },
+    visible: true,
+    visibleOnState: false,
+    speed: 0.55,
+    ease: "expo.out",
+    overwrite: true,
+    skewing: 2,
+    skewingText: 1,
+    skewingIcon: 2,
+    skewingMedia: 2,
+    skewingDelta: 0.001,
+    skewingDeltaMax: 0.15,
+    stickDelta: 0.15,
+    showTimeout: 20,
+    hideOnLeave: true,
+    hideTimeout: 300,
+    hideMediaTimeout: 300,
+    stateDetection: {
+      "-pointer": "a, button",
+      "-exclusion": ".exclusion, .nav-mobile, button",
+      "-logo": ".logo",
+    },
+  });
+}
 // MOBILE MENU
 
 const menu = document.querySelector(".menuLine");
