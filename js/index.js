@@ -67,12 +67,7 @@ function menuAtivo() {
   navMobile.classList.toggle("nav-mobile-visible");
   document.body.classList.toggle("ovf-y-hidden");
 }
-
-if (isMobile) {
-  menuViewBox.addEventListener("touchstart", menuAtivo);
-} else {
-  menuViewBox.addEventListener("click", menuAtivo);
-}
+menuViewBox.addEventListener("click", menuAtivo);
 
 // PORTFOLIO-GRUB-SCALE
 
