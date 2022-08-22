@@ -320,7 +320,7 @@ p {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
-.btn-menu {
+.menuViewBox {
   display: none;
 }
 
@@ -407,7 +407,63 @@ p {
   .hero h1 {
     font-size: 45px;
   }
-  .btn-menu {
+
+  /* MENU MOBILE 2.0 */
+
+  .menuViewBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    background-color: #222222;
+    border-radius: 50%;
+  }
+
+  .menuLine {
+    position: relative;
+    width: 30px;
+    background-color: white;
+    height: 2px;
+    transition: 0.4s ease;
+    box-sizing: border-box;
+  }
+
+  .menuLine::before,
+  .menuLine::after {
+    position: absolute;
+    content: "";
+    width: 30px;
+    background-color: white;
+    height: 2px;
+    transition: 0.4s ease;
+  }
+
+  .menuLine::before {
+    transform: translate(0, -8px);
+    /* transform: rotate(45deg); */
+  }
+
+  .menuLine::after {
+    transform: translateY(8px);
+  }
+
+  .ativo::before {
+    transform: rotate(40deg);
+  }
+
+  .ativo::after {
+    transform: rotate(-40deg);
+  }
+
+  .menuLine.ativo {
+    /* box-shadow: inset 0 2px 0 #222222; */
+    background-color: #222222;
+  }
+  /* FIM MENU */
+
+  /* .btn-menu {
     display: block;
     background: url("../imagens/menu.svg");
     width: 60px;
@@ -434,7 +490,7 @@ p {
     -webkit-backdrop-filter: blur(5px);
     cursor: pointer;
     transition: 0.3s ease;
-  }
+  } */
 
   .menu {
     padding: 12px 12px 20px 20px;
