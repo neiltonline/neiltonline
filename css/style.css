@@ -113,10 +113,11 @@ html {
   font-weight: 200;
   display: grid;
   width: 100%;
+  justify-content: center;
+  text-align: center;
 }
 
 .nav-mobile nav a {
-  width: 100%;
   padding: 10px 0;
   display: block;
   font-weight: 600;
