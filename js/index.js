@@ -64,7 +64,7 @@ gsap.to(".portScroll05", {
   scrollTrigger: {
     trigger: ".portScroll05",
     start: "0% 100%",
-    end: "0% 90%",
+    end: "0% center",
     scrub: true,
     // markers: true,
   },
@@ -156,15 +156,15 @@ function iniciaModal(modalClass, id) {
 }
 
 // TYPEWRITER (só funciona com texto sem links)
-// function typeWriter(elemento) {
-//   const textoArray = elemento.textContent.split("");
-//   elemento.textContent = "";
-//   textoArray.forEach((letra, i) => {
-//     setTimeout(function () {
-//       elemento.textContent += letra;
-//     }, 50 * i);
-//   });
-// }
+function typeWriter(elemento) {
+  const textoArray = elemento.textContent.split("");
+  elemento.textContent = "";
+  textoArray.forEach((letra, i) => {
+    setTimeout(function () {
+      elemento.textContent += letra;
+    }, 50 * i);
+  });
+}
 
-// const titulo = document.querySelector(".typewriter");
-// typeWriter(titulo);
+const titulo = document.querySelector(".typewriter");
+typeWriter(titulo);

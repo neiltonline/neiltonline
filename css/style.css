@@ -1,7 +1,7 @@
 :root {
   --primary: #76e59f;
   /* --primary: #5b3fe3; */
-  --black: #1c1c1c;
+  --black: #161616;
   --white: #ffffff;
 }
 ::selection {
@@ -94,7 +94,7 @@ html {
   position: fixed;
   top: 0;
   right: -100%;
-  background-color: #1c1c1c99;
+  background-color: #00000080;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   display: flex;
@@ -126,7 +126,7 @@ html {
 .nav-mobile nav span:first-child {
   font-size: 18px;
   opacity: 0.3;
-  padding: 25px 0 20px;
+  padding: 50px 0 20px;
 }
 
 .nav-mobile nav span {
@@ -183,6 +183,7 @@ html {
 }
 .memoji video {
   border-radius: 50%;
+  width: 100px;
   position: absolute;
 }
 .memoji img {
@@ -222,9 +223,9 @@ html {
   z-index: 3;
   display: flex;
   justify-self: end;
-  /* position: fixed; */
-  /* top: 30px; */
-  /* right: 30px; */
+  position: fixed;
+  top: 20px;
+  right: 35px;
   align-items: center;
   justify-content: center;
   width: 60px;
@@ -359,12 +360,6 @@ html {
   border-radius: 30px;
   transform: scaleX(0.8) scaleY(0.8) translateY(0px);
   z-index: -1;
-}
-
-.portScroll05 {
-  position: relative;
-  top: none;
-  height: 105vh;
 }
 
 .hidden-link {
@@ -599,6 +594,9 @@ p {
 
 @media screen and (max-height: 650px) {
   .hero p {
+    display: none;
+  }
+  .nav-mobile nav span:first-child {
     display: none;
   }
 }
