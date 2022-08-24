@@ -10,6 +10,65 @@ if (
 ) {
   isMobile = true;
 }
+// PORTFOLIO-GRUB-SCALE
+
+gsap.registerPlugin(ScrollTrigger);
+
+gsap.to(".portScroll01", {
+  scale: 1,
+  borderRadius: 0,
+  scrollTrigger: {
+    trigger: ".portScroll01",
+    start: "0% 100%",
+    end: "0% top",
+    scrub: true,
+    // markers: true,
+  },
+});
+gsap.to(".portScroll02", {
+  scale: 1,
+  borderRadius: 0,
+  scrollTrigger: {
+    trigger: ".portScroll02",
+    start: "0% 100%",
+    end: "0% top",
+    scrub: true,
+    // markers: true,
+  },
+});
+gsap.to(".portScroll03", {
+  scale: 1,
+  borderRadius: 0,
+  scrollTrigger: {
+    trigger: ".portScroll03",
+    start: "0% 100%",
+    end: "0% top",
+    scrub: true,
+    // markers: true,
+  },
+});
+// gsap.to(".portScroll04", {
+//   scale: 1,
+//   borderRadius: 0,
+//   scrollTrigger: {
+//     trigger: ".portScroll04",
+//     start: "top bottom",
+//     end: "top 12%",
+//     scrub: true,
+//     // markers: true,
+//   },
+// });
+gsap.to(".portScroll05", {
+  scale: 1,
+  borderRadius: 0,
+  scrollTrigger: {
+    trigger: ".portScroll05",
+    start: "0% 100%",
+    end: "0% 90%",
+    scrub: true,
+    // markers: true,
+  },
+});
 
 // CURSOR
 if (!isMobile) {
@@ -68,66 +127,6 @@ function menuAtivo() {
   document.body.classList.toggle("ovf-y-hidden");
 }
 menuViewBox.addEventListener("click", menuAtivo);
-
-// PORTFOLIO-GRUB-SCALE
-
-gsap.registerPlugin(ScrollTrigger);
-
-gsap.to(".portScroll01", {
-  scale: 0.93,
-  y: 50,
-  scrollTrigger: {
-    trigger: ".portScroll01",
-    start: "top bottom",
-    end: "top 12%",
-    scrub: true,
-    // markers: true,
-  },
-});
-gsap.to(".portScroll02", {
-  scale: 0.94,
-  y: 60,
-  scrollTrigger: {
-    trigger: ".portScroll02",
-    start: "top bottom",
-    end: "top 12%",
-    scrub: true,
-    // markers: true,
-  },
-});
-gsap.to(".portScroll03", {
-  scale: 0.95,
-  y: 70,
-  scrollTrigger: {
-    trigger: ".portScroll03",
-    start: "top bottom",
-    end: "top 12%",
-    scrub: true,
-    // markers: true,
-  },
-});
-// gsap.to(".portScroll04", {
-//   scale: 0.96,
-//   y: 80,
-//   scrollTrigger: {
-//     trigger: ".portScroll04",
-//     start: "top bottom",
-//     end: "top 12%",
-//     scrub: true,
-//     // markers: true,
-//   },
-// });
-gsap.to(".portScroll05", {
-  scale: 0.96,
-  y: 80,
-  scrollTrigger: {
-    trigger: ".portScroll05",
-    start: "top bottom",
-    end: "top 12%",
-    scrub: true,
-    // markers: true,
-  },
-});
 
 // MODAL
 
