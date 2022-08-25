@@ -1,4 +1,5 @@
 let isMobile = false; //initiate as false
+
 // device detection
 if (
   /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(
@@ -10,6 +11,17 @@ if (
 ) {
   isMobile = true;
 }
+
+const memoji = document.querySelector(".memoji");
+
+window.onscroll = () => {
+  if (window.scrollY > 140) {
+    memoji.classList.add("memoji-fixed");
+  } else {
+    memoji.classList.remove("memoji-fixed");
+  }
+};
+
 // PORTFOLIO-GRUB-SCALE
 
 gsap.registerPlugin(ScrollTrigger);
