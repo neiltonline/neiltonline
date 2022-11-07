@@ -169,6 +169,23 @@ html {
   z-index: 3;
 }
 
+.embreve {
+  color: rgba(255, 255, 255, 0.2);
+  position: relative;
+  cursor: not-allowed;
+}
+.embreve::after {
+  content: "EM BREVE";
+  font-size: 15px;
+  width: 130px;
+  font-weight: 200;
+  letter-spacing: 5px;
+  color: white;
+  position: absolute;
+  top: 20%;
+  left: calc(50% - 130px / 2);
+}
+
 .menuLeft {
   justify-content: start;
 }
