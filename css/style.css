@@ -175,15 +175,15 @@ html {
   cursor: not-allowed;
 }
 .embreve::after {
-  content: "EM BREVE";
-  font-size: 15px;
-  width: 130px;
+  content: "COMING SOON";
+  font-size: 13px;
+  width: 150px;
   font-weight: 200;
   letter-spacing: 5px;
   color: white;
   position: absolute;
   top: 20%;
-  left: calc(50% - 130px / 2);
+  left: calc(52% - 150px / 2);
 }
 
 .menuLeft {
