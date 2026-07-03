@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Copa do Mundo — Bracket Circular</title>
+  <base href="/bracket/" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/bracket/css/bracket.css" />
+</head>
+<body class="bracket-page">
+  <header class="bracket-header">
+    <a href="/index.html" class="bracket-logo">
+      <img src="/imagens/logo.svg" alt="neiltonline" width="37" />
+    </a>
+    <h1 id="tournament-name" class="bracket-header__title">FIFA World Cup</h1>
+    <div class="bracket-meta">
+      <span id="connection-status" class="status">Carregando…</span>
+      <span class="bracket-meta__sep">·</span>
+      <span>Atualizado <time id="last-update">—</time></span>
+    </div>
+  </header>
+
+  <main class="bracket-stage">
+    <svg
+      id="bracket-svg"
+      viewBox="0 0 1000 1000"
+      preserveAspectRatio="xMidYMid meet"
+      role="img"
+      aria-label="Chave eliminatória circular da Copa do Mundo"
+    ></svg>
+
+    <aside class="bracket-overlay">
+      <section class="bracket-live">
+        <h2>
+          <span class="live-dot"></span>
+          Ao vivo
+          <span id="live-count" class="badge">0</span>
+        </h2>
+        <ul id="live-list" class="live-list"></ul>
+      </section>
+
+      <section id="match-panel" class="match-panel" hidden>
+        <button id="close-panel" class="match-panel__close" aria-label="Fechar">×</button>
+        <p id="match-round" class="match-panel__round"></p>
+        <p id="match-teams" class="match-panel__teams"></p>
+        <p id="match-score" class="match-panel__score"></p>
+        <p id="match-status" class="match-status"></p>
+      </section>
+
+      <section class="bracket-legend">
+        <ul>
+          <li><span class="legend-line legend-line--winner"></span> Caminho ativo</li>
+          <li><span class="legend-line legend-line--live"></span> Ao vivo</li>
+          <li><span class="legend-line legend-line--out"></span> Eliminado</li>
+        </ul>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="/bracket/js/app.js"></script>
+</body>
+</html>
