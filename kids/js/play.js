@@ -4,9 +4,8 @@
   const hint = document.getElementById("hint");
   const configPanel = document.getElementById("config-panel");
   const holdProgress = document.getElementById("hold-progress");
-  const settingsBtn = document.getElementById("settings-btn");
 
-  const HOLD_MS = 2500;
+  const HOLD_MS = 2000;
   const CHAR_LIFETIME_MS = 14000;
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -202,6 +201,7 @@
   function cancelTouchHold() {
     if (touchHoldTimer) clearTimeout(touchHoldTimer);
     touchHoldTimer = null;
+    touchHoldStart = null;
     hideHoldProgress();
   }
 
@@ -425,10 +425,6 @@
   }
 
   document.getElementById("config-close").addEventListener("click", closeConfig);
-  settingsBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    openConfig();
-  });
 
   configPanel.addEventListener("click", (e) => {
     if (e.target === configPanel) closeConfig();
