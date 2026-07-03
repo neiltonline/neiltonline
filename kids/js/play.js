@@ -151,7 +151,7 @@
     if (/[0-9]/.test(content)) {
       return NUMBER_NAMES[content] || content;
     }
-    return content;
+    return content.toLowerCase();
   }
 
   function speak(content, type) {
