@@ -32,13 +32,20 @@
     5: "cinco", 6: "seis", 7: "sete", 8: "oito", 9: "nove",
   };
 
-  const LETTER_NAMES = {
-    A: "á", B: "bê", C: "cê", D: "dê", E: "é", F: "efe",
-    G: "gê", H: "agá", I: "i", J: "jota", K: "cá", L: "ele",
-    M: "eme", N: "ene", O: "ó", P: "pê", Q: "quê", R: "erre",
-    S: "esse", T: "tê", U: "u", V: "vê", W: "dáblio", X: "xis",
-    Y: "ípsilon", Z: "zê",
-  };
+  const PREFERRED_VOICE_NAMES = [
+    "luciana (enhanced)",
+    "luciana",
+    "francisca (enhanced)",
+    "francisca",
+    "fernanda",
+    "google português do brasil",
+    "google português",
+    "amanda",
+    "vitória",
+    "vitoria",
+    "maria",
+    "joana",
+  ];
 
   const EMOJI_NAMES = {
     "🐱": "gatinho", "🐶": "cachorrinho", "🐸": "sapinho", "🐥": "pintinho",
@@ -90,8 +97,35 @@
     const name = voice.name.toLowerCase();
     return (
       voice.gender === "female" ||
-      /female|feminina|luciana|francisca|maria|amanda|vitória|vitoria|fernanda|google português/i.test(name)
+      /female|feminina|luciana|francisca|maria|amanda|vitória|vitoria|fernanda|joana/i.test(name)
     );
+  }
+
+  function isRoboticVoice(voice) {
+    const name = voice.name.toLowerCase();
+    return /compact|espeak|synthetic|robot|fred|junior|ralph/i.test(name);
+  }
+
+  function scoreVoice(voice) {
+    const name = voice.name.toLowerCase();
+    let score = 0;
+
+    if (voice.lang === "pt-BR") score += 60;
+    else if (voice.lang.startsWith("pt")) score += 35;
+
+    if (voice.gender === "female") score += 45;
+    else if (isFemaleVoice(voice)) score += 30;
+
+    if (/enhanced|premium|neural|natural|wavenet|siri/i.test(name)) score += 80;
+
+    const preferredIndex = PREFERRED_VOICE_NAMES.findIndex((v) => name.includes(v));
+    if (preferredIndex !== -1) score += 100 - preferredIndex * 8;
+
+    if (isRoboticVoice(voice)) score -= 80;
+
+    if (voice.localService) score += 10;
+
+    return score;
   }
 
   function loadVoice() {
@@ -100,13 +134,13 @@
     const voices = speech.getVoices();
     const ptVoices = voices.filter((v) => v.lang.startsWith("pt"));
 
-    ptVoice =
-      ptVoices.find((v) => isFemaleVoice(v) && v.lang === "pt-BR") ||
-      ptVoices.find((v) => isFemaleVoice(v)) ||
-      ptVoices.find((v) => v.lang === "pt-BR") ||
-      ptVoices[0] ||
-      null;
+    if (ptVoices.length === 0) {
+      speechReady = true;
+      return;
+    }
 
+    ptVoices.sort((a, b) => scoreVoice(b) - scoreVoice(a));
+    ptVoice = ptVoices[0];
     speechReady = true;
   }
 
@@ -117,7 +151,7 @@
     if (/[0-9]/.test(content)) {
       return NUMBER_NAMES[content] || content;
     }
-    return LETTER_NAMES[content] || content;
+    return content;
   }
 
   function speak(content, type) {
@@ -128,8 +162,8 @@
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "pt-BR";
-    utterance.rate = 0.85;
-    utterance.pitch = 1.15;
+    utterance.rate = 0.88;
+    utterance.pitch = 1.02;
     utterance.volume = 1;
 
     if (ptVoice) utterance.voice = ptVoice;
