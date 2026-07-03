@@ -3,56 +3,47 @@
   const burstLayer = document.getElementById("burst-layer");
   const hint = document.getElementById("hint");
 
-  const COLORS = [
+  const BURST_COLORS = [
     "#FF3366", "#FF6B35", "#FFD23F", "#3DD68C",
-    "#00C2FF", "#7B61FF", "#FF61DC", "#FFFFFF",
+    "#00C2FF", "#7B61FF", "#FF61DC", "#F9A8D4",
+  ];
+
+  const ANIMALS = [
+    "🐱", "🐶", "🐸", "🐥", "🐠", "🦆", "🐝", "🦋",
+    "🐻", "🐰", "🐮", "🐷", "🦁", "🐯", "🐨", "🐼",
+    "🦊", "🐢", "🐙", "🐘", "🦒", "🐧", "🦜", "🐿️",
   ];
 
   const EMOJIS = [
-    "🎈", "🌈", "⭐", "🦋", "🐱", "🐶", "🍎", "🚗",
-    "🎵", "💫", "🌸", "🎀", "🦄", "🐸", "🍓", "🌙",
-    "☀️", "🎉", "💖", "🐠", "🦆", "🍌", "🎠", "🐥",
-    "🍉", "🎪", "🧸", "🫧", "🌺", "🍭", "🐝", "🎨",
+    ...ANIMALS,
+    "🌙", "🌛", "🌜", "⭐", "☀️", "🌈",
+    "🎈", "🎉", "💖", "🍎", "🍌", "🍓", "🧸",
+    "🎵", "💫", "🌸", "🍭", "🫧", "🎠", "🍉",
   ];
-
-  const KEY_EMOJIS = {
-    " ": "✨",
-    Enter: "🎉",
-    Backspace: "💨",
-    Tab: "➡️",
-    ArrowUp: "⬆️",
-    ArrowDown: "⬇️",
-    ArrowLeft: "⬅️",
-    ArrowRight: "➡️",
-    Escape: "🌙",
-    Shift: "🌟",
-    Control: "🎮",
-    Alt: "🎵",
-    Meta: "🍎",
-    CapsLock: "🔆",
-    Delete: "🫧",
-    "=": "➕",
-    "-": "➖",
-    "[": "📦",
-    "]": "🎁",
-    ";": "🎶",
-    "'": "💕",
-    ",": "🌼",
-    ".": "🔵",
-    "/": "🌀",
-    "\\": "⚡",
-    "`": "☁️",
-  };
 
   let currentChar = null;
   let hideHintTimer = null;
+  let lastEmoji = null;
 
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
+  function pickEmoji() {
+    let emoji;
+    do {
+      emoji = pick(EMOJIS);
+    } while (emoji === lastEmoji && EMOJIS.length > 1);
+    lastEmoji = emoji;
+    return emoji;
+  }
+
   function isLetterOrNumber(key) {
     return /^[a-zA-Z0-9]$/.test(key);
+  }
+
+  function isFunctionKey(key) {
+    return /^F([1-9]|1[0-2])$/.test(key);
   }
 
   function randomPosition() {
@@ -60,7 +51,7 @@
     const padY = 10;
     const x = padX + Math.random() * (100 - padX * 2);
     const y = padY + Math.random() * (100 - padY * 2);
-    const rot = -18 + Math.random() * 36;
+    const rot = -12 + Math.random() * 24;
     return { x, y, rot };
   }
 
@@ -101,7 +92,7 @@
   function showOnScreen(content, type) {
     removeCurrent();
 
-    const color = pick(COLORS);
+    const burstColor = pick(BURST_COLORS);
     const { x, y, rot } = randomPosition();
 
     const el = document.createElement("div");
@@ -109,14 +100,12 @@
     el.textContent = content;
     el.style.left = x + "%";
     el.style.top = y + "%";
-    el.style.color = color;
     el.style.setProperty("--rot", rot + "deg");
-    el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
 
     stage.appendChild(el);
     currentChar = el;
 
-    spawnBurst(x, y, color);
+    spawnBurst(x, y, burstColor);
     hideHint();
   }
 
@@ -130,24 +119,31 @@
       showOnScreen(key.toUpperCase(), "letter");
       return;
     }
-
-    const emoji = KEY_EMOJIS[key] || pick(EMOJIS);
-    showOnScreen(emoji, "emoji");
+    showOnScreen(pickEmoji(), "emoji");
   }
 
-  document.addEventListener("keydown", (e) => {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
 
-    if (e.key === "F5" || e.key === "F11") return;
+      if (isFunctionKey(e.key)) {
+        e.preventDefault();
+        e.stopPropagation();
+        showOnScreen(pickEmoji(), "emoji");
+        return;
+      }
 
-    e.preventDefault();
-
-    if (e.key.length === 1 || KEY_EMOJIS[e.key] || e.key.startsWith("Arrow") || e.key === "Enter" || e.key === "Backspace" || e.key === "Tab" || e.key === "Delete" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
       handleKey(e.key);
-    } else {
-      showOnScreen(pick(EMOJIS), "emoji");
-    }
-  });
+    },
+    true
+  );
 
   document.addEventListener("pointerdown", () => {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -156,7 +152,7 @@
     if (roll < 0.55) {
       showOnScreen(pick(letters.split("")), "letter");
     } else {
-      showOnScreen(pick(EMOJIS), "emoji");
+      showOnScreen(pickEmoji(), "emoji");
     }
   });
 
