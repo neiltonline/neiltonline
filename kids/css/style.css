@@ -1,10 +1,8 @@
 :root {
-  --bg-1: #ff6b9d;
-  --bg-2: #c44dff;
-  --bg-3: #4d9fff;
-  --bg-4: #4dffb8;
-  --letter-bg: rgba(255, 255, 255, 0.95);
-  --letter-color: #1a1a2e;
+  --bg-1: #6b1840;
+  --bg-2: #4a1578;
+  --bg-3: #123a6e;
+  --bg-4: #0f5240;
 }
 
 *,
@@ -28,13 +26,15 @@ body {
 
 body {
   font-family: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
-  background: linear-gradient(
-    135deg,
-    var(--bg-1),
-    var(--bg-2),
-    var(--bg-3),
-    var(--bg-4)
-  );
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.42)),
+    linear-gradient(
+      135deg,
+      var(--bg-1),
+      var(--bg-2),
+      var(--bg-3),
+      var(--bg-4)
+    );
   background-size: 400% 400%;
   animation: bgShift 12s ease infinite;
   cursor: default;
@@ -76,14 +76,10 @@ body {
   font-family: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
   font-size: clamp(56px, 16vw, 140px);
   font-weight: 700;
-  color: var(--letter-color);
-  background: var(--letter-bg);
-  padding: 0.12em 0.38em 0.18em;
-  border-radius: 20px;
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.18),
-    0 0 0 4px rgba(255, 255, 255, 0.5);
   letter-spacing: -0.02em;
+  text-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.55),
+    0 0 30px rgba(0, 0, 0, 0.35);
 }
 
 .char--emoji {

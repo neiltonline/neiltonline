@@ -8,6 +8,12 @@
     "#00C2FF", "#7B61FF", "#FF61DC", "#F9A8D4",
   ];
 
+  const LETTER_COLORS = [
+    "#FFFFFF", "#FFF59D", "#FFAB91", "#80D8FF",
+    "#B9F6CA", "#FFD180", "#EA80FC", "#F48FB1",
+    "#84FFFF", "#FFE082",
+  ];
+
   const ANIMALS = [
     "🐱", "🐶", "🐸", "🐥", "🐠", "🦆", "🐝", "🦋",
     "🐻", "🐰", "🐮", "🐷", "🦁", "🐯", "🐨", "🐼",
@@ -188,6 +194,7 @@
     trimOldest();
 
     const burstColor = pick(BURST_COLORS);
+    const letterColor = type === "letter" ? pick(LETTER_COLORS) : null;
     const { x, y, rot } = randomPosition();
 
     const el = document.createElement("div");
@@ -196,6 +203,7 @@
     el.style.left = x + "%";
     el.style.top = y + "%";
     el.style.setProperty("--rot", rot + "deg");
+    if (letterColor) el.style.color = letterColor;
 
     stage.appendChild(el);
     activeChars.push(el);
