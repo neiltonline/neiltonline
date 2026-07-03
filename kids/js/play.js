@@ -17,7 +17,7 @@
   const ANIMALS = [
     "🐱", "🐶", "🐸", "🐥", "🐠", "🦆", "🐝", "🦋",
     "🐻", "🐰", "🐮", "🐷", "🦁", "🐯", "🐨", "🐼",
-    "🦊", "🐢", "🐙", "🐘", "🦒", "🐧", "🦜", "🐿️",
+    "🦊", "🐢", "🐙", "🐘", "🦒", "🐧", "🦜", "🐿️", "🐊",
   ];
 
   const EMOJIS = [
@@ -33,16 +33,17 @@
   };
 
   const EMOJI_NAMES = {
-    "🐱": "gatinho", "🐶": "cachorrinho", "🐸": "sapinho", "🐥": "pintinho",
-    "🐠": "peixinho", "🦆": "patinho", "🐝": "abelhinha", "🦋": "borboleta",
-    "🐻": "ursinho", "🐰": "coelhinho", "🐮": "vaquinha", "🐷": "porquinho",
-    "🦁": "leãozinho", "🐯": "tigrinho", "🐨": "coala", "🐼": "pandinha",
-    "🦊": "raposinha", "🐢": "tartaruguinha", "🐙": "polvo", "🐘": "elefantinho",
-    "🦒": "girafa", "🐧": "penguim", "🦜": "papagaio", "🐿️": "esquilo",
+    "🐱": "gato", "🐶": "cachorro", "🐸": "sapo", "🐥": "galinha",
+    "🐠": "peixe", "🦆": "pato", "🐝": "abelha", "🦋": "borboleta",
+    "🐻": "urso", "🐰": "coelho", "🐮": "vaca", "🐷": "porco",
+    "🦁": "leão", "🐯": "tigre", "🐨": "coala", "🐼": "panda",
+    "🦊": "raposa", "🐢": "tartaruga", "🐙": "polvo", "🐘": "elefante",
+    "🦒": "girafa", "🐧": "pinguim", "🦜": "papagaio", "🐿️": "esquilo",
+    "🐊": "jacaré",
     "🌙": "lua", "🌛": "lua", "🌜": "lua", "⭐": "estrela", "☀️": "sol",
     "🌈": "arco-íris", "🎈": "balão", "🎉": "festa", "💖": "coração",
-    "🍎": "maçã", "🍌": "banana", "🍓": "morango", "🧸": "ursinho de pelúcia",
-    "🎵": "música", "💫": "estrelinha", "🌸": "flor", "🍭": "pirulito",
+    "🍎": "maçã", "🍌": "banana", "🍓": "morango", "🧸": "urso de pelúcia",
+    "🎵": "música", "💫": "estrela", "🌸": "flor", "🍭": "pirulito",
     "🫧": "bolha", "🎠": "carrossel", "🍉": "melancia",
   };
 

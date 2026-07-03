@@ -2,7 +2,6 @@
 import asyncio
 import os
 import subprocess
-import sys
 
 VOICE = "pt-BR-FranciscaNeural"
 EDGE_TTS = os.path.expanduser("~/.local/bin/edge-tts")
@@ -18,19 +17,20 @@ NUMBERS = {
 }
 
 EMOJI_WORDS = [
-    "gatinho", "cachorrinho", "sapinho", "pintinho", "peixinho", "patinho",
-    "abelhinha", "borboleta", "ursinho", "coelhinho", "vaquinha", "porquinho",
-    "leãozinho", "tigrinho", "coala", "pandinha", "raposinha", "tartaruguinha",
-    "polvo", "elefantinho", "girafa", "penguim", "papagaio", "esquilo",
+    "gato", "cachorro", "sapo", "galinha", "peixe", "pato",
+    "abelha", "borboleta", "urso", "coelho", "vaca", "porco",
+    "leão", "tigre", "coala", "panda", "raposa", "tartaruga",
+    "polvo", "elefante", "girafa", "pinguim", "papagaio", "esquilo",
+    "jacaré",
     "lua", "estrela", "sol", "arco-íris", "balão", "festa", "coração",
-    "maçã", "banana", "morango", "ursinho de pelúcia", "música", "estrelinha",
+    "maçã", "banana", "morango", "urso de pelúcia", "música",
     "flor", "pirulito", "bolha", "carrossel", "melancia", "figurinha",
 ]
 
 
-async def generate(text, path):
+async def generate(text, path, force=False):
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    if os.path.exists(path):
+    if os.path.exists(path) and not force:
         return
     proc = await asyncio.create_subprocess_exec(
         EDGE_TTS, "--voice", VOICE, "--text", text, "--write-media", path,
@@ -54,7 +54,7 @@ async def main():
     for word in EMOJI_WORDS:
         safe = word.replace(" ", "-")
         path = os.path.join(AUDIO_DIR, "words", f"{safe}.mp3")
-        tasks.append(generate(word, path))
+        tasks.append(generate(word, path, force=True))
 
     for i in range(0, len(tasks), 5):
         await asyncio.gather(*tasks[i : i + 5])
