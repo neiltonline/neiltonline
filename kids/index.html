@@ -13,8 +13,11 @@
 <body>
     <div id="stage" aria-live="polite" aria-label="Área de brincadeira"></div>
     <div id="burst-layer" aria-hidden="true"></div>
-    <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
-    <p class="hint" id="hint">Aperte qualquer tecla! 🎹</p>
+    <button type="button" id="settings-btn" class="settings-btn" aria-label="Abrir configurações" title="Configurações">⚙️</button>
+    <div id="hold-progress" class="hold-progress" aria-hidden="true">
+        <span class="hold-progress__label">Configurações…</span>
+    </div>
+    <p class="hint" id="hint">Toque na tela para brincar! ✨</p>
 
     <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
         <div class="config__card">
@@ -44,7 +47,7 @@
                 </label>
                 <label class="config__toggle config__toggle--indent" id="cfg-animal-sounds-wrap">
                     <input type="checkbox" id="cfg-animal-sounds" checked>
-                    <span>Sons dos animais (ex: miau, au au)</span>
+                    <span>Sons reais dos animais</span>
                 </label>
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-cat-nature" checked>
@@ -60,7 +63,7 @@
                 </label>
             </section>
 
-            <p class="config__hint">Segure qualquer tecla (ou dois dedos no celular) por 2,5s para abrir de novo.</p>
+            <p class="config__hint">No celular, toque no botão ⚙️ no canto da tela. No teclado, segure qualquer tecla por 2,5s (ou dois dedos na tela).</p>
             <button type="button" class="config__close" id="config-close">Fechar</button>
         </div>
     </div>

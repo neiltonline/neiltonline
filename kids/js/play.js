@@ -4,6 +4,7 @@
   const hint = document.getElementById("hint");
   const configPanel = document.getElementById("config-panel");
   const holdProgress = document.getElementById("hold-progress");
+  const settingsBtn = document.getElementById("settings-btn");
 
   const HOLD_MS = 2500;
   const CHAR_LIFETIME_MS = 14000;
@@ -175,7 +176,7 @@
     document.body.classList.remove("config-open");
   }
 
-  function getMaxChars() {
+  function showHoldProgress() {
     holdProgress.classList.add("is-active");
     holdProgress.setAttribute("aria-hidden", "false");
   }
@@ -424,6 +425,10 @@
   }
 
   document.getElementById("config-close").addEventListener("click", closeConfig);
+  settingsBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openConfig();
+  });
 
   configPanel.addEventListener("click", (e) => {
     if (e.target === configPanel) closeConfig();
