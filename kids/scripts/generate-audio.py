@@ -8,6 +8,10 @@ VOICE = "pt-BR-FranciscaNeural"
 EDGE_TTS = os.path.expanduser("~/.local/bin/edge-tts")
 AUDIO_DIR = os.path.join(os.path.dirname(__file__), "..", "audio")
 
+LETTER_OVERRIDES = {
+    "v": "vé",
+}
+
 NUMBERS = {
     "0": "zero", "1": "um", "2": "dois", "3": "três", "4": "quatro",
     "5": "cinco", "6": "seis", "7": "sete", "8": "oito", "9": "nove",
@@ -40,7 +44,8 @@ async def main():
 
     for letter in "abcdefghijklmnopqrstuvwxyz":
         path = os.path.join(AUDIO_DIR, "letters", f"{letter}.mp3")
-        tasks.append(generate(letter, path))
+        text = LETTER_OVERRIDES.get(letter, letter)
+        tasks.append(generate(text, path))
 
     for word in NUMBERS.values():
         path = os.path.join(AUDIO_DIR, "numbers", f"{word}.mp3")

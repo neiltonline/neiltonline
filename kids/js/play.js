@@ -53,7 +53,6 @@
   let hideHintTimer = null;
   let lastEmoji = null;
   let currentAudio = null;
-  const audioCache = new Map();
 
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -81,15 +80,17 @@
   }
 
   function getAudioSrc(content, type) {
+    let path;
     if (type === "emoji") {
       const word = EMOJI_NAMES[content] || "figurinha";
-      return `./audio/words/${wordToFile(word)}.mp3`;
-    }
-    if (/[0-9]/.test(content)) {
+      path = `audio/words/${wordToFile(word)}.mp3`;
+    } else if (/[0-9]/.test(content)) {
       const word = NUMBER_NAMES[content];
-      return `./audio/numbers/${wordToFile(word)}.mp3`;
+      path = `audio/numbers/${wordToFile(word)}.mp3`;
+    } else {
+      path = `audio/letters/${content.toLowerCase()}.mp3`;
     }
-    return `./audio/letters/${content.toLowerCase()}.mp3`;
+    return new URL(path, window.location.href).href;
   }
 
   function speak(content, type) {
@@ -97,17 +98,11 @@
 
     if (currentAudio) {
       currentAudio.pause();
-      currentAudio.currentTime = 0;
+      currentAudio = null;
     }
 
-    let audio = audioCache.get(src);
-    if (!audio) {
-      audio = new Audio(src);
-      audioCache.set(src, audio);
-    }
-
+    const audio = new Audio(src);
     currentAudio = audio;
-    audio.currentTime = 0;
     audio.play().catch(() => {});
   }
 
