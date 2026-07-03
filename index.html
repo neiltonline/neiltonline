@@ -82,7 +82,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
     <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
-    <script>w3IncludeHTML();</script>
+    <script>w3IncludeHTML(initApp);</script>
     <script>
         function iniciaModal(modalClass) {
             const modal = document.querySelector(modalClass);
@@ -95,16 +95,66 @@
             });
         }
 
-        document.getElementById('project-capitual').addEventListener('click', () => {
-            document.body.style.overflow = "hidden";
-            iniciaModal('.modal');
-        });
+        function initMobileNav() {
+            const toggle = document.querySelector('.nav-mobile');
+            const nav = document.getElementById('mobile-nav');
+            const backdrop = document.querySelector('.mobile-nav__backdrop');
+            if (!toggle || !nav || !backdrop) return;
 
-        const menu = document.querySelector('.menu');
-        if (menu) {
-            window.addEventListener('scroll', () => {
-                menu.classList.toggle('scrolled', window.scrollY > 60);
-            }, { passive: true });
+            function closeMenu() {
+                toggle.classList.remove('is-active');
+                nav.classList.remove('is-open');
+                backdrop.classList.remove('is-open');
+                toggle.setAttribute('aria-expanded', 'false');
+                nav.setAttribute('aria-hidden', 'true');
+                backdrop.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('menu-open');
+            }
+
+            function openMenu() {
+                toggle.classList.add('is-active');
+                nav.classList.add('is-open');
+                backdrop.classList.add('is-open');
+                toggle.setAttribute('aria-expanded', 'true');
+                nav.setAttribute('aria-hidden', 'false');
+                backdrop.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('menu-open');
+            }
+
+            toggle.addEventListener('click', () => {
+                nav.classList.contains('is-open') ? closeMenu() : openMenu();
+            });
+
+            backdrop.addEventListener('click', closeMenu);
+
+            nav.querySelectorAll('.mobile-nav__item').forEach((link) => {
+                link.addEventListener('click', () => {
+                    if (link.getAttribute('href')?.startsWith('#')) closeMenu();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeMenu();
+            });
+        }
+
+        function initApp() {
+            const capitual = document.getElementById('project-capitual');
+            if (capitual) {
+                capitual.addEventListener('click', () => {
+                    document.body.style.overflow = "hidden";
+                    iniciaModal('.modal');
+                });
+            }
+
+            const menu = document.querySelector('.menu');
+            if (menu) {
+                window.addEventListener('scroll', () => {
+                    menu.classList.toggle('scrolled', window.scrollY > 60);
+                }, { passive: true });
+            }
+
+            initMobileNav();
         }
     </script>
     <script>
