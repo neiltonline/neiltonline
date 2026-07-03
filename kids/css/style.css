@@ -74,7 +74,7 @@ body {
 
 .char--letter {
   font-family: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
-  font-size: clamp(80px, 24vw, 200px);
+  font-size: clamp(56px, 16vw, 140px);
   font-weight: 700;
   color: var(--letter-color);
   background: var(--letter-bg);
@@ -87,7 +87,7 @@ body {
 }
 
 .char--emoji {
-  font-size: clamp(88px, 26vw, 210px);
+  font-size: clamp(64px, 18vw, 150px);
   filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.2));
 }
 

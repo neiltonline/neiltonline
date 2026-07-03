@@ -21,7 +21,10 @@
     "🎵", "💫", "🌸", "🍭", "🫧", "🎠", "🍉",
   ];
 
-  let currentChar = null;
+  const MAX_CHARS = 10;
+  const CHAR_LIFETIME_MS = 14000;
+
+  let activeChars = [];
   let hideHintTimer = null;
   let lastEmoji = null;
 
@@ -81,16 +84,21 @@
     }
   }
 
-  function removeCurrent() {
-    if (!currentChar) return;
-    const el = currentChar;
-    currentChar = null;
+  function removeChar(el) {
+    if (!el || el.classList.contains("is-leaving")) return;
+    activeChars = activeChars.filter((c) => c !== el);
     el.classList.add("is-leaving");
     el.addEventListener("animationend", () => el.remove(), { once: true });
   }
 
+  function trimOldest() {
+    while (activeChars.length >= MAX_CHARS) {
+      removeChar(activeChars[0]);
+    }
+  }
+
   function showOnScreen(content, type) {
-    removeCurrent();
+    trimOldest();
 
     const burstColor = pick(BURST_COLORS);
     const { x, y, rot } = randomPosition();
@@ -103,7 +111,10 @@
     el.style.setProperty("--rot", rot + "deg");
 
     stage.appendChild(el);
-    currentChar = el;
+    activeChars.push(el);
+
+    const lifetime = setTimeout(() => removeChar(el), CHAR_LIFETIME_MS);
+    el._lifetime = lifetime;
 
     spawnBurst(x, y, burstColor);
     hideHint();
