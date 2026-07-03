@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#ff6b9d">
     <title>Tecladinho 🎈</title>
@@ -13,7 +13,53 @@
 <body>
     <div id="stage" aria-live="polite" aria-label="Área de brincadeira"></div>
     <div id="burst-layer" aria-hidden="true"></div>
+    <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
     <p class="hint" id="hint">Aperte qualquer tecla! 🎹</p>
+
+    <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
+        <div class="config__card">
+            <h2 class="config__title">Configurações</h2>
+
+            <section class="config__section">
+                <h3 class="config__label">Modo de jogo</h3>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-letters-only">
+                    <span>Apenas letras e números</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-emojis-only">
+                    <span>Apenas emojis</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-single-centered">
+                    <span>Um caractere gigante no centro</span>
+                </label>
+            </section>
+
+            <section class="config__section">
+                <h3 class="config__label">Tipos de emoji</h3>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-animals" checked>
+                    <span>Animais</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-nature" checked>
+                    <span>Natureza</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-food" checked>
+                    <span>Comida</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-objects" checked>
+                    <span>Objetos e festa</span>
+                </label>
+            </section>
+
+            <p class="config__hint">Segure qualquer tecla (ou dois dedos no celular) por 2,5s para abrir de novo.</p>
+            <button type="button" class="config__close" id="config-close">Fechar</button>
+        </div>
+    </div>
 
     <script src="./js/play.js"></script>
 </body>
