@@ -4,7 +4,7 @@
 
 export const RING_COUNTS = [32, 16, 8, 4, 2];
 
-const ROUND_LABELS = ['32 avos', 'Oitavas', 'Quartas', 'Semifinal', 'Final'];
+const ROUND_LABELS = ['16 avos', 'Oitavas', 'Quartas', 'Semifinal', 'Final'];
 
 export function createTeamMap(teams) {
   return Object.fromEntries(teams.map((t) => [t.id, t]));
@@ -127,7 +127,8 @@ export function getLiveMatches(matches) {
 
 export function formatScore(match) {
   if (!match.home && !match.away) return '—';
-  return `${match.homeScore} – ${match.awayScore}`;
+  const base = `${match.homeScore} – ${match.awayScore}`;
+  return match.note ? `${base} (${match.note})` : base;
 }
 
 export function getRoundLabel(round) {
