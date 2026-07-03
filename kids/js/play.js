@@ -51,10 +51,21 @@
     "🫧": "bolha", "🎠": "carrossel", "🍉": "melancia",
   };
 
+  const ANIMAL_SOUND_SLUGS = {
+    "🐱": "gato", "🐶": "cachorro", "🐸": "sapo", "🐥": "pinto",
+    "🐠": "peixe", "🦆": "pato", "🐝": "abelha", "🦋": "borboleta",
+    "🐻": "urso", "🐰": "coelho", "🐮": "vaca", "🐷": "porco",
+    "🦁": "leao", "🐯": "tigre", "🐨": "coala", "🐼": "panda",
+    "🦊": "raposa", "🐢": "tartaruga", "🐙": "polvo", "🐘": "elefante",
+    "🦒": "girafa", "🐧": "pinguim", "🦜": "papagaio", "🐿️": "esquilo",
+    "🐊": "jacare",
+  };
+
   const DEFAULT_CONFIG = {
     lettersOnly: false,
     emojisOnly: false,
     singleCentered: false,
+    animalSounds: true,
     categories: {
       animals: true,
       nature: true,
@@ -137,11 +148,14 @@
     document.getElementById("cfg-letters-only").checked = config.lettersOnly;
     document.getElementById("cfg-emojis-only").checked = config.emojisOnly;
     document.getElementById("cfg-single-centered").checked = config.singleCentered;
+    document.getElementById("cfg-animal-sounds").checked = config.animalSounds;
     document.getElementById("cfg-cat-animals").checked = config.categories.animals;
     document.getElementById("cfg-cat-nature").checked = config.categories.nature;
     document.getElementById("cfg-cat-food").checked = config.categories.food;
     document.getElementById("cfg-cat-objects").checked = config.categories.objects;
     applyBodyModes();
+    const soundsWrap = document.getElementById("cfg-animal-sounds-wrap");
+    soundsWrap.classList.toggle("is-disabled", !config.categories.animals);
   }
 
   function openConfig() {
@@ -245,15 +259,37 @@
     return new URL(path, window.location.href).href;
   }
 
-  function speak(content, type) {
-    const src = getAudioSrc(content, type);
+  function getAnimalSoundSrc(emoji) {
+    const slug = ANIMAL_SOUND_SLUGS[emoji];
+    if (!slug) return null;
+    return new URL(`audio/sounds/${slug}.mp3`, window.location.href).href;
+  }
+
+  function playAudio(src, onEnd) {
     if (currentAudio) {
       currentAudio.pause();
+      currentAudio.onended = null;
       currentAudio = null;
     }
     const audio = new Audio(src);
     currentAudio = audio;
-    audio.play().catch(() => {});
+    if (onEnd) {
+      audio.addEventListener("ended", onEnd, { once: true });
+    }
+    audio.play().catch(() => onEnd?.());
+  }
+
+  function speak(content, type) {
+    const src = getAudioSrc(content, type);
+
+    const playAnimalSound = () => {
+      if (type !== "emoji" || !config.animalSounds || !config.categories.animals) return;
+      if (!EMOJI_CATEGORIES.animals.includes(content)) return;
+      const soundSrc = getAnimalSoundSrc(content);
+      if (soundSrc) playAudio(soundSrc);
+    };
+
+    playAudio(src, playAnimalSound);
   }
 
   function randomPosition() {
@@ -414,10 +450,16 @@
     if (config.singleCentered) clearAllChars();
   });
 
+  document.getElementById("cfg-animal-sounds").addEventListener("change", (e) => {
+    config.animalSounds = e.target.checked;
+    saveConfig();
+  });
+
   ["animals", "nature", "food", "objects"].forEach((cat) => {
     document.getElementById(`cfg-cat-${cat}`).addEventListener("change", (e) => {
       config.categories[cat] = e.target.checked;
       saveConfig();
+      syncConfigUI();
     });
   });
 

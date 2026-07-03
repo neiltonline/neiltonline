@@ -314,8 +314,15 @@ body.mode-single .char.is-leaving {
   cursor: pointer;
 }
 
-.config__toggle:last-child {
-  border-bottom: none;
+.config__toggle--indent {
+  padding-left: 16px;
+  font-size: 14px;
+  color: #444;
+}
+
+.config__toggle--indent.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .config__toggle input {
