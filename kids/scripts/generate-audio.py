@@ -17,13 +17,13 @@ NUMBERS = {
 }
 
 EMOJI_WORDS = [
-    "gato", "cachorro", "sapo", "galinha", "peixe", "pato",
+    "gato", "cachorro", "sapo", "pinto", "peixe", "pato",
     "abelha", "borboleta", "urso", "coelho", "vaca", "porco",
     "leão", "tigre", "coala", "panda", "raposa", "tartaruga",
     "polvo", "elefante", "girafa", "pinguim", "papagaio", "esquilo",
     "jacaré",
     "lua", "estrela", "sol", "arco-íris", "balão", "festa", "coração",
-    "maçã", "banana", "morango", "urso de pelúcia", "música",
+    "maçã", "banana", "morango", "música",
     "flor", "pirulito", "bolha", "carrossel", "melancia", "figurinha",
 ]
 

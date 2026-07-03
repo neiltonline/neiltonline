@@ -37,7 +37,7 @@
   };
 
   const EMOJI_NAMES = {
-    "🐱": "gato", "🐶": "cachorro", "🐸": "sapo", "🐥": "galinha",
+    "🐱": "gato", "🐶": "cachorro", "🐸": "sapo", "🐥": "pinto",
     "🐠": "peixe", "🦆": "pato", "🐝": "abelha", "🦋": "borboleta",
     "🐻": "urso", "🐰": "coelho", "🐮": "vaca", "🐷": "porco",
     "🦁": "leão", "🐯": "tigre", "🐨": "coala", "🐼": "panda",
@@ -46,7 +46,7 @@
     "🐊": "jacaré",
     "🌙": "lua", "🌛": "lua", "🌜": "lua", "⭐": "estrela", "☀️": "sol",
     "🌈": "arco-íris", "🎈": "balão", "🎉": "festa", "💖": "coração",
-    "🍎": "maçã", "🍌": "banana", "🍓": "morango", "🧸": "urso de pelúcia",
+    "🍎": "maçã", "🍌": "banana", "🍓": "morango", "🧸": "urso",
     "🎵": "música", "💫": "estrela", "🌸": "flor", "🍭": "pirulito",
     "🫧": "bolha", "🎠": "carrossel", "🍉": "melancia",
   };
