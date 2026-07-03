@@ -32,21 +32,6 @@
     5: "cinco", 6: "seis", 7: "sete", 8: "oito", 9: "nove",
   };
 
-  const PREFERRED_VOICE_NAMES = [
-    "luciana (enhanced)",
-    "luciana",
-    "francisca (enhanced)",
-    "francisca",
-    "fernanda",
-    "google português do brasil",
-    "google português",
-    "amanda",
-    "vitória",
-    "vitoria",
-    "maria",
-    "joana",
-  ];
-
   const EMOJI_NAMES = {
     "🐱": "gatinho", "🐶": "cachorrinho", "🐸": "sapinho", "🐥": "pintinho",
     "🐠": "peixinho", "🦆": "patinho", "🐝": "abelhinha", "🦋": "borboleta",
@@ -67,10 +52,8 @@
   let activeChars = [];
   let hideHintTimer = null;
   let lastEmoji = null;
-  let ptVoice = null;
-  let speechReady = false;
-
-  const speech = window.speechSynthesis;
+  let currentAudio = null;
+  const audioCache = new Map();
 
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -93,87 +76,39 @@
     return /^F([1-9]|1[0-2])$/.test(key);
   }
 
-  function isFemaleVoice(voice) {
-    const name = voice.name.toLowerCase();
-    return (
-      voice.gender === "female" ||
-      /female|feminina|luciana|francisca|maria|amanda|vitória|vitoria|fernanda|joana/i.test(name)
-    );
+  function wordToFile(word) {
+    return word.replace(/ /g, "-");
   }
 
-  function isRoboticVoice(voice) {
-    const name = voice.name.toLowerCase();
-    return /compact|espeak|synthetic|robot|fred|junior|ralph/i.test(name);
-  }
-
-  function scoreVoice(voice) {
-    const name = voice.name.toLowerCase();
-    let score = 0;
-
-    if (voice.lang === "pt-BR") score += 60;
-    else if (voice.lang.startsWith("pt")) score += 35;
-
-    if (voice.gender === "female") score += 45;
-    else if (isFemaleVoice(voice)) score += 30;
-
-    if (/enhanced|premium|neural|natural|wavenet|siri/i.test(name)) score += 80;
-
-    const preferredIndex = PREFERRED_VOICE_NAMES.findIndex((v) => name.includes(v));
-    if (preferredIndex !== -1) score += 100 - preferredIndex * 8;
-
-    if (isRoboticVoice(voice)) score -= 80;
-
-    if (voice.localService) score += 10;
-
-    return score;
-  }
-
-  function loadVoice() {
-    if (!speech) return;
-
-    const voices = speech.getVoices();
-    const ptVoices = voices.filter((v) => v.lang.startsWith("pt"));
-
-    if (ptVoices.length === 0) {
-      speechReady = true;
-      return;
-    }
-
-    ptVoices.sort((a, b) => scoreVoice(b) - scoreVoice(a));
-    ptVoice = ptVoices[0];
-    speechReady = true;
-  }
-
-  function getSpeechText(content, type) {
+  function getAudioSrc(content, type) {
     if (type === "emoji") {
-      return EMOJI_NAMES[content] || "figurinha";
+      const word = EMOJI_NAMES[content] || "figurinha";
+      return `./audio/words/${wordToFile(word)}.mp3`;
     }
     if (/[0-9]/.test(content)) {
-      return NUMBER_NAMES[content] || content;
+      const word = NUMBER_NAMES[content];
+      return `./audio/numbers/${wordToFile(word)}.mp3`;
     }
-    return content.toLowerCase();
+    return `./audio/letters/${content.toLowerCase()}.mp3`;
   }
 
   function speak(content, type) {
-    if (!speech || !speechReady) return;
+    const src = getAudioSrc(content, type);
 
-    const text = getSpeechText(content, type);
-    speech.cancel();
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "pt-BR";
-    utterance.rate = 0.88;
-    utterance.pitch = 1.02;
-    utterance.volume = 1;
+    let audio = audioCache.get(src);
+    if (!audio) {
+      audio = new Audio(src);
+      audioCache.set(src, audio);
+    }
 
-    if (ptVoice) utterance.voice = ptVoice;
-
-    speech.speak(utterance);
-  }
-
-  if (speech) {
-    loadVoice();
-    speech.addEventListener("voiceschanged", loadVoice);
+    currentAudio = audio;
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
   }
 
   function randomPosition() {
@@ -286,8 +221,6 @@
   );
 
   document.addEventListener("pointerdown", () => {
-    if (speech && !speechReady) loadVoice();
-
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     const roll = Math.random();
 
