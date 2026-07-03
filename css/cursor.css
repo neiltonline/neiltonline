@@ -1,6 +1,7 @@
 :root {
-  --primary: #76e59f;
-  --black: #1c1c1c;
+  --primary: #5b3fe3;
+  --primary-light: #7c5ef5;
+  --black: #000000;
   --white: #ffffff;
 }
 .cursor {
