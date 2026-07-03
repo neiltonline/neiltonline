@@ -21,12 +21,43 @@
     "🎵", "💫", "🌸", "🍭", "🫧", "🎠", "🍉",
   ];
 
+  const NUMBER_NAMES = {
+    0: "zero", 1: "um", 2: "dois", 3: "três", 4: "quatro",
+    5: "cinco", 6: "seis", 7: "sete", 8: "oito", 9: "nove",
+  };
+
+  const LETTER_NAMES = {
+    A: "á", B: "bê", C: "cê", D: "dê", E: "é", F: "efe",
+    G: "gê", H: "agá", I: "i", J: "jota", K: "cá", L: "ele",
+    M: "eme", N: "ene", O: "ó", P: "pê", Q: "quê", R: "erre",
+    S: "esse", T: "tê", U: "u", V: "vê", W: "dáblio", X: "xis",
+    Y: "ípsilon", Z: "zê",
+  };
+
+  const EMOJI_NAMES = {
+    "🐱": "gatinho", "🐶": "cachorrinho", "🐸": "sapinho", "🐥": "pintinho",
+    "🐠": "peixinho", "🦆": "patinho", "🐝": "abelhinha", "🦋": "borboleta",
+    "🐻": "ursinho", "🐰": "coelhinho", "🐮": "vaquinha", "🐷": "porquinho",
+    "🦁": "leãozinho", "🐯": "tigrinho", "🐨": "coala", "🐼": "pandinha",
+    "🦊": "raposinha", "🐢": "tartaruguinha", "🐙": "polvo", "🐘": "elefantinho",
+    "🦒": "girafa", "🐧": "penguim", "🦜": "papagaio", "🐿️": "esquilo",
+    "🌙": "lua", "🌛": "lua", "🌜": "lua", "⭐": "estrela", "☀️": "sol",
+    "🌈": "arco-íris", "🎈": "balão", "🎉": "festa", "💖": "coração",
+    "🍎": "maçã", "🍌": "banana", "🍓": "morango", "🧸": "ursinho de pelúcia",
+    "🎵": "música", "💫": "estrelinha", "🌸": "flor", "🍭": "pirulito",
+    "🫧": "bolha", "🎠": "carrossel", "🍉": "melancia",
+  };
+
   const MAX_CHARS = 10;
   const CHAR_LIFETIME_MS = 14000;
 
   let activeChars = [];
   let hideHintTimer = null;
   let lastEmoji = null;
+  let ptVoice = null;
+  let speechReady = false;
+
+  const speech = window.speechSynthesis;
 
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -47,6 +78,62 @@
 
   function isFunctionKey(key) {
     return /^F([1-9]|1[0-2])$/.test(key);
+  }
+
+  function isFemaleVoice(voice) {
+    const name = voice.name.toLowerCase();
+    return (
+      voice.gender === "female" ||
+      /female|feminina|luciana|francisca|maria|amanda|vitória|vitoria|fernanda|google português/i.test(name)
+    );
+  }
+
+  function loadVoice() {
+    if (!speech) return;
+
+    const voices = speech.getVoices();
+    const ptVoices = voices.filter((v) => v.lang.startsWith("pt"));
+
+    ptVoice =
+      ptVoices.find((v) => isFemaleVoice(v) && v.lang === "pt-BR") ||
+      ptVoices.find((v) => isFemaleVoice(v)) ||
+      ptVoices.find((v) => v.lang === "pt-BR") ||
+      ptVoices[0] ||
+      null;
+
+    speechReady = true;
+  }
+
+  function getSpeechText(content, type) {
+    if (type === "emoji") {
+      return EMOJI_NAMES[content] || "figurinha";
+    }
+    if (/[0-9]/.test(content)) {
+      return NUMBER_NAMES[content] || content;
+    }
+    return LETTER_NAMES[content] || content;
+  }
+
+  function speak(content, type) {
+    if (!speech || !speechReady) return;
+
+    const text = getSpeechText(content, type);
+    speech.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "pt-BR";
+    utterance.rate = 0.85;
+    utterance.pitch = 1.15;
+    utterance.volume = 1;
+
+    if (ptVoice) utterance.voice = ptVoice;
+
+    speech.speak(utterance);
+  }
+
+  if (speech) {
+    loadVoice();
+    speech.addEventListener("voiceschanged", loadVoice);
   }
 
   function randomPosition() {
@@ -113,10 +200,10 @@
     stage.appendChild(el);
     activeChars.push(el);
 
-    const lifetime = setTimeout(() => removeChar(el), CHAR_LIFETIME_MS);
-    el._lifetime = lifetime;
+    setTimeout(() => removeChar(el), CHAR_LIFETIME_MS);
 
     spawnBurst(x, y, burstColor);
+    speak(content, type);
     hideHint();
   }
 
@@ -157,6 +244,8 @@
   );
 
   document.addEventListener("pointerdown", () => {
+    if (speech && !speechReady) loadVoice();
+
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     const roll = Math.random();
 
