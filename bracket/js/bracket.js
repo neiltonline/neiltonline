@@ -1,17 +1,24 @@
 /**
- * Circular bracket SVG renderer using polar coordinates.
+ * Circular bracket SVG renderer — 32/16/8/4/2 ring structure.
  */
 
 import {
+  RING_COUNTS,
   createTeamMap,
   getEliminatedTeams,
-  getMatchesByRound,
+  resolveRingNode,
+  isConnectorActive,
+  getChampion,
 } from './data.js';
-
-const CX = 500;
-const CY = 500;
-const NODE_SIZE = 28;
-const RADII = [380, 310, 240, 170, 100];
+import {
+  CX,
+  CY,
+  NODE_SIZE,
+  RADII,
+  ringAngle,
+  polarToCartesian,
+  bracketPath,
+} from './layout.js';
 
 export class CircularBracket {
   constructor(svgEl, options = {}) {
@@ -29,20 +36,21 @@ export class CircularBracket {
     const glow = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
     glow.setAttribute('id', 'glow');
     glow.innerHTML = `
-      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     `;
     defs.appendChild(glow);
 
-    const clipCircle = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
-    clipCircle.setAttribute('id', 'flag-clip');
-    const clipRect = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    clipRect.setAttribute('r', NODE_SIZE / 2);
-    clipCircle.appendChild(clipRect);
-    defs.appendChild(clipCircle);
+    const clip = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+    clip.setAttribute('id', 'flag-clip');
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('r', NODE_SIZE / 2);
+    clip.appendChild(c);
+    defs.appendChild(clip);
 
     this.svg.appendChild(defs);
     this.layers = {
+      guides: this._group('guides'),
       rings: this._group('rings'),
       connectors: this._group('connectors'),
       nodes: this._group('nodes'),
@@ -57,210 +65,165 @@ export class CircularBracket {
     return g;
   }
 
-  polarToCartesian(radius, angleDeg) {
-    const rad = ((angleDeg - 90) * Math.PI) / 180;
-    return {
-      x: CX + radius * Math.cos(rad),
-      y: CY + radius * Math.sin(rad),
-    };
-  }
-
-  angleForSlot(slot, total) {
-    const step = 360 / total;
-    return slot * step + step / 2;
-  }
-
   render(tournament) {
     this.teamMap = createTeamMap(tournament.teams);
     this.matches = tournament.matches;
     this._clearLayers();
+    this._drawGuides();
     this._drawRings();
     this._drawConnectors();
-    this._drawNodes();
+    this._drawAllNodes();
     this._drawCenter(tournament);
   }
 
   _clearLayers() {
-    Object.values(this.layers).forEach((layer) => {
-      layer.innerHTML = '';
+    Object.values(this.layers).forEach((l) => { l.innerHTML = ''; });
+  }
+
+  _drawGuides() {
+    [0, 90, 180, 270].forEach((deg) => {
+      const outer = polarToCartesian(RADII[0] + 18, deg);
+      const inner = polarToCartesian(RADII[4] - 36, deg);
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', outer.x);
+      line.setAttribute('y1', outer.y);
+      line.setAttribute('x2', inner.x);
+      line.setAttribute('y2', inner.y);
+      line.setAttribute('stroke', '#1a1a1a');
+      line.setAttribute('stroke-width', '1');
+      this.layers.guides.appendChild(line);
     });
   }
 
   _drawRings() {
-    RADII.forEach((r, i) => {
+    RADII.forEach((r) => {
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('cx', CX);
       circle.setAttribute('cy', CY);
       circle.setAttribute('r', r);
       circle.setAttribute('fill', 'none');
-      circle.setAttribute('stroke', '#2a2a2a');
+      circle.setAttribute('stroke', '#222');
       circle.setAttribute('stroke-width', '1');
-      circle.setAttribute('opacity', '0.7');
       this.layers.rings.appendChild(circle);
     });
   }
 
-  _getMatchByRoundSlot(round, slot) {
-    return this.matches.find((m) => m.round === round && m.slot === slot);
+  _drawConnectors() {
+    const eliminated = getEliminatedTeams(this.matches);
+
+    for (let ring = 0; ring < RING_COUNTS.length - 1; ring++) {
+      const parentCount = RING_COUNTS[ring + 1];
+
+      for (let parentSlot = 0; parentSlot < parentCount; parentSlot++) {
+        const childA = parentSlot * 2;
+        const childB = parentSlot * 2 + 1;
+
+        [childA, childB].forEach((childSlot) => {
+          const active = isConnectorActive(ring, childSlot, this.matches, eliminated);
+          const { match } = resolveRingNode(ring, childSlot, this.matches);
+          const isLive = match?.status === 'live';
+
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', bracketPath(ring, childSlot, ring + 1, parentSlot));
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke-width', active ? '2' : '1');
+          path.setAttribute(
+            'stroke',
+            active ? '#ffffff' : isLive ? '#c9a227' : '#2e2e2e'
+          );
+          path.setAttribute('opacity', active ? '1' : '0.55');
+          if (active) path.setAttribute('filter', 'url(#glow)');
+          this.layers.connectors.appendChild(path);
+        });
+      }
+    }
+
+    for (let slot = 0; slot < 2; slot++) {
+      const { teamId } = resolveRingNode(4, slot, this.matches);
+      if (!teamId) continue;
+      const child = polarToCartesian(RADII[4], ringAngle(4, slot));
+      const champion = getChampion(this.matches);
+      const active = champion === teamId;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      path.setAttribute('x1', child.x);
+      path.setAttribute('y1', child.y);
+      path.setAttribute('x2', CX);
+      path.setAttribute('y2', CY);
+      path.setAttribute('stroke', active ? '#ffffff' : '#2e2e2e');
+      path.setAttribute('stroke-width', active ? '2' : '1');
+      path.setAttribute('opacity', active ? '1' : '0.45');
+      if (active) path.setAttribute('filter', 'url(#glow)');
+      this.layers.connectors.appendChild(path);
+    }
   }
 
-  _drawConnectors() {
-    const eliminated = getEliminatedTeams(this.matches, this.teamMap);
-    const byRound = getMatchesByRound(this.matches);
+  _drawAllNodes() {
+    const eliminated = getEliminatedTeams(this.matches);
 
-    for (let round = 0; round < RADII.length - 1; round++) {
-      const matches = byRound[round] || [];
-      const nextMatches = byRound[round + 1] || [];
-      const childRadius = RADII[round];
-      const parentRadius = RADII[round + 1];
+    for (let ring = 0; ring < RING_COUNTS.length; ring++) {
+      const count = RING_COUNTS[ring];
+      for (let slot = 0; slot < count; slot++) {
+        const resolved = resolveRingNode(ring, slot, this.matches);
+        const pos = polarToCartesian(RADII[ring], ringAngle(ring, slot));
 
-      if (round === 0) {
-        matches.forEach((match, slot) => {
-          const parentSlot = Math.floor(slot / 2);
-          const parentAngle = this.angleForSlot(parentSlot, nextMatches.length);
-          const parent = this.polarToCartesian(parentRadius, parentAngle);
-          const childAngles = [
-            this.angleForSlot(slot * 2, 32),
-            this.angleForSlot(slot * 2 + 1, 32),
-          ];
-
-          childAngles.forEach((angle, childIdx) => {
-            const teamId = childIdx === 0 ? match.home : match.away;
-            this._drawConnectorPath(
-              childRadius, angle, parentRadius, parentAngle,
-              match, teamId, eliminated
-            );
-          });
-        });
-      } else {
-        for (let slot = 0; slot < matches.length; slot += 2) {
-          const parentSlot = slot / 2;
-          const parentAngle = this.angleForSlot(parentSlot, nextMatches.length);
-          const parent = this.polarToCartesian(parentRadius, parentAngle);
-          const childAngles = [
-            this.angleForSlot(slot, matches.length),
-            this.angleForSlot(slot + 1, matches.length),
-          ];
-
-          childAngles.forEach((angle, childIdx) => {
-            const feederMatch = matches[slot + childIdx];
-            const teamId = feederMatch?.winner || feederMatch?.home || feederMatch?.away;
-            this._drawConnectorPath(
-              childRadius, angle, parentRadius, parentAngle,
-              feederMatch, teamId, eliminated
-            );
-          });
+        if (!resolved.teamId) {
+          this._drawPlaceholder(pos, resolved.match, ring, slot);
+        } else {
+          this._drawTeamNode(pos, resolved, eliminated, ring);
         }
       }
     }
   }
 
-  _drawConnectorPath(childR, childAngle, parentR, parentAngle, match, teamId, eliminated) {
-    if (!match) return;
-    const child = this.polarToCartesian(childR, childAngle);
-    const parent = this.polarToCartesian(parentR, parentAngle);
-    const isWinnerPath = match.winner && teamId === match.winner;
-    const isLive = match.status === 'live' && teamId;
-    const isEliminated = teamId && eliminated.has(teamId);
-
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    const midR = (childR + parentR) / 2;
-    const midAngle = (childAngle + parentAngle) / 2;
-    const mid = this.polarToCartesian(midR, midAngle);
-    path.setAttribute('d', `M ${child.x} ${child.y} Q ${mid.x} ${mid.y} ${parent.x} ${parent.y}`);
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke-width', isWinnerPath ? '2.5' : '1');
-    path.setAttribute(
-      'stroke',
-      isWinnerPath ? '#5b3fe3' : isLive ? '#e8c547' : isEliminated ? '#2a2a2a' : '#3d3d3d'
-    );
-    path.setAttribute('opacity', isEliminated ? '0.25' : '0.85');
-    if (isWinnerPath) path.setAttribute('filter', 'url(#glow)');
-    this.layers.connectors.appendChild(path);
-  }
-
-  _drawNodes() {
-    const eliminated = getEliminatedTeams(this.matches, this.teamMap);
-    const byRound = getMatchesByRound(this.matches);
-
-    const r32 = byRound[0] || [];
-    r32.forEach((match, slot) => {
-      [match.home, match.away].forEach((teamId, idx) => {
-        const angle = this.angleForSlot(slot * 2 + idx, 32);
-        this._drawTeamNode(teamId, RADII[0], angle, match, eliminated);
-      });
-    });
-
-    for (let round = 1; round < RADII.length; round++) {
-      const matches = byRound[round] || [];
-      const isFinal = round === 4;
-
-      matches.forEach((match, slot) => {
-        if (isFinal) {
-          [match.home, match.away].forEach((teamId, idx) => {
-            if (!teamId) {
-              this._drawPlaceholder(RADII[round], this.angleForSlot(idx, 2), match);
-              return;
-            }
-            const angle = this.angleForSlot(idx, 2);
-            this._drawTeamNode(teamId, RADII[round], angle, match, eliminated);
-          });
-        } else {
-          const teamId = match.winner || match.home || match.away;
-          const angle = this.angleForSlot(slot, matches.length);
-          if (!teamId) {
-            this._drawPlaceholder(RADII[round], angle, match);
-          } else {
-            this._drawTeamNode(teamId, RADII[round], angle, match, eliminated);
-          }
-        }
-      });
-    }
-  }
-
-  _drawPlaceholder(radius, angle, match) {
-    const pos = this.polarToCartesian(radius, angle);
+  _drawPlaceholder(pos, match, ring, slot) {
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
 
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('r', NODE_SIZE / 2);
-    circle.setAttribute('fill', '#111');
+    circle.setAttribute('r', NODE_SIZE / 2 - 1);
+    circle.setAttribute('fill', '#0a0a0a');
     circle.setAttribute('stroke', '#2a2a2a');
     circle.setAttribute('stroke-width', '1');
-    circle.setAttribute('stroke-dasharray', '3 3');
+    circle.setAttribute('stroke-dasharray', '2 3');
     g.appendChild(circle);
 
-    g.addEventListener('click', () => {
-      this.selectedMatchId = match.id;
-      this.onMatchSelect(match);
-      this.render({ teams: Object.values(this.teamMap), matches: this.matches });
-    });
+    if (match) {
+      g.style.cursor = 'pointer';
+      g.addEventListener('click', () => this._select(match));
+    }
 
     this.layers.nodes.appendChild(g);
   }
 
-  _drawTeamNode(teamId, radius, angle, match, eliminated) {
-    const pos = this.polarToCartesian(radius, angle);
+  _drawTeamNode(pos, resolved, eliminated, ring) {
+    const { teamId, match } = resolved;
+    const team = this.teamMap[teamId];
+    if (!team) return;
+
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
     g.style.cursor = 'pointer';
 
-    const team = this.teamMap[teamId];
     const isEliminated = eliminated.has(teamId);
-    const isLive = match.status === 'live';
-    const isSelected = this.selectedMatchId === match.id;
-    const isWinner = match.winner === teamId;
+    const isLive = match?.status === 'live' &&
+      (match.home === teamId || match.away === teamId);
+    const isWinner = match?.winner === teamId;
+    const isSelected = match && this.selectedMatchId === match.id;
+    const isChampion = getChampion(this.matches) === teamId;
 
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('r', NODE_SIZE / 2);
-    circle.setAttribute('fill', '#111');
+    circle.setAttribute('fill', '#141414');
     circle.setAttribute(
       'stroke',
-      isSelected ? '#fff' : isWinner ? '#5b3fe3' : isLive ? '#e8c547' : '#444'
+      isSelected ? '#fff'
+        : isChampion ? '#5b3fe3'
+          : isWinner ? '#fff'
+            : isLive ? '#c9a227'
+              : '#3a3a3a'
     );
-    circle.setAttribute('stroke-width', isSelected || isWinner ? '2.5' : '1.5');
-    if (isEliminated) circle.setAttribute('opacity', '0.35');
+    circle.setAttribute('stroke-width', isSelected || isChampion ? '2.5' : '1.5');
+    if (isEliminated) circle.setAttribute('opacity', '0.3');
     g.appendChild(circle);
 
     const flag = document.createElementNS('http://www.w3.org/2000/svg', 'image');
@@ -270,57 +233,59 @@ export class CircularBracket {
     flag.setAttribute('width', NODE_SIZE);
     flag.setAttribute('height', NODE_SIZE);
     flag.setAttribute('clip-path', 'url(#flag-clip)');
-    if (isEliminated) flag.setAttribute('opacity', '0.35');
+    if (isEliminated) flag.setAttribute('opacity', '0.25');
     g.appendChild(flag);
 
     g.addEventListener('click', () => {
-      this.selectedMatchId = match.id;
-      this.onMatchSelect(match);
-      this.render({ teams: Object.values(this.teamMap), matches: this.matches });
+      if (match) this._select(match);
     });
 
     this.layers.nodes.appendChild(g);
   }
 
+  _select(match) {
+    this.selectedMatchId = match.id;
+    this.onMatchSelect(match);
+    this.render({ teams: Object.values(this.teamMap), matches: this.matches });
+  }
+
   _drawCenter(tournament) {
-    const champion = this.matches.find((m) => m.round === 4)?.winner;
+    const champion = getChampion(this.matches);
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.setAttribute('transform', `translate(${CX}, ${CY})`);
 
-    const outer = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    outer.setAttribute('r', '48');
-    outer.setAttribute('fill', '#0d0d0d');
-    outer.setAttribute('stroke', champion ? '#5b3fe3' : '#333');
-    outer.setAttribute('stroke-width', '2');
-    g.appendChild(outer);
+    const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    ring.setAttribute('r', '54');
+    ring.setAttribute('fill', '#080808');
+    ring.setAttribute('stroke', champion ? '#5b3fe3' : '#2a2a2a');
+    ring.setAttribute('stroke-width', '2');
+    g.appendChild(ring);
+
+    const inner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    inner.setAttribute('r', '46');
+    inner.setAttribute('fill', '#0d0d0d');
+    inner.setAttribute('stroke', '#1a1a1a');
+    inner.setAttribute('stroke-width', '1');
+    g.appendChild(inner);
 
     if (champion) {
       const team = this.teamMap[champion];
       const flag = document.createElementNS('http://www.w3.org/2000/svg', 'image');
       flag.setAttribute('href', `https://flagcdn.com/w160/${team.code}.png`);
-      flag.setAttribute('x', '-32');
-      flag.setAttribute('y', '-32');
-      flag.setAttribute('width', '64');
-      flag.setAttribute('height', '64');
+      flag.setAttribute('x', '-30');
+      flag.setAttribute('y', '-30');
+      flag.setAttribute('width', '60');
+      flag.setAttribute('height', '60');
       flag.setAttribute('clip-path', 'url(#flag-clip)');
       g.appendChild(flag);
     } else {
       const trophy = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       trophy.setAttribute('text-anchor', 'middle');
       trophy.setAttribute('dominant-baseline', 'central');
-      trophy.setAttribute('font-size', '36');
+      trophy.setAttribute('font-size', '32');
       trophy.textContent = '🏆';
       g.appendChild(trophy);
     }
-
-    const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    title.setAttribute('y', '68');
-    title.setAttribute('text-anchor', 'middle');
-    title.setAttribute('fill', '#888');
-    title.setAttribute('font-size', '11');
-    title.setAttribute('font-family', 'Syne, sans-serif');
-    title.textContent = champion ? this.teamMap[champion].name : tournament.name;
-    g.appendChild(title);
 
     this.layers.center.appendChild(g);
   }

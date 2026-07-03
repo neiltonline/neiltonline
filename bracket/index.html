@@ -12,10 +12,7 @@
     <a href="../index.html" class="bracket-logo">
       <img src="../imagens/logo.svg" alt="neiltonline" width="37" />
     </a>
-    <nav class="bracket-nav">
-      <a href="../index.html">Portfolio</a>
-      <span class="bracket-nav__active">Bracket</span>
-    </nav>
+    <h1 id="tournament-name" class="bracket-header__title">FIFA World Cup</h1>
     <div class="bracket-meta">
       <span id="connection-status" class="status">Carregando…</span>
       <span class="bracket-meta__sep">·</span>
@@ -23,11 +20,16 @@
     </div>
   </header>
 
-  <main class="bracket-main">
-    <aside class="bracket-sidebar">
-      <h1 id="tournament-name" class="bracket-title">FIFA World Cup</h1>
-      <p class="bracket-subtitle">Acompanhamento em tempo real da tabela eliminatória</p>
+  <main class="bracket-stage">
+    <svg
+      id="bracket-svg"
+      viewBox="0 0 1000 1000"
+      preserveAspectRatio="xMidYMid meet"
+      role="img"
+      aria-label="Chave eliminatória circular da Copa do Mundo"
+    ></svg>
 
+    <aside class="bracket-overlay">
       <section class="bracket-live">
         <h2>
           <span class="live-dot"></span>
@@ -46,23 +48,13 @@
       </section>
 
       <section class="bracket-legend">
-        <h2>Legenda</h2>
         <ul>
-          <li><span class="legend-line legend-line--winner"></span> Caminho do vencedor</li>
-          <li><span class="legend-line legend-line--live"></span> Jogo ao vivo</li>
+          <li><span class="legend-line legend-line--winner"></span> Caminho ativo</li>
+          <li><span class="legend-line legend-line--live"></span> Ao vivo</li>
           <li><span class="legend-line legend-line--out"></span> Eliminado</li>
         </ul>
       </section>
     </aside>
-
-    <div class="bracket-canvas-wrap">
-      <svg
-        id="bracket-svg"
-        viewBox="0 0 1000 1000"
-        role="img"
-        aria-label="Chave eliminatória circular da Copa do Mundo"
-      ></svg>
-    </div>
   </main>
 
   <script type="module" src="./js/app.js"></script>

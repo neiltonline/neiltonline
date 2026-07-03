@@ -2,9 +2,9 @@
  * Tournament data model and bracket logic.
  */
 
-const ROUND_LABELS = ['Oitavas', 'Oitavas de final', 'Quartas', 'Semifinal', 'Final'];
+export const RING_COUNTS = [32, 16, 8, 4, 2];
 
-const ROUND_COUNTS = [16, 8, 4, 2, 1];
+const ROUND_LABELS = ['32 avos', 'Oitavas', 'Quartas', 'Semifinal', 'Final'];
 
 export function createTeamMap(teams) {
   return Object.fromEntries(teams.map((t) => [t.id, t]));
@@ -29,7 +29,39 @@ export function getMatchesByRound(matches) {
   return byRound;
 }
 
-export function getEliminatedTeams(matches, teamMap) {
+export function getMatch(matches, round, slot) {
+  return matches.find((m) => m.round === round && m.slot === slot) || null;
+}
+
+/**
+ * Resolve which team (if any) occupies a visual ring slot.
+ * Ring 0 = 32 initial teams | Ring 1–4 = advancing teams per knockout stage.
+ */
+export function resolveRingNode(ring, slot, matches) {
+  if (ring === 0) {
+    const matchSlot = Math.floor(slot / 2);
+    const match = getMatch(matches, 0, matchSlot);
+    if (!match) return { teamId: null, match: null, side: null };
+    const side = slot % 2 === 0 ? 'home' : 'away';
+    return { teamId: match[side], match, side };
+  }
+
+  const feederRound = ring - 1;
+  const feederMatch = getMatch(matches, feederRound, slot);
+  if (!feederMatch) return { teamId: null, match: null, side: null };
+
+  const teamId = feederMatch.winner || null;
+  const upcomingMatch = getMatch(matches, ring, Math.floor(slot / 2));
+
+  return {
+    teamId,
+    match: upcomingMatch || feederMatch,
+    feederMatch,
+    side: null,
+  };
+}
+
+export function getEliminatedTeams(matches) {
   const eliminated = new Set();
   for (const match of matches) {
     if (match.status !== 'finished' || !match.winner) continue;
@@ -39,26 +71,31 @@ export function getEliminatedTeams(matches, teamMap) {
   return eliminated;
 }
 
-export function getActivePath(matches) {
-  const active = new Set();
-  for (const match of matches) {
-    if (match.winner) active.add(match.winner);
-    if (match.status === 'live') {
-      if (match.home) active.add(match.home);
-      if (match.away) active.add(match.away);
-    }
+export function isConnectorActive(ring, childSlot, matches, eliminated) {
+  const { teamId, match, side } = resolveRingNode(ring, childSlot, matches);
+  if (!teamId) return false;
+  if (eliminated.has(teamId)) return false;
+
+  if (ring === 0 && match) {
+    if (match.status === 'live') return true;
+    if (match.winner === teamId) return true;
+    return false;
   }
-  return active;
+
+  const feederRound = ring - 1;
+  const feeder = getMatch(matches, feederRound, childSlot);
+  if (feeder?.winner === teamId) return true;
+  if (feeder?.status === 'live') {
+    return feeder.home === teamId || feeder.away === teamId;
+  }
+  return false;
 }
 
-/**
- * Propagate finished match winners into the next round slots.
- */
 export function propagateWinners(matches) {
   const byRound = getMatchesByRound(matches);
   const updated = matches.map((m) => ({ ...m }));
 
-  for (let round = 0; round < ROUND_COUNTS.length - 1; round++) {
+  for (let round = 0; round < 4; round++) {
     const current = byRound[round] || [];
     const next = byRound[round + 1] || [];
 
@@ -73,8 +110,7 @@ export function propagateWinners(matches) {
       const idx = updated.findIndex((m) => m.id === nextMatch.id);
       if (idx === -1) continue;
 
-      const isHomeSlot = slot % 2 === 0;
-      if (isHomeSlot) {
+      if (slot % 2 === 0) {
         updated[idx].home = match.winner;
       } else {
         updated[idx].away = match.winner;
@@ -95,6 +131,14 @@ export function formatScore(match) {
 }
 
 export function getRoundLabel(round) {
-  const labels = ['32 avos', 'Oitavas', 'Quartas', 'Semifinal', 'Final'];
-  return labels[round] || `Rodada ${round + 1}`;
+  return ROUND_LABELS[round] || `Rodada ${round + 1}`;
+}
+
+export function getChampion(matches) {
+  return getMatch(matches, 4, 0)?.winner || null;
+}
+
+export function getFinalists(matches) {
+  const sf = getMatchesByRound(matches)[3] || [];
+  return sf.map((m) => m.winner).filter(Boolean);
 }
