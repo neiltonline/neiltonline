@@ -316,6 +316,18 @@
     return false;
   }
 
+  function isConfigTapZone(clientX, clientY) {
+    const w = slideWidth();
+    const h = slideHeight();
+    return clientX >= w * 0.75 && clientY <= h * 0.22;
+  }
+
+  function handleConfigTap(clientX, clientY) {
+    if (!isConfigTapZone(clientX, clientY)) return false;
+    deps.onConfigTap?.();
+    return true;
+  }
+
   function handleCenterTap(clientX) {
     if (!deps.tapToRepeat?.()) return false;
     const w = slideWidth();
@@ -337,6 +349,7 @@
     const fast = dt < SWIPE_MAX_MS;
 
     if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS) {
+      if (handleConfigTap(clientX, clientY)) return;
       if (handleTapZone(clientX)) return;
       if (handleCenterTap(clientX)) return;
       snapCurrent();
@@ -357,15 +370,6 @@
   function onPointerDown(e) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
     activePointers.add(e.pointerId);
-
-    if (activePointers.size >= 2) {
-      dragging = false;
-      track.classList.remove("is-dragging");
-      transitionCb = null;
-      setTrackTransform(CURRENT_SLOT, false);
-      deps.onTwoFingerHoldStart?.();
-      return;
-    }
 
     unlockSpeech();
 
@@ -396,12 +400,7 @@
   }
 
   function onPointerUp(e) {
-    const countBefore = activePointers.size;
     activePointers.delete(e.pointerId);
-
-    if (countBefore >= 2) {
-      deps.onTwoFingerHoldEnd?.(activePointers.size);
-    }
 
     if (!dragging) return;
     dragging = false;
@@ -440,7 +439,7 @@
     feed = deps.buildFeed ? deps.buildFeed() : [];
 
     if (feed.length === 0) {
-      track.innerHTML = "<p class=\"reels__empty\">Nada para mostrar. Segure dois dedos por 2s para abrir configurações.</p>";
+      track.innerHTML = "<p class=\"reels__empty\">Nada para mostrar. Toque 3 vezes no canto superior direito para abrir configurações.</p>";
       slots = [];
       return;
     }

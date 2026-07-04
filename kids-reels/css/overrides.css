@@ -18,11 +18,27 @@ body.mode-reels {
   touch-action: manipulation;
 }
 
-/* Config hold indicator must stay visible in reels mode */
+/* Config tap indicator (top-right, parent zone) */
 body.mode-reels .hold-progress {
   visibility: visible;
   pointer-events: none;
   z-index: 60;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  left: auto;
+  bottom: auto;
+  margin-left: 0;
+}
+
+body.mode-reels .hold-progress.is-active::before {
+  content: attr(data-taps) " / 3";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 15px/1 system-ui, sans-serif;
+  color: #fff;
 }
 
 .reels {

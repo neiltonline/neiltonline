@@ -1,7 +1,8 @@
 (function () {
   const ASSET_BASE = new URL("/kids/", window.location.origin);
   const CONFIG_KEY = "tecladinho-reels-config";
-  const HOLD_MS = 2000;
+  const CONFIG_TAP_COUNT = 3;
+  const CONFIG_TAP_WINDOW_MS = 3000;
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const ILLUS = () => window.TecladinhoIllus;
 
@@ -196,9 +197,8 @@
   let audioCtx = null;
   const audioPool = new Map();
   let configOpen = false;
-  let touchHoldTimer = null;
-  let touchHoldStart = null;
-  let touchHoldRaf = null;
+  let configTapTimes = [];
+  let configTapResetTimer = null;
 
   function saveConfig() {
     localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
@@ -797,13 +797,52 @@
     syncReelsConfigSections();
   }
 
+  function showTapProgress(count) {
+    holdProgress.classList.add("is-active");
+    holdProgress.setAttribute("aria-hidden", "false");
+    holdProgress.dataset.taps = String(count);
+    holdProgress.style.setProperty("--hold-deg", `${(count / CONFIG_TAP_COUNT) * 360}deg`);
+  }
+
+  function hideTapProgress() {
+    holdProgress.classList.remove("is-active");
+    holdProgress.setAttribute("aria-hidden", "true");
+    holdProgress.style.setProperty("--hold-deg", "0deg");
+    delete holdProgress.dataset.taps;
+  }
+
+  function cancelConfigTapProgress() {
+    if (configTapResetTimer) clearTimeout(configTapResetTimer);
+    configTapResetTimer = null;
+    configTapTimes = [];
+    hideTapProgress();
+  }
+
+  function registerConfigTap() {
+    if (configOpen) return;
+    const now = Date.now();
+    configTapTimes = configTapTimes.filter((t) => now - t < CONFIG_TAP_WINDOW_MS);
+    configTapTimes.push(now);
+    const count = configTapTimes.length;
+
+    if (count >= CONFIG_TAP_COUNT) {
+      cancelConfigTapProgress();
+      openConfig();
+      return;
+    }
+
+    showTapProgress(count);
+    if (configTapResetTimer) clearTimeout(configTapResetTimer);
+    configTapResetTimer = setTimeout(cancelConfigTapProgress, CONFIG_TAP_WINDOW_MS);
+  }
+
   function openConfig() {
     configOpen = true;
     configPanel.classList.add("is-open");
     configPanel.setAttribute("aria-hidden", "false");
     document.body.classList.add("config-open");
     syncConfigUI();
-    cancelTouchHold();
+    cancelConfigTapProgress();
   }
 
   function closeConfig() {
@@ -811,44 +850,6 @@
     configPanel.classList.remove("is-open");
     configPanel.setAttribute("aria-hidden", "true");
     document.body.classList.remove("config-open");
-  }
-
-  function showHoldProgress() {
-    holdProgress.classList.add("is-active");
-    holdProgress.setAttribute("aria-hidden", "false");
-  }
-
-  function hideHoldProgress() {
-    holdProgress.classList.remove("is-active");
-    holdProgress.setAttribute("aria-hidden", "true");
-    holdProgress.style.setProperty("--hold-deg", "0deg");
-    if (touchHoldRaf) cancelAnimationFrame(touchHoldRaf);
-    touchHoldRaf = null;
-  }
-
-  function cancelTouchHold() {
-    if (touchHoldTimer) clearTimeout(touchHoldTimer);
-    touchHoldTimer = null;
-    touchHoldStart = null;
-    hideHoldProgress();
-  }
-
-  function startTouchHold() {
-    if (configOpen) return;
-    cancelTouchHold();
-    touchHoldStart = Date.now();
-    showHoldProgress();
-    const tick = () => {
-      const elapsed = Date.now() - touchHoldStart;
-      const pct = Math.min(elapsed / HOLD_MS, 1);
-      holdProgress.style.setProperty("--hold-deg", `${pct * 360}deg`);
-      if (pct < 1) touchHoldRaf = requestAnimationFrame(tick);
-    };
-    tick();
-    touchHoldTimer = setTimeout(() => {
-      hideHoldProgress();
-      openConfig();
-    }, HOLD_MS);
   }
 
   document.getElementById("config-close").addEventListener("click", closeConfig);
@@ -926,13 +927,6 @@
     refreshReels();
   });
 
-  function onTwoFingerHoldEnd(remainingPointers) {
-    const holdDuration = touchHoldStart ? Date.now() - touchHoldStart : 0;
-    if (remainingPointers >= 2) return;
-    if (touchHoldTimer && holdDuration < HOLD_MS) cancelTouchHold();
-    else if (remainingPointers === 0) cancelTouchHold();
-  }
-
   function illusFallback(item) {
     if (!item || item.type !== "animal") return null;
     return ILLUS()?.fallback?.("animal", item.animalId) || null;
@@ -948,8 +942,7 @@
         stopSpeak: stopSpeaking,
         warmItem,
         illusFallback,
-        onTwoFingerHoldStart: startTouchHold,
-        onTwoFingerHoldEnd: onTwoFingerHoldEnd,
+        onConfigTap: registerConfigTap,
         tapToRepeat: () => config.tapRepeat,
       });
       buildAnimalConfigList();
