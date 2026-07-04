@@ -33,6 +33,23 @@
     { id: "coruja", name: "coruja", label: "Coruja" },
     { id: "lobo", name: "lobo", label: "Lobo" },
     { id: "macaco", name: "macaco", label: "Macaco" },
+    { id: "coelho", name: "coelho", label: "Coelho" },
+    { id: "peixe", name: "peixe", label: "Peixe" },
+    { id: "pinguim", name: "pinguim", label: "Pinguim" },
+    { id: "tartaruga", name: "tartaruga", label: "Tartaruga" },
+    { id: "borboleta", name: "borboleta", label: "Borboleta" },
+    { id: "coala", name: "coala", label: "Coala" },
+    { id: "panda", name: "panda", label: "Panda" },
+    { id: "girafa", name: "girafa", label: "Girafa" },
+    { id: "polvo", name: "polvo", label: "Polvo" },
+    { id: "esquilo", name: "esquilo", label: "Esquilo" },
+    { id: "zebra", name: "zebra", label: "Zebra" },
+    { id: "golfinho", name: "golfinho", label: "Golfinho" },
+    { id: "baleia", name: "baleia", label: "Baleia" },
+    { id: "cabra", name: "cabra", label: "Cabra" },
+    { id: "lhama", name: "lhama", label: "Lhama" },
+    { id: "cervo", name: "cervo", label: "Cervo" },
+    { id: "rato", name: "rato", label: "Rato" },
   ];
 
   const ANIMALS_BY_ID = Object.fromEntries(ANIMALS.map((a) => [a.id, a]));

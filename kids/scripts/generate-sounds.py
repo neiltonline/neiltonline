@@ -33,6 +33,13 @@ ANIMAL_SOUNDS = {
     "papagaio": "Loro! Loro!",
     "esquilo": "Tic tic!",
     "jacare": "Tchac!",
+    "zebra": "Hiii!",
+    "golfinho": "Ehee! Ehee!",
+    "baleia": "Wuuu!",
+    "cabra": "Mééé!",
+    "lhama": "Hmmm!",
+    "cervo": "Snif!",
+    "rato": "Fri fri!",
 }
 
 

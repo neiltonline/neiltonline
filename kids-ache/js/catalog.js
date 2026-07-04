@@ -1,6 +1,7 @@
 (function () {
   const FEMININE = new Set([
     "vaca", "galinha", "raposa", "abelha", "ovelha", "coruja", "borboleta",
+    "baleia", "cabra", "girafa", "zebra",
     "mamae", "titia", "vovo", "bola", "lua", "maca", "banana", "melancia",
     "agua", "flor", "estrela", "musica", "festa", "bolha",
     "cabeca", "orelha", "boca", "mao", "perna", "barriga",
@@ -35,6 +36,18 @@
     { id: "pinguim", name: "pinguim", label: "Pinguim" },
     { id: "tartaruga", name: "tartaruga", label: "Tartaruga" },
     { id: "borboleta", name: "borboleta", label: "Borboleta" },
+    { id: "coala", name: "coala", label: "Coala" },
+    { id: "panda", name: "panda", label: "Panda" },
+    { id: "girafa", name: "girafa", label: "Girafa" },
+    { id: "polvo", name: "polvo", label: "Polvo" },
+    { id: "esquilo", name: "esquilo", label: "Esquilo" },
+    { id: "zebra", name: "zebra", label: "Zebra" },
+    { id: "golfinho", name: "golfinho", label: "Golfinho" },
+    { id: "baleia", name: "baleia", label: "Baleia" },
+    { id: "cabra", name: "cabra", label: "Cabra" },
+    { id: "lhama", name: "lhama", label: "Lhama" },
+    { id: "cervo", name: "cervo", label: "Cervo" },
+    { id: "rato", name: "rato", label: "Rato" },
   ];
 
   const WORDS = [

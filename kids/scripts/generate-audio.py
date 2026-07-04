@@ -25,6 +25,9 @@ ANIMAL_WORDS = [
     "gato", "cachorro", "vaca", "porco", "galinha", "pinto", "pato", "galo",
     "sapo", "leão", "tigre", "elefante", "urso", "raposa", "abelha", "papagaio",
     "jacaré", "cavalo", "ovelha", "coruja", "lobo", "macaco",
+    "coelho", "peixe", "pinguim", "tartaruga", "borboleta",
+    "coala", "panda", "girafa", "polvo", "esquilo",
+    "zebra", "golfinho", "baleia", "cabra", "lhama", "cervo", "rato",
 ]
 
 TODDLER_WORDS = [
