@@ -110,16 +110,6 @@
     5: "cinco", 6: "seis", 7: "sete", 8: "oito", 9: "nove",
   };
 
-  let variants = {};
-  let config = loadConfig();
-  let currentAudio = null;
-  let speechPrimed = false;
-  let configOpen = false;
-  let touchHoldTimer = null;
-  let touchHoldStart = null;
-  let touchHoldRaf = null;
-  let activePointers = new Set();
-
   function defaultAnimalToggles() {
     return Object.fromEntries(ANIMALS.map((a) => [a.id, true]));
   }
@@ -166,6 +156,16 @@
       return structuredClone(DEFAULT_CONFIG);
     }
   }
+
+  let variants = {};
+  let config = loadConfig();
+  let currentAudio = null;
+  let speechPrimed = false;
+  let configOpen = false;
+  let touchHoldTimer = null;
+  let touchHoldStart = null;
+  let touchHoldRaf = null;
+  let activePointers = new Set();
 
   function saveConfig() {
     localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
