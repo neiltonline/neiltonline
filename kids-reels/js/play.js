@@ -105,6 +105,41 @@
     { bg: "#42A5F5", fg: "#FFFFFF" },
   ];
 
+  const ANIMAL_BACKGROUNDS = [
+    "#FFD54F", "#FFCC80", "#FFE082", "#FFF59D", "#FFECB3", "#FFE0B2",
+  ];
+
+  const WORD_BACKGROUNDS = [
+    "#81D4FA", "#80DEEA", "#A5D6A7", "#CE93D8", "#F48FB1", "#90CAF9",
+  ];
+
+  const TWEMOJI_BASE = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72";
+
+  const WORD_TWEMOJI = {
+    papai: "1f468",
+    mamae: "1f469",
+    titio: "1f9d1-200d-1f9b0",
+    titia: "1f469-200d-1f9b0",
+    vovo: "1f475",
+    avo: "1f474",
+    bola: "26bd",
+    brincar: "1f9f8",
+    lua: "1f319",
+    sol: "2600-fe0f",
+    morango: "1f353",
+    banana: "1f34c",
+    maca: "1f34e",
+    agua: "1f4a7",
+    leite: "1f95b",
+    estrela: "2b50",
+    flor: "1f338",
+    bebe: "1f476",
+    pao: "1f35e",
+    abraco: "1f917",
+    beijo: "1f48b",
+    dormir: "1f634",
+  };
+
   const NUMBER_NAMES = {
     0: "zero", 1: "um", 2: "dois", 3: "três", 4: "quatro",
     5: "cinco", 6: "seis", 7: "sete", 8: "oito", 9: "nove",
@@ -165,11 +200,11 @@
   let config = loadConfig();
   let currentAudio = null;
   let speechPrimed = false;
+  let pendingSpeak = null;
   let configOpen = false;
   let touchHoldTimer = null;
   let touchHoldStart = null;
   let touchHoldRaf = null;
-  let activePointers = new Set();
 
   function saveConfig() {
     localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
@@ -200,14 +235,16 @@
     return BODY_PARTS.filter((b) => config.body[b.id]);
   }
 
-  function animalVideos(id) {
-    const list = variants[id]?.videos;
-    return list?.filter((p) => p.startsWith("videos/animals/")) || [];
+  function pickAnimalImage(id) {
+    const list = variants[id]?.images;
+    if (list?.length) return list[Math.floor(Math.random() * list.length)];
+    return `images/animals/${id}.jpg`;
   }
 
-  function wordVideos(id) {
-    const list = variants[id]?.videos;
-    return list?.filter((p) => p.startsWith("videos/words/")) || [];
+  function wordIllustrationUrl(id) {
+    const code = WORD_TWEMOJI[id];
+    if (!code) return null;
+    return `${TWEMOJI_BASE}/${code}.png`;
   }
 
   let feedResetGuard = false;
@@ -216,11 +253,15 @@
     const items = [];
 
     if (config.reelsCategories.animals) {
-      for (const animal of getEnabledAnimals()) {
-        for (const src of animalVideos(animal.id)) {
-          items.push({ type: "animal", animalId: animal.id, label: animal.label, src });
-        }
-      }
+      getEnabledAnimals().forEach((animal, i) => {
+        items.push({
+          type: "animal",
+          animalId: animal.id,
+          label: animal.label,
+          image: pickAnimalImage(animal.id),
+          bg: ANIMAL_BACKGROUNDS[i % ANIMAL_BACKGROUNDS.length],
+        });
+      });
     }
 
     if (config.reelsCategories.colors) {
@@ -246,17 +287,19 @@
     }
 
     if (config.reelsCategories.words) {
-      for (const word of getEnabledWords()) {
-        for (const src of wordVideos(word.id)) {
-          items.push({
-            type: "word",
-            wordId: word.id,
-            label: word.label,
-            name: word.name,
-            src,
-          });
-        }
-      }
+      getEnabledWords().forEach((word, i) => {
+        const illustration = wordIllustrationUrl(word.id);
+        if (!illustration) return;
+        items.push({
+          type: "word",
+          wordId: word.id,
+          label: word.label,
+          name: word.name,
+          image: illustration,
+          external: true,
+          bg: WORD_BACKGROUNDS[i % WORD_BACKGROUNDS.length],
+        });
+      });
     }
 
     if (config.reelsCategories.body) {
@@ -357,15 +400,28 @@
     audio.addEventListener("ended", done, { once: true });
     audio.addEventListener("error", done, { once: true });
     const safety = setTimeout(done, 3500);
-    audio.play().catch(done);
+    audio.play().catch(() => {
+      clearTimeout(safety);
+      if (!speechPrimed) {
+        pendingSpeak = () => playAudio(src, onEnd);
+        return;
+      }
+      done();
+    });
   }
 
   function unlockSpeech() {
-    if (speechPrimed) return;
-    speechPrimed = true;
-    const prime = new Audio(assetUrl("audio/letters/a.mp3"));
-    prime.volume = 0.01;
-    prime.play().then(() => prime.pause()).catch(() => {});
+    if (!speechPrimed) {
+      speechPrimed = true;
+      const prime = new Audio(assetUrl("audio/letters/a.mp3"));
+      prime.volume = 0.01;
+      prime.play().then(() => prime.pause()).catch(() => {});
+    }
+    if (pendingSpeak) {
+      const retry = pendingSpeak;
+      pendingSpeak = null;
+      retry();
+    }
   }
 
   function speakReelsItem(item, onEnd) {
@@ -451,9 +507,9 @@
     WORDS.forEach((word) => {
       const label = document.createElement("label");
       label.className = "config__animal";
-      const thumb = wordVideos(word.id)[0];
-      const thumbHtml = thumb
-        ? `<video src="${assetUrl(thumb)}" muted playsinline preload="metadata" width="48" height="48"></video>`
+      const illustration = wordIllustrationUrl(word.id);
+      const thumbHtml = illustration
+        ? `<img src="${illustration}" alt="" width="48" height="48" loading="lazy" class="config__color-thumb">`
         : `<span class="config__word-fallback">${word.label.charAt(0)}</span>`;
       label.innerHTML = `
         <input type="checkbox" data-word="${word.id}" ${config.words[word.id] ? "checked" : ""}>
@@ -633,27 +689,12 @@
     refreshReels();
   });
 
-  document.addEventListener("pointerdown", (e) => {
-    if (configOpen) return;
-    activePointers.add(e.pointerId);
-    if (activePointers.size >= 2) startTouchHold();
-  }, { passive: true });
-
-  document.addEventListener("pointerup", (e) => {
-    const wasTwoFinger = activePointers.size >= 2;
+  function onTwoFingerHoldEnd(remainingPointers) {
     const holdDuration = touchHoldStart ? Date.now() - touchHoldStart : 0;
-    activePointers.delete(e.pointerId);
-    if (wasTwoFinger && touchHoldTimer) {
-      if (holdDuration < HOLD_MS) cancelTouchHold();
-      return;
-    }
-    if (activePointers.size < 2) cancelTouchHold();
-  }, { passive: true });
-
-  document.addEventListener("pointercancel", (e) => {
-    activePointers.delete(e.pointerId);
-    if (activePointers.size < 2) cancelTouchHold();
-  }, { passive: true });
+    if (remainingPointers >= 2) return;
+    if (touchHoldTimer && holdDuration < HOLD_MS) cancelTouchHold();
+    else if (remainingPointers === 0) cancelTouchHold();
+  }
 
   function bootReels() {
     try {
@@ -664,6 +705,8 @@
         speakItem: speakReelsItem,
         unlockSpeech,
         stopSpeak: stopSpeaking,
+        onTwoFingerHoldStart: startTouchHold,
+        onTwoFingerHoldEnd: onTwoFingerHoldEnd,
       });
       buildAnimalConfigList();
       buildColorConfigList();

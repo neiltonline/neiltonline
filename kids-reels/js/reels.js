@@ -14,9 +14,7 @@
   let slots = [];
   let activeIndex = 0;
   let feed = [];
-  let audioUnlocked = false;
-  let speakTimer = null;
-  let transitionCb = null;
+  let speechUnlocked = false;
 
   let deps = {};
   let pointerStartY = 0;
@@ -54,61 +52,45 @@
   }
 
   function stopSpeechNow() {
-    clearTimeout(speakTimer);
-    speakTimer = null;
     if (deps.stopSpeak) deps.stopSpeak();
   }
 
-  function slideVideos(slide) {
-    return slide ? [...slide.querySelectorAll("video")] : [];
-  }
-
-  function pauseAllVideos() {
-    slots.forEach((slide) => {
-      slideVideos(slide).forEach((video) => video.pause());
-    });
-  }
-
-  function speakItem(item) {
-    if (!item || !deps.speakItem) return;
-    deps.speakItem(item, () => {});
-  }
-
-  function scheduleSpeak(item) {
-    clearTimeout(speakTimer);
-    stopSpeechNow();
-    speakTimer = setTimeout(() => {
-      speakTimer = null;
-      speakItem(item);
-    }, IS_COARSE ? 160 : 50);
-  }
-
-  function playVideosForSlide(slide, muted) {
-    slideVideos(slide).forEach((video) => {
-      video.muted = muted;
-      video.loop = true;
-      video.play().catch(() => {});
-    });
+  function speakItem(item, onEnd) {
+    if (!item || !deps.speakItem) {
+      onEnd?.();
+      return;
+    }
+    deps.speakItem(item, onEnd);
   }
 
   function unlockSpeech() {
+    if (speechUnlocked) return;
+    speechUnlocked = true;
     if (deps.unlockSpeech) deps.unlockSpeech();
   }
 
-  function unlockAudio() {
-    if (audioUnlocked) return;
-    audioUnlocked = true;
-    playVideosForSlide(slots[CURRENT_SLOT], false);
+  function setSlideMediaHidden(slide, hidden) {
+    if (!slide) return;
+    slide.classList.toggle("is-media-hidden", hidden);
+    slide.classList.toggle("is-audio-pending", hidden);
   }
 
   function onSlideActive() {
-    pauseAllVideos();
+    stopSpeechNow();
     const item = feed[activeIndex];
     const slide = slots[CURRENT_SLOT];
     if (!item || !slide) return;
-    slideVideos(slide).forEach((v) => { v.currentTime = 0; });
-    playVideosForSlide(slide, !audioUnlocked);
-    scheduleSpeak(item);
+
+    setSlideMediaHidden(slide, true);
+
+    speakItem(item, () => {
+      setSlideMediaHidden(slide, false);
+    });
+  }
+
+  function illustrationSrc(item) {
+    if (item.external) return item.image;
+    return deps.assetUrl(item.image);
   }
 
   function fillSlot(slot, feedIndex) {
@@ -123,21 +105,18 @@
 
     if (item.type === "animal" || item.type === "word") {
       slot.classList.add(item.type === "animal" ? "reels__slide--animal" : "reels__slide--word");
+      slot.style.background = item.bg || "#FFD54F";
       const stage = document.createElement("div");
-      stage.className = "reels__video-stage";
-      const video = document.createElement("video");
-      video.src = deps.assetUrl(item.src);
-      video.className = "reels__video-fg";
-      video.playsInline = true;
-      video.setAttribute("playsinline", "");
-      video.setAttribute("webkit-playsinline", "");
-      video.preload = "metadata";
-      video.muted = true;
-      video.loop = true;
-      stage.appendChild(video);
+      stage.className = "reels__illus-stage";
+      const img = document.createElement("img");
+      img.className = "reels__illus";
+      img.src = illustrationSrc(item);
+      img.alt = item.label;
+      img.decoding = "async";
       const label = document.createElement("div");
       label.className = "reels__label";
       label.textContent = item.label;
+      stage.append(img);
       slot.append(stage, label);
       return;
     }
@@ -217,11 +196,12 @@
     cb();
   }
 
+  let transitionCb = null;
+
   function goNext() {
     if (feed.length < 2) return;
     markSwiped();
     stopSpeechNow();
-    pauseAllVideos();
     setTrackTransform(2, true);
     transitionCb = () => {
       activeIndex = wrapIndex(activeIndex + 1);
@@ -234,7 +214,6 @@
     if (feed.length < 2) return;
     markSwiped();
     stopSpeechNow();
-    pauseAllVideos();
     setTrackTransform(0, true);
     transitionCb = () => {
       activeIndex = wrapIndex(activeIndex - 1);
@@ -294,7 +273,6 @@
     const fast = dt < SWIPE_MAX_MS;
 
     unlockSpeech();
-    unlockAudio();
 
     if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS && handleTapZone(clientY)) {
       return;
@@ -314,16 +292,18 @@
   function onPointerDown(e) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
     activePointers.add(e.pointerId);
-    if (activePointers.size > 1) {
+
+    if (activePointers.size >= 2) {
       dragging = false;
       track.classList.remove("is-dragging");
       transitionCb = null;
       setTrackTransform(CURRENT_SLOT, false);
+      deps.onTwoFingerHoldStart?.();
       return;
     }
+
     stopSpeechNow();
     unlockSpeech();
-    unlockAudio();
     dragging = true;
     pointerStartY = e.clientY;
     pointerStartX = e.clientX;
@@ -347,7 +327,13 @@
   }
 
   function onPointerUp(e) {
+    const countBefore = activePointers.size;
     activePointers.delete(e.pointerId);
+
+    if (countBefore >= 2) {
+      deps.onTwoFingerHoldEnd?.(activePointers.size);
+    }
+
     if (!dragging) return;
     dragging = false;
     track.classList.remove("is-dragging");
@@ -363,20 +349,17 @@
     if (e.key === "ArrowDown" || e.key === "PageDown") {
       e.preventDefault();
       unlockSpeech();
-      unlockAudio();
       goNext();
     }
     if (e.key === "ArrowUp" || e.key === "PageUp") {
       e.preventDefault();
       unlockSpeech();
-      unlockAudio();
       goPrev();
     }
   }
 
   function onVisibilityChange() {
     if (document.visibilityState !== "visible") {
-      pauseAllVideos();
       stopSpeechNow();
       return;
     }
@@ -402,6 +385,7 @@
     }
 
     activeIndex = 0;
+    speechUnlocked = false;
     updateViewportMetrics();
     syncWindow();
     onSlideActive();
@@ -416,7 +400,6 @@
     root.classList.remove("is-hidden");
     root.setAttribute("aria-hidden", "false");
     document.body.classList.add("mode-reels");
-    audioUnlocked = false;
     syncSwipeHintState();
     updateViewportMetrics();
     render();
@@ -437,14 +420,13 @@
 
   function unmount() {
     stopSpeechNow();
-    pauseAllVideos();
     root.classList.add("is-hidden");
     root.setAttribute("aria-hidden", "true");
     document.body.classList.remove("mode-reels");
     track.style.transform = "";
     track.innerHTML = "";
     slots = [];
-    audioUnlocked = false;
+    speechUnlocked = false;
 
     root.removeEventListener("pointerdown", onPointerDown);
     root.removeEventListener("pointermove", onPointerMove);
@@ -479,8 +461,7 @@
 
     refresh() {
       stopSpeechNow();
-      pauseAllVideos();
-      audioUnlocked = false;
+      speechUnlocked = false;
       render();
     },
   };

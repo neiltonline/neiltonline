@@ -18,6 +18,13 @@ body.mode-reels {
   touch-action: manipulation;
 }
 
+/* Config hold indicator must stay visible in reels mode */
+body.mode-reels .hold-progress {
+  visibility: visible;
+  pointer-events: none;
+  z-index: 60;
+}
+
 .reels {
   height: var(--reels-h, 100dvh);
   height: var(--reels-h, 100svh);
@@ -38,45 +45,59 @@ body.mode-reels {
   transition: transform 0.22s cubic-bezier(0.25, 0.9, 0.35, 1) !important;
 }
 
-.reels__video-bg {
-  display: none !important;
-}
-
 .reels__slide {
   height: var(--reels-h, 100dvh) !important;
   min-height: var(--reels-h, 100dvh) !important;
 }
 
-.reels__video-stage {
+/* Audio-first: hide illustration until speech finishes */
+.reels__slide.is-media-hidden .reels__illus-stage,
+.reels__slide.is-media-hidden .reels__color-stage,
+.reels__slide.is-media-hidden .reels__letter,
+.reels__slide.is-media-hidden .reels__label {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.reels__slide:not(.is-media-hidden) .reels__illus-stage,
+.reels__slide:not(.is-media-hidden) .reels__color-stage,
+.reels__slide:not(.is-media-hidden) .reels__letter,
+.reels__slide:not(.is-media-hidden) .reels__label {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.reels__slide.is-audio-pending::after {
+  content: "🔊";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(48px, 14vw, 72px);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.reels__illus-stage {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  background: #000;
+  padding: max(56px, 12vh) 5% max(88px, calc(env(safe-area-inset-bottom) + 72px));
+  box-sizing: border-box;
 }
 
-.reels__video-fg {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  max-height: 100%;
-  object-fit: cover;
-  object-position: center;
+.reels__illus {
+  width: min(82vw, 360px);
+  max-height: 58vh;
+  object-fit: contain;
+  border-radius: 18px;
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.2));
   pointer-events: none;
-}
-
-.reels__slide--animal video,
-.reels__slide--word video {
-  position: static;
-  inset: auto;
-}
-
-.reels__slide--animal .reels__video-stage,
-.reels__slide--word .reels__video-stage {
-  z-index: 0;
 }
 
 .reels__label {
@@ -179,20 +200,6 @@ body.mode-reels {
   padding: max(40px, 10vh) 24px;
 }
 
-/* Mobile portrait: show full vertical video without cropping */
-@media (pointer: coarse) and (orientation: portrait) {
-  .reels__video-fg {
-    width: auto;
-    max-width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .reels__video-bg {
-    filter: blur(20px) brightness(0.3);
-  }
-}
-
 /* Tap zones hint (subtle) until first swipe */
 .reels:not(.has-swiped)::before,
 .reels:not(.has-swiped)::after {
@@ -218,6 +225,17 @@ body.mode-reels {
 @media (prefers-reduced-motion: reduce) {
   .reels:not(.has-swiped) .reels__swipe-hint {
     animation: none;
+  }
+
+  .reels__slide.is-media-hidden .reels__illus-stage,
+  .reels__slide.is-media-hidden .reels__color-stage,
+  .reels__slide.is-media-hidden .reels__letter,
+  .reels__slide.is-media-hidden .reels__label,
+  .reels__slide:not(.is-media-hidden) .reels__illus-stage,
+  .reels__slide:not(.is-media-hidden) .reels__color-stage,
+  .reels__slide:not(.is-media-hidden) .reels__letter,
+  .reels__slide:not(.is-media-hidden) .reels__label {
+    transition: none;
   }
 }
 

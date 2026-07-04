@@ -14,7 +14,7 @@
     <title>Tecladinho Reels 🎬</title>
     <base href="/kids-reels/">
     <link rel="stylesheet" href="/kids/css/style.css">
-    <link rel="stylesheet" href="/kids-reels/css/overrides.css?v=7">
+    <link rel="stylesheet" href="/kids-reels/css/overrides.css?v=8">
     <style>
         .reels__boot-slide {
             display: flex;
@@ -77,7 +77,7 @@
                 <h3 class="config__label">Mostrar no feed</h3>
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-reels-animals" checked>
-                    <span>Animais (vídeos)</span>
+                    <span>Animais (ilustrações)</span>
                 </label>
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-reels-colors" checked>
@@ -89,7 +89,7 @@
                 </label>
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-reels-words" checked>
-                    <span>Palavras (vídeos)</span>
+                    <span>Palavras (ilustrações)</span>
                 </label>
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-reels-body" checked>
@@ -150,7 +150,7 @@
 
     <script>
     (function () {
-        var BUILD = "7";
+        var BUILD = "8";
         function reloadFresh() {
             var url = new URL(location.href);
             url.searchParams.set("v", BUILD);
@@ -186,8 +186,8 @@
         }, 3000);
     })();
     </script>
-    <script src="/kids-reels/js/reels.js?v=7"></script>
-    <script src="/kids-reels/js/play.js?v=7"></script>
+    <script src="/kids-reels/js/reels.js?v=8"></script>
+    <script src="/kids-reels/js/play.js?v=8"></script>
 </body>
 
 </html>
