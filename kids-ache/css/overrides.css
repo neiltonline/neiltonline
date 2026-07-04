@@ -192,48 +192,18 @@ body.mode-ache .hold-progress.is-active {
   box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.08);
 }
 
-.ache__shape {
-  width: min(40vw, 170px);
-  height: min(40vw, 170px);
-  background: var(--shape-fill, #888);
+.ache__color-swatch {
+  width: min(42vw, 180px);
+  height: min(42vw, 180px);
+  border-radius: 50%;
+  background: var(--swatch-fill, #888);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
   pointer-events: none;
 }
 
-.ache__shape--circle { border-radius: 50%; }
-.ache__shape--square { border-radius: 16px; }
-
-.ache__shape--triangle {
-  width: 0;
-  height: 0;
-  background: transparent;
-  border-left: min(20vw, 85px) solid transparent;
-  border-right: min(20vw, 85px) solid transparent;
-  border-bottom: min(34vw, 148px) solid var(--shape-fill, #888);
-  box-shadow: none;
-}
-
-.ache__shape--hexagon {
-  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-}
-
-.ache__shape--diamond {
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-}
-
-.ache__shape--pentagon {
-  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-}
-
-.ache__shape--outline {
+.ache__color-swatch--outline {
   background: #fff !important;
-  border: 6px solid var(--shape-fill, #888);
-}
-
-.ache__shape--outline.ache__shape--triangle {
-  background: transparent !important;
-  border: none;
-  border-bottom-color: var(--shape-fill, #888);
+  border: 8px solid var(--swatch-fill, #888);
 }
 
 .ache__burst {

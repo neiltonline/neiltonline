@@ -52,24 +52,20 @@
       });
     }
 
-    if (config.categories.shapes) {
-      C().COLORS.forEach((color, i) => {
+    if (config.categories.colors) {
+      C().COLORS.forEach((color) => {
         if (!config.colors[color.id]) return;
-        const shapeSlug = C().SHAPE_AUDIO[color.shape];
-        if (!shapeSlug) return;
         pool.push({
-          uid: `shape:${color.id}`,
-          kind: "shape",
+          uid: `color:${color.id}`,
+          kind: "color",
           id: color.id,
           label: color.label,
-          shape: color.shape,
-          shapeSlug,
+          name: color.name,
           hex: color.hex,
           outline: color.outline,
-          text: color.text,
+          article: C().articleFor(color.id),
           bg: "#ECEFF1",
-          article: "o",
-          question: "qual",
+          question: "onde",
         });
       });
     }
@@ -137,23 +133,6 @@
     return pool;
   }
 
-  function distinctShapePool(pool) {
-    const byShape = new Map();
-    pool.filter((p) => p.kind === "shape").forEach((p) => {
-      if (!byShape.has(p.shape)) byShape.set(p.shape, p);
-    });
-    return [...byShape.values()];
-  }
-
-  function shapeChoicesForRound(target, pool, count) {
-    const shapes = distinctShapePool(pool);
-    if (shapes.length < count) {
-      return homogeneousChoices(target, pool, Math.min(count, shapes.length));
-    }
-    const distractors = pickN(shapes, count - 1, target.uid);
-    return shuffle([target, ...distractors]);
-  }
-
   function homogeneousChoices(target, pool, count) {
     const sameKind = pool.filter((p) => p.kind === target.kind);
     const distractors = pickN(sameKind, count - 1, target.uid);
@@ -172,22 +151,8 @@
       return;
     }
 
-    let targetPool = pool;
-    if (pool.some((p) => p.kind === "shape")) {
-      const shapes = distinctShapePool(pool);
-      const nonShapes = pool.filter((p) => p.kind !== "shape");
-      targetPool = [...shapes, ...nonShapes];
-    }
-
-    const target = targetPool[Math.floor(Math.random() * targetPool.length)];
-    if (target.kind === "shape" && distinctShapePool(pool).length < count) {
-      choicesEl.innerHTML = `<p class="ache__empty">Ative mais formas diferentes nas configurações.</p>`;
-      return;
-    }
-
-    const choices = target.kind === "shape"
-      ? shapeChoicesForRound(target, pool, count)
-      : homogeneousChoices(target, pool, count);
+    const target = pool[Math.floor(Math.random() * pool.length)];
+    const choices = homogeneousChoices(target, pool, count);
 
     round = { target, choices, pool };
     renderChoices(choices);
@@ -209,12 +174,12 @@
       const stage = document.createElement("div");
       stage.className = "ache__choice-stage";
 
-      if (item.kind === "shape") {
-        const shape = document.createElement("div");
-        const outline = item.outline ? " ache__shape--outline" : "";
-        shape.className = `ache__shape ache__shape--${item.shape}${outline}`;
-        shape.style.setProperty("--shape-fill", item.hex || "#888");
-        stage.appendChild(shape);
+      if (item.kind === "color") {
+        const swatch = document.createElement("div");
+        const outline = item.outline ? " ache__color-swatch--outline" : "";
+        swatch.className = `ache__color-swatch${outline}`;
+        swatch.style.setProperty("--swatch-fill", item.hex || "#888");
+        stage.appendChild(swatch);
       } else if (item.bodyBall) {
         const ball = document.createElement("div");
         ball.className = "ache__body-ball";

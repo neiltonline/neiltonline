@@ -1,18 +1,10 @@
 (function () {
-  const SHAPE_AUDIO = {
-    circle: "circulo",
-    square: "quadrado",
-    triangle: "triangulo",
-    hexagon: "hexagono",
-    diamond: "losango",
-    pentagon: "pentagono",
-  };
-
   const FEMININE = new Set([
     "vaca", "galinha", "raposa", "abelha", "ovelha", "coruja", "borboleta",
     "mamae", "titia", "vovo", "bola", "lua", "maca", "banana", "melancia",
-    "agua", "flor", "estrela", "musica", "festa", "bolha", "laranja",
+    "agua", "flor", "estrela", "musica", "festa", "bolha",
     "cabeca", "orelha", "boca", "mao", "perna", "barriga",
+    "rosa", "laranja",
   ]);
 
   const ANIMALS = [
@@ -126,7 +118,6 @@
     WORDS,
     BODY_PARTS,
     COLORS,
-    SHAPE_AUDIO,
     CHOICE_BACKGROUNDS,
     articleFor,
     wordToFile,

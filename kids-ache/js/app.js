@@ -16,7 +16,7 @@
   }
 
   const DEFAULT_CONFIG = {
-    categories: { animals: true, shapes: true, words: false, body: false },
+    categories: { animals: true, colors: true, words: false, body: false },
     mixCategories: true,
     choiceCount: 2,
     timerSec: 10,
@@ -32,10 +32,17 @@
       const saved = localStorage.getItem(CONFIG_KEY);
       if (!saved) return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
       const parsed = JSON.parse(saved);
+      const savedCats = parsed.categories || {};
+      const categories = {
+        animals: savedCats.animals ?? DEFAULT_CONFIG.categories.animals,
+        colors: savedCats.colors ?? savedCats.shapes ?? DEFAULT_CONFIG.categories.colors,
+        words: savedCats.words ?? DEFAULT_CONFIG.categories.words,
+        body: savedCats.body ?? DEFAULT_CONFIG.categories.body,
+      };
       return {
         ...DEFAULT_CONFIG,
         ...parsed,
-        categories: { ...DEFAULT_CONFIG.categories, ...parsed.categories },
+        categories,
         animals: { ...defaultToggles(C().ANIMALS), ...parsed.animals },
         colors: { ...defaultToggles(C().COLORS), ...parsed.colors },
         words: { ...defaultToggles(C().WORDS), ...parsed.words },
@@ -156,12 +163,11 @@
 
   function questionSources(target) {
     const sources = [];
-    if (target.question === "qual") {
-      sources.push(assetUrl(`audio/quiz/qual-e-${target.article}.mp3`));
-      sources.push(assetUrl(`audio/quiz/shapes/${target.shapeSlug}.mp3`));
+    sources.push(assetUrl(`audio/quiz/onde-esta-${target.article}.mp3`));
+    if (target.kind === "body") {
+      sources.push(assetUrl(wordAudioPath(target.name, "body")));
     } else {
-      sources.push(assetUrl(`audio/quiz/onde-esta-${target.article}.mp3`));
-      sources.push(assetUrl(wordAudioPath(target.name, target.kind === "body" ? "body" : "word")));
+      sources.push(assetUrl(wordAudioPath(target.name, "word")));
     }
     return sources;
   }
@@ -292,7 +298,7 @@
 
   function syncConfigUI() {
     document.getElementById("cfg-cat-animals").checked = config.categories.animals;
-    document.getElementById("cfg-cat-shapes").checked = config.categories.shapes;
+    document.getElementById("cfg-cat-colors").checked = config.categories.colors;
     document.getElementById("cfg-cat-words").checked = config.categories.words;
     document.getElementById("cfg-cat-body").checked = config.categories.body;
     document.getElementById("cfg-mix").checked = config.mixCategories;
@@ -418,7 +424,7 @@
       if (e.target === configPanel) closeConfig();
     });
 
-    ["animals", "shapes", "words", "body"].forEach((cat) => {
+    ["animals", "colors", "words", "body"].forEach((cat) => {
       document.getElementById(`cfg-cat-${cat}`).addEventListener("change", (e) => {
         config.categories[cat] = e.target.checked;
         saveConfig();
