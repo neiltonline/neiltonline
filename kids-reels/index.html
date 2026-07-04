@@ -4,21 +4,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#5C6BC0">
     <title>Tecladinho Reels 🎬</title>
-    <link rel="stylesheet" href="../kids/css/style.css">
-    <link rel="stylesheet" href="./css/overrides.css?v=20260704f">
+    <base href="/kids-reels/">
+    <link rel="stylesheet" href="/kids/css/style.css">
+    <link rel="stylesheet" href="/kids-reels/css/overrides.css?v=6">
+    <style>
+        .reels__boot-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            min-height: 100dvh;
+            min-height: 100svh;
+        }
+        .reels__boot-loading {
+            color: rgba(255, 255, 255, 0.9);
+            font: 600 18px/1.3 system-ui, sans-serif;
+            margin: 0;
+        }
+        .reels__fail {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 24px;
+            background: #1a1a2e;
+            color: #fff;
+            text-align: center;
+            font-family: system-ui, sans-serif;
+        }
+        .reels__fail button {
+            padding: 16px 28px;
+            border: none;
+            border-radius: 999px;
+            background: #fff;
+            color: #222;
+            font-size: 18px;
+            font-weight: 700;
+        }
+    </style>
 </head>
 
 <body class="mode-reels">
     <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
     <div id="reels" class="reels" aria-hidden="false">
-        <div class="reels__track"></div>
-        <p class="reels__swipe-hint">👆 Deslize para trocar · Toque em cima ou embaixo</p>
+        <div class="reels__track">
+            <section class="reels__slide reels__slide--letter reels__boot-slide" style="background:#5C6BC0">
+                <div class="reels__letter" style="color:#FFFFFF">A</div>
+                <p class="reels__boot-loading">Carregando...</p>
+            </section>
+        </div>
+        <p class="reels__swipe-hint">👆 Deslize para trocar</p>
     </div>
 
     <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
@@ -100,8 +148,46 @@
         </div>
     </div>
 
-    <script src="./js/reels.js?v=20260704f"></script>
-    <script src="./js/play.js?v=20260704f"></script>
+    <script>
+    (function () {
+        var BUILD = "6";
+        function reloadFresh() {
+            var url = new URL(location.href);
+            url.searchParams.set("v", BUILD);
+            url.searchParams.set("t", String(Date.now()));
+            location.replace(url.toString());
+        }
+        function showFail(msg) {
+            if (document.getElementById("reels-fail")) return;
+            var box = document.createElement("div");
+            box.id = "reels-fail";
+            box.className = "reels__fail";
+            box.innerHTML = "<p>" + msg + "</p><button type=\"button\">Atualizar página</button>";
+            box.querySelector("button").onclick = reloadFresh;
+            document.body.appendChild(box);
+        }
+        window.__reelsMarkReady = function () {
+            var fail = document.getElementById("reels-fail");
+            if (fail) fail.remove();
+        };
+        window.addEventListener("error", function () {
+            showFail("Erro ao carregar. Toque para atualizar.");
+        });
+        setTimeout(function () {
+            if (window.__reelsReady) return;
+            var slides = document.querySelectorAll(".reels__slide:not(.reels__boot-slide)").length;
+            if (slides > 0) return;
+            if (!sessionStorage.getItem("reels-auto-retry")) {
+                sessionStorage.setItem("reels-auto-retry", "1");
+                reloadFresh();
+                return;
+            }
+            showFail("Não carregou os reels. Toque para atualizar.");
+        }, 3000);
+    })();
+    </script>
+    <script src="/kids-reels/js/reels.js?v=6"></script>
+    <script src="/kids-reels/js/play.js?v=6"></script>
 </body>
 
 </html>

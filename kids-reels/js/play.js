@@ -1,5 +1,5 @@
 (function () {
-  const ASSET_BASE = new URL("../kids/", window.location.href);
+  const ASSET_BASE = new URL("/kids/", window.location.origin);
   const CONFIG_KEY = "tecladinho-reels-config";
   const HOLD_MS = 2000;
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -138,10 +138,14 @@
     reelsCategories: defaultReelsCategories(),
   };
 
+  function cloneData(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
   function loadConfig() {
     try {
       const saved = localStorage.getItem(CONFIG_KEY);
-      if (!saved) return structuredClone(DEFAULT_CONFIG);
+      if (!saved) return cloneData(DEFAULT_CONFIG);
       const parsed = JSON.parse(saved);
       return {
         ...DEFAULT_CONFIG,
@@ -153,7 +157,7 @@
         reelsCategories: { ...defaultReelsCategories(), ...parsed.reelsCategories },
       };
     } catch {
-      return structuredClone(DEFAULT_CONFIG);
+      return cloneData(DEFAULT_CONFIG);
     }
   }
 
@@ -656,6 +660,8 @@
       buildWordConfigList();
       buildBodyConfigList();
       window.TecladinhoReels.activate();
+      window.__reelsReady = true;
+      if (window.__reelsMarkReady) window.__reelsMarkReady();
     } catch (err) {
       console.error("Tecladinho Reels boot failed:", err);
       const track = document.querySelector(".reels__track");
