@@ -1,12 +1,15 @@
 (function () {
   const ASSET_BASE = new URL("/kids/", window.location.origin);
   const CONFIG_KEY = "tecladinho-reels-config";
-  const CONFIG_TAP_COUNT = 3;
-  const CONFIG_TAP_WINDOW_MS = 3000;
+  const PARENT_HOLD_MS = 2500;
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const ILLUS = () => window.TecladinhoIllus;
 
   const configPanel = document.getElementById("config-panel");
+  const parentGate = document.getElementById("parent-gate");
+  const parentGateQuestion = document.getElementById("parent-gate-question");
+  const parentGateAnswerInput = document.getElementById("parent-gate-answer");
+  const parentGateError = document.getElementById("parent-gate-error");
   const holdProgress = document.getElementById("hold-progress");
   const animalListEl = document.getElementById("cfg-animal-list");
   const colorListEl = document.getElementById("cfg-color-list");
@@ -197,8 +200,8 @@
   let audioCtx = null;
   const audioPool = new Map();
   let configOpen = false;
-  let configTapTimes = [];
-  let configTapResetTimer = null;
+  let parentGateAnswer = 0;
+  let parentHoldRaf = null;
 
   function saveConfig() {
     localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
@@ -797,43 +800,56 @@
     syncReelsConfigSections();
   }
 
-  function showTapProgress(count) {
-    holdProgress.classList.add("is-active");
-    holdProgress.setAttribute("aria-hidden", "false");
-    holdProgress.dataset.taps = String(count);
-    holdProgress.style.setProperty("--hold-deg", `${(count / CONFIG_TAP_COUNT) * 360}deg`);
+  function newParentQuestion() {
+    const a = 2 + Math.floor(Math.random() * 8);
+    const b = 2 + Math.floor(Math.random() * 8);
+    parentGateAnswer = a + b;
+    return `${a} + ${b}`;
   }
 
-  function hideTapProgress() {
-    holdProgress.classList.remove("is-active");
-    holdProgress.setAttribute("aria-hidden", "true");
-    holdProgress.style.setProperty("--hold-deg", "0deg");
+  function showParentHoldProgress(pct) {
+    holdProgress.classList.add("is-active");
+    holdProgress.setAttribute("aria-hidden", "false");
+    holdProgress.style.setProperty("--hold-deg", `${pct * 360}deg`);
     delete holdProgress.dataset.taps;
   }
 
-  function cancelConfigTapProgress() {
-    if (configTapResetTimer) clearTimeout(configTapResetTimer);
-    configTapResetTimer = null;
-    configTapTimes = [];
-    hideTapProgress();
+  function hideParentHoldProgress() {
+    holdProgress.classList.remove("is-active");
+    holdProgress.setAttribute("aria-hidden", "true");
+    holdProgress.style.setProperty("--hold-deg", "0deg");
+    if (parentHoldRaf) cancelAnimationFrame(parentHoldRaf);
+    parentHoldRaf = null;
   }
 
-  function registerConfigTap() {
-    if (configOpen) return;
-    const now = Date.now();
-    configTapTimes = configTapTimes.filter((t) => now - t < CONFIG_TAP_WINDOW_MS);
-    configTapTimes.push(now);
-    const count = configTapTimes.length;
+  function showParentGate() {
+    hideParentHoldProgress();
+    parentGateQuestion.textContent = `Quanto é ${newParentQuestion()}?`;
+    parentGateAnswerInput.value = "";
+    parentGateError.hidden = true;
+    parentGate.classList.add("is-open");
+    parentGate.setAttribute("aria-hidden", "false");
+    parentGateAnswerInput.focus();
+  }
 
-    if (count >= CONFIG_TAP_COUNT) {
-      cancelConfigTapProgress();
+  function hideParentGate() {
+    parentGate.classList.remove("is-open");
+    parentGate.setAttribute("aria-hidden", "true");
+    parentGateAnswerInput.value = "";
+    parentGateError.hidden = true;
+  }
+
+  function submitParentGate() {
+    const value = Number.parseInt(parentGateAnswerInput.value, 10);
+    if (value === parentGateAnswer) {
+      hideParentGate();
       openConfig();
       return;
     }
-
-    showTapProgress(count);
-    if (configTapResetTimer) clearTimeout(configTapResetTimer);
-    configTapResetTimer = setTimeout(cancelConfigTapProgress, CONFIG_TAP_WINDOW_MS);
+    parentGateError.hidden = false;
+    parentGateQuestion.textContent = `Quanto é ${newParentQuestion()}?`;
+    parentGateAnswerInput.value = "";
+    parentGateAnswerInput.focus();
   }
 
   function openConfig() {
@@ -842,7 +858,7 @@
     configPanel.setAttribute("aria-hidden", "false");
     document.body.classList.add("config-open");
     syncConfigUI();
-    cancelConfigTapProgress();
+    hideParentHoldProgress();
   }
 
   function closeConfig() {
@@ -853,6 +869,14 @@
   }
 
   document.getElementById("config-close").addEventListener("click", closeConfig);
+  document.getElementById("parent-gate-submit").addEventListener("click", submitParentGate);
+  document.getElementById("parent-gate-cancel").addEventListener("click", hideParentGate);
+  parentGateAnswerInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") submitParentGate();
+  });
+  parentGate.addEventListener("click", (e) => {
+    if (e.target === parentGate) hideParentGate();
+  });
   configPanel.addEventListener("click", (e) => {
     if (e.target === configPanel) closeConfig();
   });
@@ -942,7 +966,11 @@
         stopSpeak: stopSpeaking,
         warmItem,
         illusFallback,
-        onConfigTap: registerConfigTap,
+        onParentHoldComplete: showParentGate,
+        onParentHoldProgress: showParentHoldProgress,
+        onParentHoldCancel: hideParentHoldProgress,
+        isConfigOpen: () => configOpen || parentGate.classList.contains("is-open"),
+        parentHoldMs: () => PARENT_HOLD_MS,
         tapToRepeat: () => config.tapRepeat,
       });
       buildAnimalConfigList();

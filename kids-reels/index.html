@@ -14,7 +14,7 @@
     <title>Tecladinho Reels 🎬</title>
     <base href="/kids-reels/">
     <link rel="stylesheet" href="/kids/css/style.css">
-    <link rel="stylesheet" href="/kids-reels/css/overrides.css?v=19">
+    <link rel="stylesheet" href="/kids-reels/css/overrides.css?v=20">
     <style>
         .reels__boot-slide {
             display: flex;
@@ -67,6 +67,19 @@
             </section>
         </div>
         <p class="reels__swipe-hint">Deslize para o lado</p>
+    </div>
+
+    <div id="parent-gate" class="parent-gate" aria-hidden="true" role="dialog" aria-label="Acesso para pais">
+        <div class="parent-gate__card">
+            <h2 class="parent-gate__title">Só para pais</h2>
+            <p class="parent-gate__question" id="parent-gate-question"></p>
+            <input class="parent-gate__input" id="parent-gate-answer" type="number" inputmode="numeric" autocomplete="off" aria-label="Resposta">
+            <p class="parent-gate__error" id="parent-gate-error" hidden>Resposta incorreta. Tente de novo.</p>
+            <div class="parent-gate__actions">
+                <button type="button" class="parent-gate__btn parent-gate__btn--primary" id="parent-gate-submit">Entrar</button>
+                <button type="button" class="parent-gate__btn" id="parent-gate-cancel">Cancelar</button>
+            </div>
+        </div>
     </div>
 
     <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
@@ -151,14 +164,14 @@
                 <div id="cfg-body-list" class="config__animal-grid"></div>
             </section>
 
-            <p class="config__hint">Toque 3 vezes no canto superior direito da tela (em até 3 segundos) para abrir esta tela.</p>
+            <p class="config__hint">Para abrir: segure canto superior esquerdo e inferior direito ao mesmo tempo por 2,5s, depois resolva a conta.</p>
             <button type="button" class="config__close" id="config-close">Fechar</button>
         </div>
     </div>
 
     <script>
     (function () {
-        var BUILD = "19";
+        var BUILD = "20";
         function reloadFresh() {
             var url = new URL(location.href);
             url.searchParams.set("v", BUILD);
@@ -194,9 +207,9 @@
         }, 3000);
     })();
     </script>
-    <script src="/kids-reels/js/fluent-illus.js?v=19"></script>
-    <script src="/kids-reels/js/reels.js?v=19"></script>
-    <script src="/kids-reels/js/play.js?v=19"></script>
+    <script src="/kids-reels/js/fluent-illus.js?v=20"></script>
+    <script src="/kids-reels/js/reels.js?v=20"></script>
+    <script src="/kids-reels/js/play.js?v=20"></script>
 </body>
 
 </html>

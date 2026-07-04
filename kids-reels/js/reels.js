@@ -22,6 +22,11 @@
   let pointerStartTime = 0;
   let dragging = false;
   let activePointers = new Set();
+  const pointerPositions = new Map();
+  let parentHoldTimer = null;
+  let parentHoldStart = null;
+  let parentHoldRaf = null;
+  const PARENT_CORNER = 0.16;
 
   function wrapIndex(index) {
     const n = feed.length;
@@ -302,6 +307,63 @@
     return `translate3d(${-(slotIndex * slideWidth()) + offsetPx}px, 0, 0)`;
   }
 
+  function isTopLeftCorner(x, y) {
+    const w = slideWidth();
+    const h = slideHeight();
+    return x < w * PARENT_CORNER && y < h * PARENT_CORNER;
+  }
+
+  function isBottomRightCorner(x, y) {
+    const w = slideWidth();
+    const h = slideHeight();
+    return x > w * (1 - PARENT_CORNER) && y > h * (1 - PARENT_CORNER);
+  }
+
+  function hasOppositeCornerHold() {
+    if (activePointers.size < 2) return false;
+    const points = [...pointerPositions.values()];
+    const hasTopLeft = points.some((p) => isTopLeftCorner(p.x, p.y));
+    const hasBottomRight = points.some((p) => isBottomRightCorner(p.x, p.y));
+    return hasTopLeft && hasBottomRight;
+  }
+
+  function cancelParentHold() {
+    if (parentHoldTimer) clearTimeout(parentHoldTimer);
+    parentHoldTimer = null;
+    parentHoldStart = null;
+    if (parentHoldRaf) cancelAnimationFrame(parentHoldRaf);
+    parentHoldRaf = null;
+    deps.onParentHoldCancel?.();
+  }
+
+  function startParentHold() {
+    if (parentHoldTimer || deps.isConfigOpen?.()) return;
+    parentHoldStart = Date.now();
+    deps.onParentHoldProgress?.(0);
+    const tick = () => {
+      if (!parentHoldStart) return;
+      const pct = Math.min((Date.now() - parentHoldStart) / (deps.parentHoldMs?.() || 2500), 1);
+      deps.onParentHoldProgress?.(pct);
+      if (pct < 1) parentHoldRaf = requestAnimationFrame(tick);
+    };
+    tick();
+    parentHoldTimer = setTimeout(() => {
+      parentHoldTimer = null;
+      parentHoldStart = null;
+      if (parentHoldRaf) cancelAnimationFrame(parentHoldRaf);
+      parentHoldRaf = null;
+      deps.onParentHoldComplete?.();
+    }, deps.parentHoldMs?.() || 2500);
+  }
+
+  function updateParentHold() {
+    if (hasOppositeCornerHold()) {
+      if (!parentHoldTimer) startParentHold();
+      return;
+    }
+    cancelParentHold();
+  }
+
   function handleTapZone(clientX) {
     const w = slideWidth();
     const edge = w * 0.22;
@@ -314,18 +376,6 @@
       return true;
     }
     return false;
-  }
-
-  function isConfigTapZone(clientX, clientY) {
-    const w = slideWidth();
-    const h = slideHeight();
-    return clientX >= w * 0.75 && clientY <= h * 0.22;
-  }
-
-  function handleConfigTap(clientX, clientY) {
-    if (!isConfigTapZone(clientX, clientY)) return false;
-    deps.onConfigTap?.();
-    return true;
   }
 
   function handleCenterTap(clientX) {
@@ -349,7 +399,6 @@
     const fast = dt < SWIPE_MAX_MS;
 
     if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS) {
-      if (handleConfigTap(clientX, clientY)) return;
       if (handleTapZone(clientX)) return;
       if (handleCenterTap(clientX)) return;
       snapCurrent();
@@ -370,6 +419,14 @@
   function onPointerDown(e) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
     activePointers.add(e.pointerId);
+    pointerPositions.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    updateParentHold();
+
+    if (hasOppositeCornerHold()) {
+      dragging = false;
+      track.classList.remove("is-dragging");
+      return;
+    }
 
     unlockSpeech();
 
@@ -388,6 +445,15 @@
   }
 
   function onPointerMove(e) {
+    if (pointerPositions.has(e.pointerId)) {
+      pointerPositions.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+    updateParentHold();
+    if (hasOppositeCornerHold()) {
+      dragging = false;
+      track.classList.remove("is-dragging");
+      return;
+    }
     if (!dragging) return;
     const dy = e.clientY - pointerStartY;
     const dx = e.clientX - pointerStartX;
@@ -400,7 +466,9 @@
   }
 
   function onPointerUp(e) {
+    pointerPositions.delete(e.pointerId);
     activePointers.delete(e.pointerId);
+    updateParentHold();
 
     if (!dragging) return;
     dragging = false;
@@ -439,7 +507,7 @@
     feed = deps.buildFeed ? deps.buildFeed() : [];
 
     if (feed.length === 0) {
-      track.innerHTML = "<p class=\"reels__empty\">Nada para mostrar. Toque 3 vezes no canto superior direito para abrir configurações.</p>";
+      track.innerHTML = "<p class=\"reels__empty\">Nada para mostrar.</p>";
       slots = [];
       return;
     }
