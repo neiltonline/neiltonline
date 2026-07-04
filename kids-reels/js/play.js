@@ -39,6 +39,11 @@
     { id: "coruja", name: "coruja", label: "Coruja" },
     { id: "lobo", name: "lobo", label: "Lobo" },
     { id: "macaco", name: "macaco", label: "Macaco" },
+    { id: "coelho", name: "coelho", label: "Coelho" },
+    { id: "peixe", name: "peixe", label: "Peixe" },
+    { id: "pinguim", name: "pinguim", label: "Pinguim" },
+    { id: "tartaruga", name: "tartaruga", label: "Tartaruga" },
+    { id: "borboleta", name: "borboleta", label: "Borboleta" },
   ];
 
   const ANIMALS_BY_ID = Object.fromEntries(ANIMALS.map((a) => [a.id, a]));
@@ -70,16 +75,11 @@
     { id: "dormir", name: "dormir", label: "Dormir" },
     { id: "balao", name: "balão", label: "Balão" },
     { id: "bolha", name: "bolha", label: "Bolha" },
-    { id: "borboleta", name: "borboleta", label: "Borboleta" },
     { id: "carrossel", name: "carrossel", label: "Carrossel" },
-    { id: "coelho", name: "coelho", label: "Coelho" },
     { id: "coracao", name: "coração", label: "Coração" },
     { id: "festa", name: "festa", label: "Festa" },
     { id: "musica", name: "música", label: "Música" },
-    { id: "peixe", name: "peixe", label: "Peixe" },
-    { id: "pinguim", name: "pinguim", label: "Pinguim" },
     { id: "pirulito", name: "pirulito", label: "Pirulito" },
-    { id: "tartaruga", name: "tartaruga", label: "Tartaruga" },
     { id: "arcoiris", name: "arco-íris", label: "Arco-íris" },
   ];
 
@@ -618,10 +618,10 @@
     const soundSrc = item.soundAudio || pickAnimalSound(item.animalId);
 
     preloadAudio(wordSrc);
-    preloadAudio(soundSrc);
+    if (soundSrc) preloadAudio(soundSrc);
 
     playAudio(wordSrc, () => {
-      if (gen !== speakGeneration) return;
+      if (gen !== speakGeneration || !soundSrc) return;
       playAudio(soundSrc, null, { chain: true, gen, immediate: true });
     }, { gen, immediate });
   }
