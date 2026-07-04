@@ -47,7 +47,7 @@
         colors: { ...defaultToggles(C().COLORS), ...parsed.colors },
         words: { ...defaultToggles(C().WORDS), ...parsed.words },
         body: { ...defaultToggles(C().BODY_PARTS), ...parsed.body },
-        choiceCount: parsed.choiceCount === 3 ? 3 : 2,
+        choiceCount: C().normalizeChoiceCount(parsed.choiceCount),
         timerSec: [8, 10, 12, 15].includes(parsed.timerSec) ? parsed.timerSec : 10,
         hintAfterMisses: parsed.hintAfterMisses === 1 ? 1 : 2,
         mixCategories: parsed.mixCategories !== false,
@@ -302,8 +302,7 @@
     document.getElementById("cfg-cat-words").checked = config.categories.words;
     document.getElementById("cfg-cat-body").checked = config.categories.body;
     document.getElementById("cfg-mix").checked = config.mixCategories;
-    document.getElementById("cfg-choices-2").checked = config.choiceCount === 2;
-    document.getElementById("cfg-choices-3").checked = config.choiceCount === 3;
+    document.getElementById("cfg-choice-count").value = String(config.choiceCount);
     document.getElementById("cfg-timer").value = String(config.timerSec);
     document.getElementById("cfg-hint").checked = config.hintAfterMisses === 2;
   }
@@ -438,20 +437,10 @@
       window.AcheGame.refresh();
     });
 
-    document.getElementById("cfg-choices-2").addEventListener("change", (e) => {
-      if (e.target.checked) {
-        config.choiceCount = 2;
-        saveConfig();
-        window.AcheGame.refresh();
-      }
-    });
-
-    document.getElementById("cfg-choices-3").addEventListener("change", (e) => {
-      if (e.target.checked) {
-        config.choiceCount = 3;
-        saveConfig();
-        window.AcheGame.refresh();
-      }
+    document.getElementById("cfg-choice-count").addEventListener("change", (e) => {
+      config.choiceCount = C().normalizeChoiceCount(e.target.value);
+      saveConfig();
+      window.AcheGame.refresh();
     });
 
     document.getElementById("cfg-timer").addEventListener("change", (e) => {
