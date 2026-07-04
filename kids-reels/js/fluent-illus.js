@@ -38,6 +38,18 @@
     pinguim: f3("Penguin", "penguin"),
     tartaruga: f3("Turtle", "turtle"),
     borboleta: f3("Butterfly", "butterfly"),
+    coala: f3("Koala", "koala"),
+    panda: f3("Panda", "panda"),
+    girafa: f3("Giraffe", "giraffe"),
+    polvo: f3("Octopus", "octopus"),
+    esquilo: f3("Squirrel", "squirrel"),
+    zebra: f3("Zebra", "zebra"),
+    golfinho: f3("Dolphin", "dolphin"),
+    baleia: f3("Whale", "whale"),
+    cabra: f3("Goat", "goat"),
+    lhama: f3("Llama", "llama"),
+    cervo: f3("Deer", "deer"),
+    rato: f3("Mouse", "mouse"),
   };
 
   const WORDS = {
@@ -99,6 +111,9 @@
       lobo: "1f43a", macaco: "1f412",
       coelho: "1f430", peixe: "1f41f", pinguim: "1f427",
       tartaruga: "1f422", borboleta: "1f98b",
+      coala: "1f428", panda: "1f43c", girafa: "1f992", polvo: "1f419",
+      esquilo: "1f43f", zebra: "1f993", golfinho: "1f42c", baleia: "1f433",
+      cabra: "1f410", lhama: "1f999", cervo: "1f98c", rato: "1f401",
     },
   };
 

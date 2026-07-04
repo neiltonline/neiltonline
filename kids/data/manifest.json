@@ -505,5 +505,89 @@
     "videos": [
       "videos/words/vovo-1.mp4"
     ]
+  },
+  "baleia": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/baleia.mp3"
+    ],
+    "videos": []
+  },
+  "cabra": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/cabra.mp3"
+    ],
+    "videos": []
+  },
+  "cervo": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/cervo.mp3"
+    ],
+    "videos": []
+  },
+  "coala": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/coala.mp3"
+    ],
+    "videos": []
+  },
+  "esquilo": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/esquilo.mp3"
+    ],
+    "videos": []
+  },
+  "girafa": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/girafa.mp3"
+    ],
+    "videos": []
+  },
+  "golfinho": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/golfinho.mp3"
+    ],
+    "videos": []
+  },
+  "lhama": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/lhama.mp3"
+    ],
+    "videos": []
+  },
+  "panda": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/panda.mp3"
+    ],
+    "videos": []
+  },
+  "polvo": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/polvo.mp3"
+    ],
+    "videos": []
+  },
+  "rato": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/rato.mp3"
+    ],
+    "videos": []
+  },
+  "zebra": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/zebra.mp3"
+    ],
+    "videos": []
   }
 }
