@@ -100,3 +100,29 @@ body.mode-reels {
   flex-shrink: 0;
   background: #fff;
 }
+
+/* Audio first: hide video/illustration until speech finishes */
+.reels__slide.is-media-hidden .reels__video-stage,
+.reels__slide.is-media-hidden .reels__color-stage,
+.reels__slide.is-media-hidden .reels__letter,
+.reels__slide.is-media-hidden .reels__label {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.96);
+}
+
+.reels__video-stage,
+.reels__color-stage,
+.reels__letter,
+.reels__slide .reels__label {
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
+}
+
+.reels__slide.is-media-hidden.reels__slide--animal,
+.reels__slide.is-media-hidden.reels__slide--word {
+  background: #111 !important;
+}
+
+.reels__slide.is-media-hidden.reels__slide--color {
+  background: var(--slide-color, #111) !important;
+}

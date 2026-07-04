@@ -270,26 +270,28 @@
     prime.play().then(() => prime.pause()).catch(() => {});
   }
 
-  function speakReelsItem(item) {
+  function speakReelsItem(item, onEnd) {
     if (item.type === "animal") {
-      playAudio(getAudioSrc(item.animalId, "animal"));
+      playAudio(getAudioSrc(item.animalId, "animal"), onEnd);
       return;
     }
     if (item.type === "color") {
-      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`));
+      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), onEnd);
       return;
     }
     if (item.type === "letter") {
       if (/[0-9]/.test(item.char)) {
-        playAudio(assetUrl(`audio/numbers/${wordToFile(NUMBER_NAMES[item.char])}.mp3`));
+        playAudio(assetUrl(`audio/numbers/${wordToFile(NUMBER_NAMES[item.char])}.mp3`), onEnd);
       } else {
-        playAudio(assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`));
+        playAudio(assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`), onEnd);
       }
       return;
     }
     if (item.type === "word") {
-      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`));
+      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), onEnd);
+      return;
     }
+    onEnd?.();
   }
 
   function refreshReels() {

@@ -16,6 +16,34 @@
   let pointerStartTime = 0;
   let dragging = false;
   let activePointers = new Set();
+  let speechGeneration = 0;
+
+  function setSlideMediaVisible(slide, visible) {
+    if (!slide) return;
+    slide.classList.toggle("is-media-hidden", !visible);
+  }
+
+  function revealSlideMedia(slide) {
+    if (!slide) return;
+    setSlideMediaVisible(slide, true);
+    if (slideVideos(slide).length) {
+      playVideosForSlide(slide, !audioUnlocked);
+    }
+  }
+
+  function beginSlideSequence(item, slide) {
+    const gen = ++speechGeneration;
+    setSlideMediaVisible(slide, false);
+
+    const afterSpeech = () => {
+      if (gen !== speechGeneration) return;
+      revealSlideMedia(slide);
+    };
+
+    if (speechUnlocked) {
+      speakItem(item, afterSpeech);
+    }
+  }
 
   function slideVideos(slide) {
     return slide ? [...slide.querySelectorAll("video")] : [];
@@ -27,9 +55,12 @@
     });
   }
 
-  function speakItem(item) {
-    if (!item || !deps.speakItem) return;
-    deps.speakItem(item);
+  function speakItem(item, onEnd) {
+    if (!item || !deps.speakItem) {
+      onEnd?.();
+      return;
+    }
+    deps.speakItem(item, onEnd);
   }
 
   function playVideosForSlide(slide, muted) {
@@ -59,34 +90,47 @@
     if (speechUnlocked) return;
     speechUnlocked = true;
     if (deps.unlockSpeech) deps.unlockSpeech();
-    speakItem(feed[activeIndex]);
+    const item = feed[activeIndex];
+    const slide = slides[activeIndex];
+    if (!item || !slide) return;
+
+    const gen = ++speechGeneration;
+    const afterSpeech = () => {
+      if (gen !== speechGeneration) return;
+      revealSlideMedia(slide);
+    };
+    speakItem(item, afterSpeech);
   }
 
   function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
     const slide = slides[activeIndex];
-    if (slide) playVideosForSlide(slide, false);
+    if (slide && !slide.classList.contains("is-media-hidden")) {
+      playVideosForSlide(slide, false);
+    }
   }
 
   function playSlide(index) {
     if (index < 0 || index >= slides.length) return;
     activeIndex = index;
     const item = feed[index];
+    const slide = slides[index];
 
-    slides.forEach((slide, i) => {
+    slides.forEach((s, i) => {
       if (i === index) {
-        slideVideos(slide).forEach((video) => {
+        slideVideos(s).forEach((video) => {
           video.currentTime = 0;
         });
-        playVideosForSlide(slide, !audioUnlocked);
+        resetVideosForSlide(s);
       } else {
-        resetVideosForSlide(slide);
+        resetVideosForSlide(s);
+        setSlideMediaVisible(s, false);
       }
-      slide.classList.toggle("is-active", i === index);
+      s.classList.toggle("is-active", i === index);
     });
 
-    if (speechUnlocked) speakItem(item);
+    beginSlideSequence(item, slide);
   }
 
   function slideHeight() {
@@ -234,6 +278,7 @@
     const slide = document.createElement("section");
     slide.className = "reels__slide reels__slide--color";
     slide.style.background = item.hex;
+    slide.style.setProperty("--slide-color", item.hex);
 
     const stage = document.createElement("div");
     stage.className = "reels__color-stage";
