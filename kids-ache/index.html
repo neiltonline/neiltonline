@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#283593">
+    <title>Ache! 🎯</title>
+    <base href="/kids-ache/">
+    <link rel="stylesheet" href="/kids/css/style.css">
+    <link rel="stylesheet" href="/kids-ache/css/overrides.css?v=1">
+</head>
+
+<body class="mode-ache">
+    <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
+
+    <main id="ache" class="ache" aria-label="Jogo Ache">
+        <header class="ache__header">
+            <h1 class="ache__title">Ache!</h1>
+            <button type="button" class="ache__repeat" aria-label="Ouvir de novo">🔊</button>
+        </header>
+        <div class="ache__timer" aria-hidden="true"></div>
+        <div class="ache__choices"></div>
+        <div class="ache__burst" aria-hidden="true"></div>
+    </main>
+
+    <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
+        <div class="config__card">
+            <h2 class="config__title">Configurações</h2>
+
+            <section class="config__section">
+                <h3 class="config__label">Categorias no jogo</h3>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-animals" checked>
+                    <span>Animais</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-shapes" checked>
+                    <span>Formas (cores)</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-words">
+                    <span>Palavras</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-body">
+                    <span>Corpo</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-mix" checked>
+                    <span>Misturar categorias</span>
+                </label>
+            </section>
+
+            <section class="config__section">
+                <h3 class="config__label">Opções na tela</h3>
+                <div class="config__radio-row">
+                    <label>
+                        <input type="radio" name="choices" id="cfg-choices-2" checked>
+                        <span>2 opções</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="choices" id="cfg-choices-3">
+                        <span>3 opções</span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="config__section">
+                <h3 class="config__label">Tempo para responder</h3>
+                <select id="cfg-timer" class="config__select">
+                    <option value="8">8 segundos</option>
+                    <option value="10" selected>10 segundos</option>
+                    <option value="12">12 segundos</option>
+                    <option value="15">15 segundos</option>
+                </select>
+            </section>
+
+            <section class="config__section">
+                <h3 class="config__label">Ajuda</h3>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-hint" checked>
+                    <span>Balançar a resposta certa após 2 erros</span>
+                </label>
+            </section>
+
+            <section class="config__section" id="cfg-animals-section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Animais</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-animals">Todos</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-animals">Nenhum</button>
+                    </div>
+                </div>
+                <div id="cfg-animal-list" class="config__animal-grid"></div>
+            </section>
+
+            <section class="config__section" id="cfg-colors-section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Formas / cores</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-colors">Todas</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-colors">Nenhuma</button>
+                    </div>
+                </div>
+                <p class="config__section-note">Pergunta: “Qual é o quadrado?” — cada cor tem uma forma diferente.</p>
+                <div id="cfg-color-list" class="config__animal-grid"></div>
+            </section>
+
+            <section class="config__section" id="cfg-words-section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Palavras</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-words">Todas</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-words">Nenhuma</button>
+                    </div>
+                </div>
+                <div id="cfg-word-list" class="config__animal-grid"></div>
+            </section>
+
+            <section class="config__section" id="cfg-body-section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Partes do corpo</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-body">Todas</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-body">Nenhuma</button>
+                    </div>
+                </div>
+                <div id="cfg-body-list" class="config__animal-grid"></div>
+            </section>
+
+            <p class="config__hint">Para abrir: segure o canto superior esquerdo e o inferior direito por 2,5 segundos.</p>
+            <p class="config__hint"><a href="/kids-reels/">Tecladinho Reels</a></p>
+            <button type="button" class="config__close" id="config-close">Fechar</button>
+        </div>
+    </div>
+
+    <script src="/kids-reels/js/fluent-illus.js?v=22"></script>
+    <script src="/kids-ache/js/catalog.js?v=1"></script>
+    <script src="/kids-ache/js/game.js?v=1"></script>
+    <script src="/kids-ache/js/app.js?v=1"></script>
+</body>
+
+</html>

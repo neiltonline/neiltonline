@@ -39,6 +39,24 @@ BODY_WORDS = [
     "mão", "braço", "perna", "barriga", "cabelo", "dente",
 ]
 
+QUIZ_PROMPTS = {
+    "muito-bem": "Muito bem!",
+    "tenta-de-novo": "Tenta de novo!",
+    "onde-esta-o": "Onde está o",
+    "onde-esta-a": "Onde está a",
+    "qual-e-o": "Qual é o",
+    "qual-e-a": "Qual é a",
+}
+
+QUIZ_SHAPES = {
+    "circulo": "círculo",
+    "quadrado": "quadrado",
+    "triangulo": "triângulo",
+    "hexagono": "hexágono",
+    "losango": "losango",
+    "pentagono": "pentágono",
+}
+
 
 async def generate(text, path, force=False):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -81,6 +99,14 @@ async def main():
         safe = word.replace(" ", "-")
         path = os.path.join(AUDIO_DIR, "body", f"{safe}.mp3")
         tasks.append(generate(word, path, force=True))
+
+    for slug, text in QUIZ_PROMPTS.items():
+        path = os.path.join(AUDIO_DIR, "quiz", f"{slug}.mp3")
+        tasks.append(generate(text, path, force=True))
+
+    for slug, text in QUIZ_SHAPES.items():
+        path = os.path.join(AUDIO_DIR, "quiz", "shapes", f"{slug}.mp3")
+        tasks.append(generate(text, path, force=True))
 
     for i in range(0, len(tasks), 5):
         await asyncio.gather(*tasks[i : i + 5])
