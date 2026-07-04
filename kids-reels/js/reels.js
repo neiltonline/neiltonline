@@ -14,7 +14,6 @@
   let slots = [];
   let activeIndex = 0;
   let feed = [];
-  let speechUnlocked = false;
 
   let deps = {};
   let pointerStartY = 0;
@@ -55,6 +54,10 @@
     if (deps.stopSpeak) deps.stopSpeak();
   }
 
+  function unlockSpeech() {
+    if (deps.unlockSpeech) deps.unlockSpeech();
+  }
+
   function speakItem(item, onEnd) {
     if (!item || !deps.speakItem) {
       onEnd?.();
@@ -63,34 +66,63 @@
     deps.speakItem(item, onEnd);
   }
 
-  function unlockSpeech() {
-    if (speechUnlocked) return;
-    speechUnlocked = true;
-    if (deps.unlockSpeech) deps.unlockSpeech();
-  }
-
   function setSlideMediaHidden(slide, hidden) {
     if (!slide) return;
     slide.classList.toggle("is-media-hidden", hidden);
     slide.classList.toggle("is-audio-pending", hidden);
   }
 
+  function currentSlide() {
+    return slots[CURRENT_SLOT];
+  }
+
   function onSlideActive() {
-    stopSpeechNow();
     const item = feed[activeIndex];
-    const slide = slots[CURRENT_SLOT];
+    const slide = currentSlide();
     if (!item || !slide) return;
 
     setSlideMediaHidden(slide, true);
-
     speakItem(item, () => {
-      setSlideMediaHidden(slide, false);
+      if (slots[CURRENT_SLOT] === slide) {
+        setSlideMediaHidden(slide, false);
+      }
     });
   }
 
-  function illustrationSrc(item) {
-    if (item.external) return item.image;
-    return deps.assetUrl(item.image);
+  function replayCurrentAudio() {
+    stopSpeechNow();
+    onSlideActive();
+  }
+
+  function buildIllusSlide(slot, item, typeClass) {
+    slot.classList.add(typeClass);
+    slot.style.background = item.bg || item.hex || "#FFD54F";
+
+    const stage = document.createElement("div");
+    stage.className = "reels__illus-stage";
+
+    const img = document.createElement("img");
+    img.className = "reels__illus";
+    img.src = item.illustration;
+    img.alt = item.label;
+    img.decoding = "async";
+
+    stage.appendChild(img);
+
+    if (item.object) {
+      const objectTag = document.createElement("div");
+      objectTag.className = "reels__illus-object-name";
+      objectTag.textContent = item.object;
+      if (item.text) objectTag.style.color = item.text;
+      stage.appendChild(objectTag);
+    }
+
+    const label = document.createElement("div");
+    label.className = "reels__label";
+    label.textContent = item.label;
+    if (item.text) label.style.color = item.text;
+
+    slot.append(stage, label);
   }
 
   function fillSlot(slot, feedIndex) {
@@ -103,62 +135,23 @@
     slot.replaceChildren();
     slot.style.background = "";
 
-    if (item.type === "animal" || item.type === "word") {
-      slot.classList.add(item.type === "animal" ? "reels__slide--animal" : "reels__slide--word");
-      slot.style.background = item.bg || "#FFD54F";
-      const stage = document.createElement("div");
-      stage.className = "reels__illus-stage";
-      const img = document.createElement("img");
-      img.className = "reels__illus";
-      img.src = illustrationSrc(item);
-      img.alt = item.label;
-      img.decoding = "async";
-      const label = document.createElement("div");
-      label.className = "reels__label";
-      label.textContent = item.label;
-      stage.append(img);
-      slot.append(stage, label);
+    if (item.type === "animal") {
+      buildIllusSlide(slot, item, "reels__slide--animal");
+      return;
+    }
+
+    if (item.type === "word") {
+      buildIllusSlide(slot, item, "reels__slide--word");
       return;
     }
 
     if (item.type === "color") {
-      slot.classList.add("reels__slide--color");
-      slot.style.background = item.hex;
-      const stage = document.createElement("div");
-      stage.className = "reels__color-stage";
-      const img = document.createElement("img");
-      img.className = "reels__color-object";
-      img.src = deps.assetUrl(item.image);
-      img.alt = item.object || item.label;
-      img.decoding = "async";
-      const objectTag = document.createElement("div");
-      objectTag.className = "reels__color-object-name";
-      objectTag.textContent = item.object || "";
-      if (item.text) objectTag.style.color = item.text;
-      const label = document.createElement("div");
-      label.className = "reels__label";
-      label.textContent = item.label;
-      if (item.text) label.style.color = item.text;
-      stage.append(img, objectTag);
-      slot.append(stage, label);
+      buildIllusSlide(slot, item, "reels__slide--color");
       return;
     }
 
     if (item.type === "body") {
-      slot.classList.add("reels__slide--body");
-      slot.style.background = item.bg;
-      const stage = document.createElement("div");
-      stage.className = "reels__color-stage";
-      const img = document.createElement("img");
-      img.className = "reels__color-object";
-      img.src = deps.assetUrl(item.image);
-      img.alt = item.label;
-      img.decoding = "async";
-      const label = document.createElement("div");
-      label.className = "reels__label";
-      label.textContent = item.label;
-      stage.append(img);
-      slot.append(stage, label);
+      buildIllusSlide(slot, item, "reels__slide--body");
       return;
     }
 
@@ -187,6 +180,8 @@
     track.style.transform = translateY(slotIndex);
   }
 
+  let transitionCb = null;
+
   function onTransitionEnd(e) {
     if (e.target !== track || e.propertyName !== "transform") return;
     track.classList.remove("is-animating");
@@ -195,8 +190,6 @@
     transitionCb = null;
     cb();
   }
-
-  let transitionCb = null;
 
   function goNext() {
     if (feed.length < 2) return;
@@ -272,10 +265,13 @@
     const velocity = dy / Math.max(dt, 1);
     const fast = dt < SWIPE_MAX_MS;
 
-    unlockSpeech();
-
-    if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS && handleTapZone(clientY)) {
-      return;
+    if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS) {
+      if (currentSlide()?.classList.contains("is-audio-pending")) {
+        unlockSpeech();
+        replayCurrentAudio();
+        return;
+      }
+      if (handleTapZone(clientY)) return;
     }
 
     if (dy < -SWIPE_THRESHOLD || velocity < -FLICK_VELOCITY || (fast && dy < -20)) {
@@ -302,8 +298,12 @@
       return;
     }
 
-    stopSpeechNow();
     unlockSpeech();
+
+    if (currentSlide()?.classList.contains("is-audio-pending")) {
+      replayCurrentAudio();
+    }
+
     dragging = true;
     pointerStartY = e.clientY;
     pointerStartX = e.clientX;
@@ -385,7 +385,6 @@
     }
 
     activeIndex = 0;
-    speechUnlocked = false;
     updateViewportMetrics();
     syncWindow();
     onSlideActive();
@@ -426,7 +425,6 @@
     track.style.transform = "";
     track.innerHTML = "";
     slots = [];
-    speechUnlocked = false;
 
     root.removeEventListener("pointerdown", onPointerDown);
     root.removeEventListener("pointermove", onPointerMove);
@@ -461,7 +459,6 @@
 
     refresh() {
       stopSpeechNow();
-      speechUnlocked = false;
       render();
     },
   };

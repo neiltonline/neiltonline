@@ -3,6 +3,7 @@
   const CONFIG_KEY = "tecladinho-reels-config";
   const HOLD_MS = 2000;
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const TW = () => window.TecladinhoTwemoji;
 
   const configPanel = document.getElementById("config-panel");
   const holdProgress = document.getElementById("hold-progress");
@@ -68,32 +69,32 @@
   ];
 
   const BODY_PARTS = [
-    { id: "cabeca", name: "cabeça", label: "Cabeça", bg: "#FFE0B2", image: "images/body/cabeca.jpg" },
-    { id: "pe", name: "pé", label: "Pé", bg: "#E1BEE7", image: "images/body/pe.jpg" },
-    { id: "olhos", name: "olhos", label: "Olhos", bg: "#BBDEFB", image: "images/body/olhos.jpg" },
-    { id: "orelha", name: "orelha", label: "Orelha", bg: "#FFECB3", image: "images/body/orelha.jpg" },
-    { id: "nariz", name: "nariz", label: "Nariz", bg: "#FFCDD2", image: "images/body/nariz.jpg" },
-    { id: "boca", name: "boca", label: "Boca", bg: "#F8BBD0", image: "images/body/boca.jpg" },
-    { id: "mao", name: "mão", label: "Mão", bg: "#FFCCBC", image: "images/body/mao.jpg" },
-    { id: "braco", name: "braço", label: "Braço", bg: "#FFAB91", image: "images/body/braco.png" },
-    { id: "perna", name: "perna", label: "Perna", bg: "#C5CAE9", image: "images/body/perna.jpg" },
-    { id: "barriga", name: "barriga", label: "Barriga", bg: "#DCEDC8", image: "images/body/barriga.jpg" },
-    { id: "cabelo", name: "cabelo", label: "Cabelo", bg: "#D7CCC8", image: "images/body/cabelo.jpg" },
-    { id: "dente", name: "dente", label: "Dente", bg: "#E0F7FA", image: "images/body/dente.jpg" },
+    { id: "cabeca", name: "cabeça", label: "Cabeça", bg: "#FFE0B2" },
+    { id: "pe", name: "pé", label: "Pé", bg: "#E1BEE7" },
+    { id: "olhos", name: "olhos", label: "Olhos", bg: "#BBDEFB" },
+    { id: "orelha", name: "orelha", label: "Orelha", bg: "#FFECB3" },
+    { id: "nariz", name: "nariz", label: "Nariz", bg: "#FFCDD2" },
+    { id: "boca", name: "boca", label: "Boca", bg: "#F8BBD0" },
+    { id: "mao", name: "mão", label: "Mão", bg: "#FFCCBC" },
+    { id: "braco", name: "braço", label: "Braço", bg: "#FFAB91" },
+    { id: "perna", name: "perna", label: "Perna", bg: "#C5CAE9" },
+    { id: "barriga", name: "barriga", label: "Barriga", bg: "#DCEDC8" },
+    { id: "cabelo", name: "cabelo", label: "Cabelo", bg: "#D7CCC8" },
+    { id: "dente", name: "dente", label: "Dente", bg: "#E0F7FA" },
   ];
 
   const COLORS = [
-    { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935", image: "images/colors/vermelho.jpg", object: "Morango" },
-    { id: "azul", name: "azul", label: "Azul", hex: "#1E88E5", image: "images/colors/azul.png", object: "Bola" },
-    { id: "amarelo", name: "amarelo", label: "Amarelo", hex: "#FDD835", text: "#333", image: "images/colors/amarelo.jpg", object: "Banana" },
-    { id: "verde", name: "verde", label: "Verde", hex: "#43A047", image: "images/colors/verde.jpg", object: "Maçã" },
-    { id: "laranja", name: "laranja", label: "Laranja", hex: "#FB8C00", image: "images/colors/laranja.jpg", object: "Laranja" },
-    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA", image: "images/colors/roxo.jpg", object: "Uva" },
-    { id: "rosa", name: "rosa", label: "Rosa", hex: "#EC407A", image: "images/colors/rosa.jpg", object: "Flor" },
-    { id: "branco", name: "branco", label: "Branco", hex: "#E8EAF6", text: "#333", image: "images/colors/branco.jpg", object: "Nuvem" },
-    { id: "preto", name: "preto", label: "Preto", hex: "#212121", image: "images/colors/preto.jpg", object: "Gato" },
-    { id: "marrom", name: "marrom", label: "Marrom", hex: "#6D4C41", image: "images/colors/marrom.jpg", object: "Urso" },
-    { id: "cinza", name: "cinza", label: "Cinza", hex: "#757575", image: "images/colors/cinza.jpg", object: "Elefante" },
+    { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935", object: "Morango" },
+    { id: "azul", name: "azul", label: "Azul", hex: "#1E88E5", object: "Bola" },
+    { id: "amarelo", name: "amarelo", label: "Amarelo", hex: "#FDD835", text: "#333", object: "Banana" },
+    { id: "verde", name: "verde", label: "Verde", hex: "#43A047", object: "Maçã" },
+    { id: "laranja", name: "laranja", label: "Laranja", hex: "#FB8C00", object: "Laranja" },
+    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA", object: "Uva" },
+    { id: "rosa", name: "rosa", label: "Rosa", hex: "#EC407A", object: "Flor" },
+    { id: "branco", name: "branco", label: "Branco", hex: "#E8EAF6", text: "#333", object: "Nuvem" },
+    { id: "preto", name: "preto", label: "Preto", hex: "#212121", object: "Gato" },
+    { id: "marrom", name: "marrom", label: "Marrom", hex: "#6D4C41", object: "Urso" },
+    { id: "cinza", name: "cinza", label: "Cinza", hex: "#757575", object: "Elefante" },
   ];
 
   const REELS_LETTER_BACKGROUNDS = [
@@ -112,33 +113,6 @@
   const WORD_BACKGROUNDS = [
     "#81D4FA", "#80DEEA", "#A5D6A7", "#CE93D8", "#F48FB1", "#90CAF9",
   ];
-
-  const TWEMOJI_BASE = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72";
-
-  const WORD_TWEMOJI = {
-    papai: "1f468",
-    mamae: "1f469",
-    titio: "1f9d1-200d-1f9b0",
-    titia: "1f469-200d-1f9b0",
-    vovo: "1f475",
-    avo: "1f474",
-    bola: "26bd",
-    brincar: "1f9f8",
-    lua: "1f319",
-    sol: "2600-fe0f",
-    morango: "1f353",
-    banana: "1f34c",
-    maca: "1f34e",
-    agua: "1f4a7",
-    leite: "1f95b",
-    estrela: "2b50",
-    flor: "1f338",
-    bebe: "1f476",
-    pao: "1f35e",
-    abraco: "1f917",
-    beijo: "1f48b",
-    dormir: "1f634",
-  };
 
   const NUMBER_NAMES = {
     0: "zero", 1: "um", 2: "dois", 3: "três", 4: "quatro",
@@ -196,7 +170,6 @@
     }
   }
 
-  let variants = {};
   let config = loadConfig();
   let currentAudio = null;
   let speechPrimed = false;
@@ -211,12 +184,12 @@
   }
 
   function assetUrl(path) {
-    return new URL(path, ASSET_BASE).href;
+    const parts = path.split("/").map((part) => encodeURIComponent(part));
+    return new URL(parts.join("/"), ASSET_BASE).href;
   }
 
-  function animalImages(id) {
-    const list = variants[id]?.images;
-    return list?.length ? list.map(assetUrl) : [assetUrl(`images/animals/${id}.jpg`)];
+  function illus(type, id) {
+    return TW()?.[type]?.(id) || null;
   }
 
   function getEnabledAnimals() {
@@ -235,18 +208,6 @@
     return BODY_PARTS.filter((b) => config.body[b.id]);
   }
 
-  function pickAnimalImage(id) {
-    const list = variants[id]?.images;
-    if (list?.length) return list[Math.floor(Math.random() * list.length)];
-    return `images/animals/${id}.jpg`;
-  }
-
-  function wordIllustrationUrl(id) {
-    const code = WORD_TWEMOJI[id];
-    if (!code) return null;
-    return `${TWEMOJI_BASE}/${code}.png`;
-  }
-
   let feedResetGuard = false;
 
   function buildReelsFeed() {
@@ -254,11 +215,13 @@
 
     if (config.reelsCategories.animals) {
       getEnabledAnimals().forEach((animal, i) => {
+        const illustration = illus("animal", animal.id);
+        if (!illustration) return;
         items.push({
           type: "animal",
           animalId: animal.id,
           label: animal.label,
-          image: pickAnimalImage(animal.id),
+          illustration,
           bg: ANIMAL_BACKGROUNDS[i % ANIMAL_BACKGROUNDS.length],
         });
       });
@@ -266,6 +229,8 @@
 
     if (config.reelsCategories.colors) {
       for (const color of getEnabledColors()) {
+        const illustration = illus("color", color.id);
+        if (!illustration) continue;
         items.push({
           type: "color",
           id: color.id,
@@ -273,7 +238,7 @@
           name: color.name,
           hex: color.hex,
           text: color.text,
-          image: color.image,
+          illustration,
           object: color.object,
         });
       }
@@ -288,15 +253,14 @@
 
     if (config.reelsCategories.words) {
       getEnabledWords().forEach((word, i) => {
-        const illustration = wordIllustrationUrl(word.id);
+        const illustration = illus("word", word.id);
         if (!illustration) return;
         items.push({
           type: "word",
           wordId: word.id,
           label: word.label,
           name: word.name,
-          image: illustration,
-          external: true,
+          illustration,
           bg: WORD_BACKGROUNDS[i % WORD_BACKGROUNDS.length],
         });
       });
@@ -304,13 +268,15 @@
 
     if (config.reelsCategories.body) {
       for (const part of getEnabledBodyParts()) {
+        const illustration = illus("body", part.id);
+        if (!illustration) continue;
         items.push({
           type: "body",
           id: part.id,
           label: part.label,
           name: part.name,
           bg: part.bg,
-          image: part.image,
+          illustration,
         });
       }
     }
@@ -332,6 +298,8 @@
         return buildReelsFeed();
       }
       for (const color of COLORS) {
+        const illustration = illus("color", color.id);
+        if (!illustration) continue;
         items.push({
           type: "color",
           id: color.id,
@@ -339,7 +307,7 @@
           name: color.name,
           hex: color.hex,
           text: color.text,
-          image: color.image,
+          illustration,
           object: color.object,
         });
       }
@@ -374,36 +342,48 @@
       currentAudio.pause();
       currentAudio.currentTime = 0;
       currentAudio.onended = null;
+      currentAudio.onerror = null;
       currentAudio = null;
     }
   }
 
   function playAudio(src, onEnd) {
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.onended = null;
-      currentAudio = null;
-    }
+    stopSpeaking();
 
     let finished = false;
-    const audio = new Audio(src);
+    let safety = null;
+    const audio = new Audio();
+    audio.preload = "auto";
+    audio.src = src;
     currentAudio = audio;
 
     const done = () => {
       if (finished) return;
       finished = true;
-      clearTimeout(safety);
+      if (safety) clearTimeout(safety);
       if (currentAudio === audio) currentAudio = null;
       onEnd?.();
     };
 
+    const queueRetry = () => {
+      if (safety) clearTimeout(safety);
+      pendingSpeak = () => playAudio(src, onEnd);
+    };
+
     audio.addEventListener("ended", done, { once: true });
-    audio.addEventListener("error", done, { once: true });
-    const safety = setTimeout(done, 3500);
-    audio.play().catch(() => {
-      clearTimeout(safety);
+    audio.addEventListener("error", () => {
       if (!speechPrimed) {
-        pendingSpeak = () => playAudio(src, onEnd);
+        queueRetry();
+        return;
+      }
+      done();
+    }, { once: true });
+
+    audio.play().then(() => {
+      safety = setTimeout(done, 6000);
+    }).catch(() => {
+      if (!speechPrimed) {
+        queueRetry();
         return;
       }
       done();
@@ -463,6 +443,13 @@
     reelsBodySection.classList.toggle("is-disabled-section", !config.reelsCategories.body);
   }
 
+  function thumbHtml(type, id, fallback) {
+    const src = illus(type, id);
+    return src
+      ? `<img src="${src}" alt="" width="48" height="48" loading="lazy" class="config__color-thumb">`
+      : `<span class="config__word-fallback">${fallback}</span>`;
+  }
+
   function buildBodyConfigList() {
     bodyListEl.innerHTML = "";
     BODY_PARTS.forEach((part) => {
@@ -470,7 +457,7 @@
       label.className = "config__animal";
       label.innerHTML = `
         <input type="checkbox" data-body="${part.id}" ${config.body[part.id] ? "checked" : ""}>
-        <img src="${assetUrl(part.image)}" alt="" width="48" height="48" loading="lazy" class="config__color-thumb">
+        ${thumbHtml("body", part.id, part.label.charAt(0))}
         <span>${part.label}</span>
       `;
       label.querySelector("input").addEventListener("change", (e) => {
@@ -489,7 +476,7 @@
       label.className = "config__animal config__color";
       label.innerHTML = `
         <input type="checkbox" data-color="${color.id}" ${config.colors[color.id] ? "checked" : ""}>
-        <img src="${assetUrl(color.image)}" alt="" width="48" height="48" loading="lazy" class="config__color-thumb">
+        ${thumbHtml("color", color.id, color.label.charAt(0))}
         <span class="config__swatch" style="background:${color.hex}"></span>
         <span>${color.label} · ${color.object}</span>
       `;
@@ -507,13 +494,9 @@
     WORDS.forEach((word) => {
       const label = document.createElement("label");
       label.className = "config__animal";
-      const illustration = wordIllustrationUrl(word.id);
-      const thumbHtml = illustration
-        ? `<img src="${illustration}" alt="" width="48" height="48" loading="lazy" class="config__color-thumb">`
-        : `<span class="config__word-fallback">${word.label.charAt(0)}</span>`;
       label.innerHTML = `
         <input type="checkbox" data-word="${word.id}" ${config.words[word.id] ? "checked" : ""}>
-        ${thumbHtml}
+        ${thumbHtml("word", word.id, word.label.charAt(0))}
         <span>${word.label}</span>
       `;
       label.querySelector("input").addEventListener("change", (e) => {
@@ -532,7 +515,7 @@
       label.className = "config__animal";
       label.innerHTML = `
         <input type="checkbox" data-animal="${animal.id}" ${config.animals[animal.id] ? "checked" : ""}>
-        <img src="${animalImages(animal.id)[0]}" alt="" width="48" height="48" loading="lazy">
+        ${thumbHtml("animal", animal.id, animal.label.charAt(0))}
         <span>${animal.label}</span>
       `;
       label.querySelector("input").addEventListener("change", (e) => {
@@ -701,7 +684,6 @@
       window.TecladinhoReels.init({
         root: document.getElementById("reels"),
         buildFeed: buildReelsFeed,
-        assetUrl,
         speakItem: speakReelsItem,
         unlockSpeech,
         stopSpeak: stopSpeaking,
@@ -724,23 +706,5 @@
     }
   }
 
-  async function loadManifest() {
-    try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 4000);
-      const res = await fetch(assetUrl("data/manifest.json"), { signal: ctrl.signal });
-      clearTimeout(timer);
-      if (res.ok) {
-        variants = await res.json();
-        buildAnimalConfigList();
-        buildWordConfigList();
-        refreshReels();
-      }
-    } catch {
-      /* manifest optional */
-    }
-  }
-
   bootReels();
-  loadManifest();
 })();
