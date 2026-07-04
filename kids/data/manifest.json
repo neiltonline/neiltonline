@@ -14,6 +14,64 @@
       "videos/animals/abelha-2.mp4"
     ]
   },
+  "abraco": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/abraco-1.mp4"
+    ]
+  },
+  "agua": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/agua-1.mp4"
+    ]
+  },
+  "avo": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/avo-1.mp4"
+    ]
+  },
+  "banana": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/banana-1.mp4"
+    ]
+  },
+  "bebe": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/bebe-1.mp4"
+    ]
+  },
+  "beijo": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/beijo-1.mp4"
+    ]
+  },
+  "bola": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/bola-1.mp4",
+      "videos/words/bola-2.mp4"
+    ]
+  },
+  "brincar": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/brincar-1.mp4",
+      "videos/words/brincar-2.mp4"
+    ]
+  },
   "cachorro": {
     "images": [
       "images/animals/cachorro-1.jpg",
@@ -59,6 +117,14 @@
       "videos/animals/coruja-2.mp4"
     ]
   },
+  "dormir": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/dormir-1.mp4",
+      "videos/words/dormir-2.mp4"
+    ]
+  },
   "elefante": {
     "images": [
       "images/animals/elefante-1.jpg",
@@ -71,6 +137,20 @@
       "videos/animals/elefante-1.mp4",
       "videos/animals/elefante-2.mp4",
       "videos/animals/elefante-3.mp4"
+    ]
+  },
+  "estrela": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/estrela-1.mp4"
+    ]
+  },
+  "flor": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/flor-1.mp4"
     ]
   },
   "galinha": {
@@ -146,6 +226,13 @@
       "videos/animals/leao-2.mp4"
     ]
   },
+  "leite": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/leite-1.mp4"
+    ]
+  },
   "lobo": {
     "images": [
       "images/animals/lobo-1.jpg"
@@ -159,6 +246,21 @@
       "videos/animals/lobo-2.mp4"
     ]
   },
+  "lua": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/lua-1.mp4",
+      "videos/words/lua-2.mp4"
+    ]
+  },
+  "maca": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/maca-1.mp4"
+    ]
+  },
   "macaco": {
     "images": [
       "images/animals/macaco-1.jpg",
@@ -169,6 +271,20 @@
     ],
     "videos": [
       "videos/animals/macaco-1.mp4"
+    ]
+  },
+  "mamae": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/mamae-1.mp4"
+    ]
+  },
+  "morango": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/morango-1.mp4"
     ]
   },
   "ovelha": {
@@ -185,6 +301,13 @@
       "videos/animals/ovelha-2.mp4"
     ]
   },
+  "pao": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/pao-1.mp4"
+    ]
+  },
   "papagaio": {
     "images": [
       "images/animals/papagaio-1.jpg"
@@ -196,6 +319,13 @@
     "videos": [
       "videos/animals/papagaio-1.mp4",
       "videos/animals/papagaio-2.mp4"
+    ]
+  },
+  "papai": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/papai-1.mp4"
     ]
   },
   "pato": {
@@ -271,6 +401,13 @@
       "videos/animals/sapo-2.mp4"
     ]
   },
+  "sol": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/sol-1.mp4"
+    ]
+  },
   "tigre": {
     "images": [
       "images/animals/tigre-1.jpg",
@@ -284,6 +421,20 @@
     "videos": [
       "videos/animals/tigre-1.mp4",
       "videos/animals/tigre-2.mp4"
+    ]
+  },
+  "titia": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/titia-1.mp4"
+    ]
+  },
+  "titio": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/titio-1.mp4"
     ]
   },
   "urso": {
@@ -311,6 +462,13 @@
     ],
     "videos": [
       "videos/animals/vaca-1.mp4"
+    ]
+  },
+  "vovo": {
+    "images": [],
+    "sounds": [],
+    "videos": [
+      "videos/words/vovo-1.mp4"
     ]
   }
 }

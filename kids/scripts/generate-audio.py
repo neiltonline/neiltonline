@@ -27,6 +27,13 @@ ANIMAL_WORDS = [
     "jacaré", "cavalo", "ovelha", "coruja", "lobo", "macaco",
 ]
 
+TODDLER_WORDS = [
+    "papai", "mamãe", "titio", "titia", "vovó", "vovô",
+    "bola", "brincar", "lua", "sol", "morango", "banana", "maçã",
+    "água", "leite", "estrela", "flor", "bebê", "pão",
+    "abraço", "beijo", "dormir",
+]
+
 
 async def generate(text, path, force=False):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -58,6 +65,11 @@ async def main():
 
     for word in COLOR_WORDS:
         path = os.path.join(AUDIO_DIR, "words", f"{word}.mp3")
+        tasks.append(generate(word, path, force=True))
+
+    for word in TODDLER_WORDS:
+        safe = word.replace(" ", "-")
+        path = os.path.join(AUDIO_DIR, "words", f"{safe}.mp3")
         tasks.append(generate(word, path, force=True))
 
     for i in range(0, len(tasks), 5):

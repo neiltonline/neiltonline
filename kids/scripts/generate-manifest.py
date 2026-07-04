@@ -9,12 +9,13 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 IMAGES_DIR = os.path.join(ROOT, "images", "animals")
 SOUNDS_DIR = os.path.join(ROOT, "audio", "sounds")
 VIDEOS_DIR = os.path.join(ROOT, "videos", "animals")
+WORD_VIDEOS_DIR = os.path.join(ROOT, "videos", "words")
 MANIFEST_PATH = os.path.join(ROOT, "data", "manifest.json")
 
 VARIANT_RE = re.compile(r"^([a-z]+)-(\d+)\.(jpg|mp3|mp4)$")
 
 
-def collect_variants(directory, ext):
+def collect_variants(directory, ext, rel_subdir):
     by_slug = {}
     for path in glob.glob(os.path.join(directory, f"*.{ext}")):
         name = os.path.basename(path)
@@ -27,28 +28,23 @@ def collect_variants(directory, ext):
     result = {}
     for slug, items in sorted(by_slug.items()):
         items.sort()
-        if ext == "jpg":
-            rel = "images/animals"
-        elif ext == "mp3":
-            rel = "audio/sounds"
-        else:
-            rel = "videos/animals"
-        result[slug] = [f"{rel}/{name}" for _, name in items]
+        result[slug] = [f"{rel_subdir}/{name}" for _, name in items]
     return result
 
 
 def main():
-    images = collect_variants(IMAGES_DIR, "jpg")
-    sounds = collect_variants(SOUNDS_DIR, "mp3")
-    videos = collect_variants(VIDEOS_DIR, "mp4")
+    images = collect_variants(IMAGES_DIR, "jpg", "images/animals")
+    sounds = collect_variants(SOUNDS_DIR, "mp3", "audio/sounds")
+    videos = collect_variants(VIDEOS_DIR, "mp4", "videos/animals")
+    word_videos = collect_variants(WORD_VIDEOS_DIR, "mp4", "videos/words")
 
-    slugs = sorted(set(images) | set(sounds) | set(videos))
+    slugs = sorted(set(images) | set(sounds) | set(videos) | set(word_videos))
     manifest = {}
     for slug in slugs:
         manifest[slug] = {
             "images": images.get(slug, []),
             "sounds": sounds.get(slug, []),
-            "videos": videos.get(slug, []),
+            "videos": videos.get(slug, []) + word_videos.get(slug, []),
         }
 
     os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
@@ -58,7 +54,7 @@ def main():
     total_img = sum(len(v["images"]) for v in manifest.values())
     total_snd = sum(len(v["sounds"]) for v in manifest.values())
     total_vid = sum(len(v["videos"]) for v in manifest.values())
-    print(f"Wrote {MANIFEST_PATH}: {len(manifest)} animals, {total_img} images, {total_snd} sounds, {total_vid} videos", flush=True)
+    print(f"Wrote {MANIFEST_PATH}: {len(manifest)} entries, {total_img} images, {total_snd} sounds, {total_vid} videos", flush=True)
 
 
 if __name__ == "__main__":

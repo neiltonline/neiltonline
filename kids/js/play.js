@@ -8,6 +8,8 @@
   const colorListEl = document.getElementById("cfg-color-list");
   const reelsAnimalsSection = document.getElementById("cfg-reels-animals-section");
   const reelsColorsSection = document.getElementById("cfg-reels-colors-section");
+  const reelsWordsSection = document.getElementById("cfg-reels-words-section");
+  const wordListEl = document.getElementById("cfg-word-list");
 
   const HOLD_MS = 2000;
   const CHAR_LIFETIME_MS = 14000;
@@ -39,6 +41,33 @@
   ];
 
   const ANIMALS_BY_ID = Object.fromEntries(ANIMALS.map((a) => [a.id, a]));
+
+  const WORDS = [
+    { id: "papai", name: "papai", label: "Papai" },
+    { id: "mamae", name: "mamãe", label: "Mamãe" },
+    { id: "titio", name: "titio", label: "Titio" },
+    { id: "titia", name: "titia", label: "Titia" },
+    { id: "vovo", name: "vovó", label: "Vovó" },
+    { id: "avo", name: "vovô", label: "Vovô" },
+    { id: "bola", name: "bola", label: "Bola" },
+    { id: "brincar", name: "brincar", label: "Brincar" },
+    { id: "lua", name: "lua", label: "Lua" },
+    { id: "sol", name: "sol", label: "Sol" },
+    { id: "morango", name: "morango", label: "Morango" },
+    { id: "banana", name: "banana", label: "Banana" },
+    { id: "maca", name: "maçã", label: "Maçã" },
+    { id: "agua", name: "água", label: "Água" },
+    { id: "leite", name: "leite", label: "Leite" },
+    { id: "estrela", name: "estrela", label: "Estrela" },
+    { id: "flor", name: "flor", label: "Flor" },
+    { id: "bebe", name: "bebê", label: "Bebê" },
+    { id: "pao", name: "pão", label: "Pão" },
+    { id: "abraco", name: "abraço", label: "Abraço" },
+    { id: "beijo", name: "beijo", label: "Beijo" },
+    { id: "dormir", name: "dormir", label: "Dormir" },
+  ];
+
+  const WORDS_BY_ID = Object.fromEntries(WORDS.map((w) => [w.id, w]));
 
   const COLORS = [
     { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935" },
@@ -89,8 +118,12 @@
     return Object.fromEntries(COLORS.map((c) => [c.id, true]));
   }
 
+  function defaultWordToggles() {
+    return Object.fromEntries(WORDS.map((w) => [w.id, true]));
+  }
+
   function defaultReelsCategories() {
-    return { animals: true, colors: true, letters: true };
+    return { animals: true, colors: true, letters: true, words: true };
   }
 
   const DEFAULT_CONFIG = {
@@ -101,6 +134,7 @@
     animalSounds: true,
     animals: defaultAnimalToggles(),
     colors: defaultColorToggles(),
+    words: defaultWordToggles(),
     reelsCategories: defaultReelsCategories(),
   };
 
@@ -131,6 +165,7 @@
         ...parsed,
         animals: { ...defaultAnimalToggles(), ...parsed.animals },
         colors: { ...defaultColorToggles(), ...parsed.colors },
+        words: { ...defaultWordToggles(), ...parsed.words },
         reelsCategories: { ...defaultReelsCategories(), ...parsed.reelsCategories },
       };
       if (parsed.emojisOnly && merged.animalsOnly === undefined) {
@@ -182,9 +217,18 @@
     return COLORS.filter((c) => config.colors[c.id]);
   }
 
+  function getEnabledWords() {
+    return WORDS.filter((w) => config.words[w.id]);
+  }
+
   function animalVideos(id) {
     const list = variants[id]?.videos;
-    return list?.length ? list : [];
+    return list?.filter((p) => p.startsWith("videos/animals/")) || [];
+  }
+
+  function wordVideos(id) {
+    const list = variants[id]?.videos;
+    return list?.filter((p) => p.startsWith("videos/words/")) || [];
   }
 
   function buildReelsFeed() {
@@ -228,6 +272,20 @@
       });
     }
 
+    if (config.reelsCategories.words) {
+      for (const word of getEnabledWords()) {
+        for (const src of wordVideos(word.id)) {
+          items.push({
+            type: "word",
+            wordId: word.id,
+            label: word.label,
+            name: word.name,
+            src,
+          });
+        }
+      }
+    }
+
     for (let i = items.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [items[i], items[j]] = [items[j], items[i]];
@@ -251,6 +309,10 @@
       } else {
         playAudio(assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`));
       }
+      return;
+    }
+    if (item.type === "word") {
+      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`));
     }
   }
 
@@ -314,6 +376,30 @@
   function syncReelsConfigSections() {
     reelsAnimalsSection.classList.toggle("is-disabled-section", !config.reelsCategories.animals);
     reelsColorsSection.classList.toggle("is-disabled-section", !config.reelsCategories.colors);
+    reelsWordsSection.classList.toggle("is-disabled-section", !config.reelsCategories.words);
+  }
+
+  function buildWordConfigList() {
+    wordListEl.innerHTML = "";
+    WORDS.forEach((word) => {
+      const label = document.createElement("label");
+      label.className = "config__animal";
+      const thumb = wordVideos(word.id)[0];
+      const thumbHtml = thumb
+        ? `<video src="${thumb}" muted playsinline preload="metadata" width="48" height="48"></video>`
+        : `<span class="config__word-fallback">${word.label.charAt(0)}</span>`;
+      label.innerHTML = `
+        <input type="checkbox" data-word="${word.id}" ${config.words[word.id] ? "checked" : ""}>
+        ${thumbHtml}
+        <span>${word.label}</span>
+      `;
+      label.querySelector("input").addEventListener("change", (e) => {
+        config.words[word.id] = e.target.checked;
+        saveConfig();
+        refreshReelsIfActive();
+      });
+      wordListEl.appendChild(label);
+    });
   }
 
   function buildAnimalConfigList() {
@@ -343,12 +429,16 @@
     document.getElementById("cfg-reels-animals").checked = config.reelsCategories.animals;
     document.getElementById("cfg-reels-colors").checked = config.reelsCategories.colors;
     document.getElementById("cfg-reels-letters").checked = config.reelsCategories.letters;
+    document.getElementById("cfg-reels-words").checked = config.reelsCategories.words;
     document.getElementById("cfg-animal-sounds").checked = config.animalSounds;
     animalListEl.querySelectorAll("[data-animal]").forEach((input) => {
       input.checked = config.animals[input.dataset.animal];
     });
     colorListEl.querySelectorAll("[data-color]").forEach((input) => {
       input.checked = config.colors[input.dataset.color];
+    });
+    wordListEl.querySelectorAll("[data-word]").forEach((input) => {
+      input.checked = config.words[input.dataset.word];
     });
     applyBodyModes();
     syncReelsConfigSections();
@@ -734,7 +824,21 @@
     refreshReelsIfActive();
   });
 
-  ["animals", "colors", "letters"].forEach((cat) => {
+  document.getElementById("cfg-select-all-words").addEventListener("click", () => {
+    WORDS.forEach((w) => { config.words[w.id] = true; });
+    saveConfig();
+    syncConfigUI();
+    refreshReelsIfActive();
+  });
+
+  document.getElementById("cfg-deselect-all-words").addEventListener("click", () => {
+    WORDS.forEach((w) => { config.words[w.id] = false; });
+    saveConfig();
+    syncConfigUI();
+    refreshReelsIfActive();
+  });
+
+  ["animals", "colors", "letters", "words"].forEach((cat) => {
     document.getElementById(`cfg-reels-${cat}`).addEventListener("change", (e) => {
       config.reelsCategories[cat] = e.target.checked;
       saveConfig();
@@ -861,6 +965,7 @@
 
     buildAnimalConfigList();
     buildColorConfigList();
+    buildWordConfigList();
     applyBodyModes();
     hideHintTimer = setTimeout(hideHint, 4000);
   }

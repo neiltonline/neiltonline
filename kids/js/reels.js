@@ -212,6 +212,28 @@
     return slide;
   }
 
+  function createWordSlide(item) {
+    const slide = document.createElement("section");
+    slide.className = "reels__slide reels__slide--word";
+
+    const video = document.createElement("video");
+    video.src = deps.assetUrl(item.src);
+    video.playsInline = true;
+    video.loop = true;
+    video.preload = "metadata";
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.muted = true;
+
+    const label = document.createElement("div");
+    label.className = "reels__label";
+    label.textContent = item.label;
+
+    slide.appendChild(video);
+    slide.appendChild(label);
+    return slide;
+  }
+
   function render() {
     track.innerHTML = "";
     slides = [];
@@ -226,6 +248,9 @@
       let slide;
       if (item.type === "animal") {
         slide = createAnimalSlide(item);
+        if (index < 2) slide.querySelector("video").preload = "auto";
+      } else if (item.type === "word") {
+        slide = createWordSlide(item);
         if (index < 2) slide.querySelector("video").preload = "auto";
       } else if (item.type === "color") {
         slide = createColorSlide(item);
