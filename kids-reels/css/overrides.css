@@ -106,34 +106,6 @@ body.mode-reels {
   background: #fff;
 }
 
-.reels__boot {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  pointer-events: auto;
-}
-
-.reels__boot.is-hidden {
-  display: none;
-}
-
-.reels__boot-btn {
-  padding: 20px 32px;
-  border: none;
-  border-radius: 999px;
-  background: #fff;
-  color: #222;
-  font-size: clamp(20px, 5.5vw, 28px);
-  font-weight: 800;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
 .reels__empty {
   color: #fff;
   font-size: clamp(16px, 4.5vw, 20px);

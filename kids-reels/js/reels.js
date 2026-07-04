@@ -140,12 +140,6 @@
     }
 
     prefetchAround(index);
-    hideBootScreen();
-  }
-
-  function hideBootScreen() {
-    const boot = document.getElementById("reels-boot");
-    if (boot) boot.classList.add("is-hidden");
   }
 
   function slideHeight() {

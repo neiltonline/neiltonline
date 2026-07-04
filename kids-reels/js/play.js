@@ -288,7 +288,22 @@
         saveConfig();
         return buildReelsFeed();
       }
-      return items;
+      for (const color of COLORS) {
+        items.push({
+          type: "color",
+          id: color.id,
+          label: color.label,
+          name: color.name,
+          hex: color.hex,
+          text: color.text,
+          image: color.image,
+          object: color.object,
+        });
+      }
+      LETTERS.split("").forEach((char, i) => {
+        const palette = REELS_LETTER_BACKGROUNDS[i % REELS_LETTER_BACKGROUNDS.length];
+        items.push({ type: "letter", char, bg: palette.bg, fg: palette.fg });
+      });
     }
 
     feedResetGuard = false;
@@ -631,26 +646,30 @@
     if (activePointers.size < 2) cancelTouchHold();
   }, { passive: true });
 
-  async function init() {
-    window.TecladinhoReels.init({
-      root: document.getElementById("reels"),
-      buildFeed: buildReelsFeed,
-      assetUrl,
-      speakItem: speakReelsItem,
-      unlockSpeech,
-    });
+  function bootReels() {
+    try {
+      window.TecladinhoReels.init({
+        root: document.getElementById("reels"),
+        buildFeed: buildReelsFeed,
+        assetUrl,
+        speakItem: speakReelsItem,
+        unlockSpeech,
+      });
+      buildAnimalConfigList();
+      buildColorConfigList();
+      buildWordConfigList();
+      buildBodyConfigList();
+      window.TecladinhoReels.activate();
+    } catch (err) {
+      console.error("Tecladinho Reels boot failed:", err);
+      const track = document.querySelector(".reels__track");
+      if (track) {
+        track.innerHTML = "<p class=\"reels__empty\">Erro ao carregar. Recarregue a página.</p>";
+      }
+    }
+  }
 
-    buildAnimalConfigList();
-    buildColorConfigList();
-    buildWordConfigList();
-    buildBodyConfigList();
-    window.TecladinhoReels.activate();
-
-    document.getElementById("reels-boot-btn")?.addEventListener("click", () => {
-      unlockSpeech();
-      document.getElementById("reels-boot")?.classList.add("is-hidden");
-    });
-
+  async function loadManifest() {
     try {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 4000);
@@ -667,5 +686,6 @@
     }
   }
 
-  init();
+  bootReels();
+  loadManifest();
 })();
