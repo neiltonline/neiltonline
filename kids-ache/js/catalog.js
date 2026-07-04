@@ -113,13 +113,31 @@
     return word.replace(/\s+/g, "-");
   }
 
+  const CHOICE_COUNTS = [2, 3, 4, 6, 9, 12];
+
+  function gridFor(count) {
+    if (count <= 3) return { cols: 1, rows: count };
+    if (count <= 4) return { cols: 2, rows: 2 };
+    if (count <= 6) return { cols: 2, rows: 3 };
+    if (count <= 9) return { cols: 3, rows: 3 };
+    return { cols: 3, rows: 4 };
+  }
+
+  function normalizeChoiceCount(n) {
+    const val = Number(n);
+    return CHOICE_COUNTS.includes(val) ? val : 2;
+  }
+
   window.AcheCatalog = {
     ANIMALS,
     WORDS,
     BODY_PARTS,
     COLORS,
+    CHOICE_COUNTS,
     CHOICE_BACKGROUNDS,
     articleFor,
     wordToFile,
+    gridFor,
+    normalizeChoiceCount,
   };
 })();

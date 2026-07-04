@@ -109,16 +109,22 @@ body.mode-ache .hold-progress.is-active {
 .ache__choices {
   flex: 1;
   display: grid;
+  grid-template-columns: repeat(var(--grid-cols, 1), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--grid-rows, 2), minmax(0, 1fr));
   gap: 14px;
   min-height: 0;
 }
 
-.ache__choices--2 {
-  grid-template-rows: 1fr 1fr;
+.ache__choices[data-count="4"],
+.ache__choices[data-count="6"],
+.ache__choices[data-count="9"],
+.ache__choices[data-count="12"] {
+  gap: 10px;
 }
 
-.ache__choices--3 {
-  grid-template-rows: 1fr 1fr 1fr;
+.ache__choices[data-count="9"],
+.ache__choices[data-count="12"] {
+  gap: 8px;
 }
 
 .ache__choice {
@@ -133,6 +139,22 @@ body.mode-ache .hold-progress.is-active {
     inset 0 0 0 4px rgba(255, 255, 255, 0.35);
   transition: transform 0.15s ease;
   min-height: 0;
+}
+
+.ache__choices[data-count="6"] .ache__choice,
+.ache__choices[data-count="9"] .ache__choice,
+.ache__choices[data-count="12"] .ache__choice {
+  border-radius: 20px;
+  padding: 8px;
+}
+
+.ache__choices[data-count="9"] .ache__choice,
+.ache__choices[data-count="12"] .ache__choice {
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
 .ache__choice:active {
@@ -179,14 +201,46 @@ body.mode-ache .hold-progress.is-active {
 .ache__illus {
   width: min(42vw, 180px);
   height: min(42vw, 180px);
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
   pointer-events: none;
 }
 
+.ache__choices[data-count="4"] .ache__illus,
+.ache__choices[data-count="4"] .ache__color-swatch,
+.ache__choices[data-count="4"] .ache__body-ball {
+  width: min(28vw, 120px);
+  height: min(28vw, 120px);
+}
+
+.ache__choices[data-count="6"] .ache__illus,
+.ache__choices[data-count="6"] .ache__color-swatch,
+.ache__choices[data-count="6"] .ache__body-ball {
+  width: min(24vw, 100px);
+  height: min(24vw, 100px);
+}
+
+.ache__choices[data-count="9"] .ache__illus,
+.ache__choices[data-count="9"] .ache__color-swatch,
+.ache__choices[data-count="9"] .ache__body-ball {
+  width: min(20vw, 80px);
+  height: min(20vw, 80px);
+}
+
+.ache__choices[data-count="12"] .ache__illus,
+.ache__choices[data-count="12"] .ache__color-swatch,
+.ache__choices[data-count="12"] .ache__body-ball {
+  width: min(16vw, 64px);
+  height: min(16vw, 64px);
+}
+
 .ache__body-ball {
   width: min(38vw, 160px);
   height: min(38vw, 160px);
+  max-width: 100%;
+  max-height: 100%;
   border-radius: 50%;
   background: #ffeb3b;
   box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.08);
@@ -195,6 +249,8 @@ body.mode-ache .hold-progress.is-active {
 .ache__color-swatch {
   width: min(42vw, 180px);
   height: min(42vw, 180px);
+  max-width: 100%;
+  max-height: 100%;
   border-radius: 50%;
   background: var(--swatch-fill, #888);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);

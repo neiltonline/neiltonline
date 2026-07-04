@@ -139,20 +139,41 @@
     return shuffle([target, ...distractors]);
   }
 
+  function poolsByKind(pool) {
+    const map = new Map();
+    pool.forEach((item) => {
+      if (!map.has(item.kind)) map.set(item.kind, []);
+      map.get(item.kind).push(item);
+    });
+    return map;
+  }
+
   function startRound() {
     stopTimer();
     missCount = 0;
     const config = deps.getConfig();
     const pool = buildPool(config);
-    const count = Math.min(Math.max(config.choiceCount || 2, 2), 3);
+    const count = C().normalizeChoiceCount(config.choiceCount);
 
     if (pool.length < count) {
-      choicesEl.innerHTML = `<p class="ache__empty">Escolha mais itens nas configurações.</p>`;
+      choicesEl.innerHTML = `<p class="ache__empty">Escolha mais itens nas configurações (mínimo ${count}).</p>`;
       return;
     }
 
-    const target = pool[Math.floor(Math.random() * pool.length)];
+    const byKind = poolsByKind(pool);
+    const eligible = [...byKind.values()].filter((items) => items.length >= count);
+    if (!eligible.length) {
+      choicesEl.innerHTML = `<p class="ache__empty">Ative pelo menos ${count} itens na mesma categoria.</p>`;
+      return;
+    }
+
+    const kindPool = eligible[Math.floor(Math.random() * eligible.length)];
+    const target = kindPool[Math.floor(Math.random() * kindPool.length)];
     const choices = homogeneousChoices(target, pool, count);
+    if (choices.length < count) {
+      choicesEl.innerHTML = `<p class="ache__empty">Ative mais itens desta categoria.</p>`;
+      return;
+    }
 
     round = { target, choices, pool };
     renderChoices(choices);
@@ -162,7 +183,12 @@
 
   function renderChoices(choices) {
     choicesEl.innerHTML = "";
-    choicesEl.className = `ache__choices ache__choices--${choices.length}`;
+    const { cols, rows } = C().gridFor(choices.length);
+    choicesEl.className = "ache__choices";
+    choicesEl.dataset.count = String(choices.length);
+    choicesEl.dataset.cols = String(cols);
+    choicesEl.style.setProperty("--grid-cols", String(cols));
+    choicesEl.style.setProperty("--grid-rows", String(rows));
     choices.forEach((item, i) => {
       const btn = document.createElement("button");
       btn.type = "button";
