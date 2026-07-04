@@ -66,17 +66,17 @@
   ];
 
   const COLORS = [
-    { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935" },
-    { id: "azul", name: "azul", label: "Azul", hex: "#1E88E5" },
-    { id: "amarelo", name: "amarelo", label: "Amarelo", hex: "#FDD835", text: "#333" },
-    { id: "verde", name: "verde", label: "Verde", hex: "#43A047" },
-    { id: "laranja", name: "laranja", label: "Laranja", hex: "#FB8C00" },
-    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA" },
-    { id: "rosa", name: "rosa", label: "Rosa", hex: "#EC407A" },
-    { id: "branco", name: "branco", label: "Branco", hex: "#F5F5F5", text: "#333" },
-    { id: "preto", name: "preto", label: "Preto", hex: "#212121" },
-    { id: "marrom", name: "marrom", label: "Marrom", hex: "#6D4C41" },
-    { id: "cinza", name: "cinza", label: "Cinza", hex: "#757575" },
+    { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935", image: "images/colors/vermelho.jpg", object: "Morango" },
+    { id: "azul", name: "azul", label: "Azul", hex: "#1E88E5", image: "images/colors/azul.png", object: "Bola" },
+    { id: "amarelo", name: "amarelo", label: "Amarelo", hex: "#FDD835", text: "#333", image: "images/colors/amarelo.jpg", object: "Banana" },
+    { id: "verde", name: "verde", label: "Verde", hex: "#43A047", image: "images/colors/verde.jpg", object: "Maçã" },
+    { id: "laranja", name: "laranja", label: "Laranja", hex: "#FB8C00", image: "images/colors/laranja.jpg", object: "Laranja" },
+    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA", image: "images/colors/roxo.jpg", object: "Uva" },
+    { id: "rosa", name: "rosa", label: "Rosa", hex: "#EC407A", image: "images/colors/rosa.jpg", object: "Flor" },
+    { id: "branco", name: "branco", label: "Branco", hex: "#E8EAF6", text: "#333", image: "images/colors/branco.jpg", object: "Nuvem" },
+    { id: "preto", name: "preto", label: "Preto", hex: "#212121", image: "images/colors/preto.jpg", object: "Gato" },
+    { id: "marrom", name: "marrom", label: "Marrom", hex: "#6D4C41", image: "images/colors/marrom.jpg", object: "Urso" },
+    { id: "cinza", name: "cinza", label: "Cinza", hex: "#757575", image: "images/colors/cinza.jpg", object: "Elefante" },
   ];
 
   const REELS_LETTER_BACKGROUNDS = [
@@ -199,6 +199,8 @@
           name: color.name,
           hex: color.hex,
           text: color.text,
+          image: color.image,
+          object: color.object,
         });
       }
     }
@@ -307,8 +309,9 @@
       label.className = "config__animal config__color";
       label.innerHTML = `
         <input type="checkbox" data-color="${color.id}" ${config.colors[color.id] ? "checked" : ""}>
+        <img src="${assetUrl(color.image)}" alt="" width="48" height="48" loading="lazy" class="config__color-thumb">
         <span class="config__swatch" style="background:${color.hex}"></span>
-        <span>${color.label}</span>
+        <span>${color.label} · ${color.object}</span>
       `;
       label.querySelector("input").addEventListener("change", (e) => {
         config.colors[color.id] = e.target.checked;

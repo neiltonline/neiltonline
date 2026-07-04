@@ -235,16 +235,28 @@
     slide.className = "reels__slide reels__slide--color";
     slide.style.background = item.hex;
 
-    const swatch = document.createElement("div");
-    swatch.className = "reels__color-fill";
-    swatch.style.background = item.hex;
+    const stage = document.createElement("div");
+    stage.className = "reels__color-stage";
+
+    const img = document.createElement("img");
+    img.className = "reels__color-object";
+    img.src = deps.assetUrl(item.image);
+    img.alt = item.object || item.label;
+    img.draggable = false;
+
+    const objectTag = document.createElement("div");
+    objectTag.className = "reels__color-object-name";
+    objectTag.textContent = item.object || "";
+    if (item.text) objectTag.style.color = item.text;
 
     const label = document.createElement("div");
     label.className = "reels__label";
     label.textContent = item.label;
     if (item.text) label.style.color = item.text;
 
-    slide.appendChild(swatch);
+    stage.appendChild(img);
+    stage.appendChild(objectTag);
+    slide.appendChild(stage);
     slide.appendChild(label);
     return slide;
   }
