@@ -34,6 +34,11 @@ TODDLER_WORDS = [
     "abraço", "beijo", "dormir",
 ]
 
+BODY_WORDS = [
+    "cabeça", "pé", "olhos", "orelha", "nariz", "boca",
+    "mão", "braço", "perna", "barriga", "cabelo", "dente",
+]
+
 
 async def generate(text, path, force=False):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -70,6 +75,11 @@ async def main():
     for word in TODDLER_WORDS:
         safe = word.replace(" ", "-")
         path = os.path.join(AUDIO_DIR, "words", f"{safe}.mp3")
+        tasks.append(generate(word, path, force=True))
+
+    for word in BODY_WORDS:
+        safe = word.replace(" ", "-")
+        path = os.path.join(AUDIO_DIR, "body", f"{safe}.mp3")
         tasks.append(generate(word, path, force=True))
 
     for i in range(0, len(tasks), 5):

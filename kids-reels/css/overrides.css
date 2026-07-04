@@ -123,6 +123,7 @@ body.mode-reels {
   background: #111 !important;
 }
 
-.reels__slide.is-media-hidden.reels__slide--color {
+.reels__slide.is-media-hidden.reels__slide--color,
+.reels__slide.is-media-hidden.reels__slide--body {
   background: var(--slide-color, #111) !important;
 }

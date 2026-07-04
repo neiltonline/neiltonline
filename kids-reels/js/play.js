@@ -9,9 +9,11 @@
   const animalListEl = document.getElementById("cfg-animal-list");
   const colorListEl = document.getElementById("cfg-color-list");
   const wordListEl = document.getElementById("cfg-word-list");
+  const bodyListEl = document.getElementById("cfg-body-list");
   const reelsAnimalsSection = document.getElementById("cfg-reels-animals-section");
   const reelsColorsSection = document.getElementById("cfg-reels-colors-section");
   const reelsWordsSection = document.getElementById("cfg-reels-words-section");
+  const reelsBodySection = document.getElementById("cfg-reels-body-section");
 
   const ANIMALS = [
     { id: "gato", name: "gato", label: "Gato" },
@@ -65,6 +67,21 @@
     { id: "dormir", name: "dormir", label: "Dormir" },
   ];
 
+  const BODY_PARTS = [
+    { id: "cabeca", name: "cabeça", label: "Cabeça", bg: "#FFE0B2", image: "images/body/cabeca.jpg" },
+    { id: "pe", name: "pé", label: "Pé", bg: "#E1BEE7", image: "images/body/pe.jpg" },
+    { id: "olhos", name: "olhos", label: "Olhos", bg: "#BBDEFB", image: "images/body/olhos.jpg" },
+    { id: "orelha", name: "orelha", label: "Orelha", bg: "#FFECB3", image: "images/body/orelha.jpg" },
+    { id: "nariz", name: "nariz", label: "Nariz", bg: "#FFCDD2", image: "images/body/nariz.jpg" },
+    { id: "boca", name: "boca", label: "Boca", bg: "#F8BBD0", image: "images/body/boca.jpg" },
+    { id: "mao", name: "mão", label: "Mão", bg: "#FFCCBC", image: "images/body/mao.jpg" },
+    { id: "braco", name: "braço", label: "Braço", bg: "#FFAB91", image: "images/body/braco.png" },
+    { id: "perna", name: "perna", label: "Perna", bg: "#C5CAE9", image: "images/body/perna.jpg" },
+    { id: "barriga", name: "barriga", label: "Barriga", bg: "#DCEDC8", image: "images/body/barriga.jpg" },
+    { id: "cabelo", name: "cabelo", label: "Cabelo", bg: "#D7CCC8", image: "images/body/cabelo.jpg" },
+    { id: "dente", name: "dente", label: "Dente", bg: "#E0F7FA", image: "images/body/dente.jpg" },
+  ];
+
   const COLORS = [
     { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935", image: "images/colors/vermelho.jpg", object: "Morango" },
     { id: "azul", name: "azul", label: "Azul", hex: "#1E88E5", image: "images/colors/azul.png", object: "Bola" },
@@ -115,14 +132,19 @@
     return Object.fromEntries(WORDS.map((w) => [w.id, true]));
   }
 
+  function defaultBodyToggles() {
+    return Object.fromEntries(BODY_PARTS.map((b) => [b.id, true]));
+  }
+
   function defaultReelsCategories() {
-    return { animals: true, colors: true, letters: true, words: true };
+    return { animals: true, colors: true, letters: true, words: true, body: true };
   }
 
   const DEFAULT_CONFIG = {
     animals: defaultAnimalToggles(),
     colors: defaultColorToggles(),
     words: defaultWordToggles(),
+    body: defaultBodyToggles(),
     reelsCategories: defaultReelsCategories(),
   };
 
@@ -137,6 +159,7 @@
         animals: { ...defaultAnimalToggles(), ...parsed.animals },
         colors: { ...defaultColorToggles(), ...parsed.colors },
         words: { ...defaultWordToggles(), ...parsed.words },
+        body: { ...defaultBodyToggles(), ...parsed.body },
         reelsCategories: { ...defaultReelsCategories(), ...parsed.reelsCategories },
       };
     } catch {
@@ -167,6 +190,10 @@
 
   function getEnabledWords() {
     return WORDS.filter((w) => config.words[w.id]);
+  }
+
+  function getEnabledBodyParts() {
+    return BODY_PARTS.filter((b) => config.body[b.id]);
   }
 
   function animalVideos(id) {
@@ -223,6 +250,19 @@
             src,
           });
         }
+      }
+    }
+
+    if (config.reelsCategories.body) {
+      for (const part of getEnabledBodyParts()) {
+        items.push({
+          type: "body",
+          id: part.id,
+          label: part.label,
+          name: part.name,
+          bg: part.bg,
+          image: part.image,
+        });
       }
     }
 
@@ -291,6 +331,10 @@
       playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), onEnd);
       return;
     }
+    if (item.type === "body") {
+      playAudio(assetUrl(`audio/body/${wordToFile(item.name)}.mp3`), onEnd);
+      return;
+    }
     onEnd?.();
   }
 
@@ -302,6 +346,26 @@
     reelsAnimalsSection.classList.toggle("is-disabled-section", !config.reelsCategories.animals);
     reelsColorsSection.classList.toggle("is-disabled-section", !config.reelsCategories.colors);
     reelsWordsSection.classList.toggle("is-disabled-section", !config.reelsCategories.words);
+    reelsBodySection.classList.toggle("is-disabled-section", !config.reelsCategories.body);
+  }
+
+  function buildBodyConfigList() {
+    bodyListEl.innerHTML = "";
+    BODY_PARTS.forEach((part) => {
+      const label = document.createElement("label");
+      label.className = "config__animal";
+      label.innerHTML = `
+        <input type="checkbox" data-body="${part.id}" ${config.body[part.id] ? "checked" : ""}>
+        <img src="${assetUrl(part.image)}" alt="" width="48" height="48" loading="lazy" class="config__color-thumb">
+        <span>${part.label}</span>
+      `;
+      label.querySelector("input").addEventListener("change", (e) => {
+        config.body[part.id] = e.target.checked;
+        saveConfig();
+        refreshReels();
+      });
+      bodyListEl.appendChild(label);
+    });
   }
 
   function buildColorConfigList() {
@@ -371,6 +435,7 @@
     document.getElementById("cfg-reels-colors").checked = config.reelsCategories.colors;
     document.getElementById("cfg-reels-letters").checked = config.reelsCategories.letters;
     document.getElementById("cfg-reels-words").checked = config.reelsCategories.words;
+    document.getElementById("cfg-reels-body").checked = config.reelsCategories.body;
     animalListEl.querySelectorAll("[data-animal]").forEach((input) => {
       input.checked = config.animals[input.dataset.animal];
     });
@@ -379,6 +444,9 @@
     });
     wordListEl.querySelectorAll("[data-word]").forEach((input) => {
       input.checked = config.words[input.dataset.word];
+    });
+    bodyListEl.querySelectorAll("[data-body]").forEach((input) => {
+      input.checked = config.body[input.dataset.body];
     });
     syncReelsConfigSections();
   }
@@ -442,7 +510,7 @@
     if (e.target === configPanel) closeConfig();
   });
 
-  ["animals", "colors", "letters", "words"].forEach((cat) => {
+  ["animals", "colors", "letters", "words", "body"].forEach((cat) => {
     document.getElementById(`cfg-reels-${cat}`).addEventListener("change", (e) => {
       config.reelsCategories[cat] = e.target.checked;
       saveConfig();
@@ -493,6 +561,20 @@
     refreshReels();
   });
 
+  document.getElementById("cfg-select-all-body").addEventListener("click", () => {
+    BODY_PARTS.forEach((b) => { config.body[b.id] = true; });
+    saveConfig();
+    syncConfigUI();
+    refreshReels();
+  });
+
+  document.getElementById("cfg-deselect-all-body").addEventListener("click", () => {
+    BODY_PARTS.forEach((b) => { config.body[b.id] = false; });
+    saveConfig();
+    syncConfigUI();
+    refreshReels();
+  });
+
   document.addEventListener("pointerdown", (e) => {
     if (configOpen) return;
     activePointers.add(e.pointerId);
@@ -534,6 +616,7 @@
     buildAnimalConfigList();
     buildColorConfigList();
     buildWordConfigList();
+    buildBodyConfigList();
     window.TecladinhoReels.activate();
   }
 

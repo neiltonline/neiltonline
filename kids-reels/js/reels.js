@@ -306,6 +306,31 @@
     return slide;
   }
 
+  function createBodySlide(item) {
+    const slide = document.createElement("section");
+    slide.className = "reels__slide reels__slide--body";
+    slide.style.background = item.bg;
+    slide.style.setProperty("--slide-color", item.bg);
+
+    const stage = document.createElement("div");
+    stage.className = "reels__color-stage";
+
+    const img = document.createElement("img");
+    img.className = "reels__color-object";
+    img.src = deps.assetUrl(item.image);
+    img.alt = item.label;
+    img.draggable = false;
+
+    const label = document.createElement("div");
+    label.className = "reels__label";
+    label.textContent = item.label;
+
+    stage.appendChild(img);
+    slide.appendChild(stage);
+    slide.appendChild(label);
+    return slide;
+  }
+
   function createLetterSlide(item) {
     const slide = document.createElement("section");
     slide.className = "reels__slide reels__slide--letter";
@@ -340,6 +365,8 @@
         if (index < 2) slideVideos(slide).forEach((v) => { v.preload = "auto"; });
       } else if (item.type === "color") {
         slide = createColorSlide(item);
+      } else if (item.type === "body") {
+        slide = createBodySlide(item);
       } else if (item.type === "letter") {
         slide = createLetterSlide(item);
       } else {
