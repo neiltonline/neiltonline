@@ -296,10 +296,23 @@
       currentAudio.onended = null;
       currentAudio = null;
     }
+
+    let finished = false;
     const audio = new Audio(src);
     currentAudio = audio;
-    if (onEnd) audio.addEventListener("ended", onEnd, { once: true });
-    audio.play().catch(() => onEnd?.());
+
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(safety);
+      if (currentAudio === audio) currentAudio = null;
+      onEnd?.();
+    };
+
+    audio.addEventListener("ended", done, { once: true });
+    audio.addEventListener("error", done, { once: true });
+    const safety = setTimeout(done, 3500);
+    audio.play().catch(done);
   }
 
   function unlockSpeech() {

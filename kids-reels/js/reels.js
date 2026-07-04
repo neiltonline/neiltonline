@@ -109,7 +109,15 @@
     }
   }
 
-  function beginSlideSequence(item, slide) {
+  function scheduleReveal(gen, slide, reveal, ms = 2200) {
+    setTimeout(() => {
+      if (gen !== speechGeneration) return;
+      if (slide?.classList.contains("is-media-hidden")) reveal();
+    }, ms);
+  }
+
+  function runAudioFirstSequence(item, slide) {
+    if (!item || !slide) return;
     const gen = ++speechGeneration;
     setSlideMediaVisible(slide, false);
 
@@ -118,19 +126,22 @@
       revealSlideMedia(slide);
     };
 
+    hideTapPrompt();
+    speakItem(item, reveal);
+    scheduleReveal(gen, slide, reveal);
+  }
+
+  function beginSlideSequence(item, slide) {
+    if (!item || !slide) return;
+
     if (!interactionPrimed) {
+      setSlideMediaVisible(slide, true);
+      if (slideVideos(slide).length) playVideosForSlide(slide, true);
       showTapPrompt();
       return;
     }
 
-    hideTapPrompt();
-    speakItem(item, reveal);
-
-    setTimeout(() => {
-      if (gen === speechGeneration && slide?.classList.contains("is-media-hidden")) {
-        reveal();
-      }
-    }, 5000);
+    runAudioFirstSequence(item, slide);
   }
 
   function onFirstInteraction() {
@@ -138,9 +149,10 @@
     interactionPrimed = true;
     hideTapPrompt();
     if (deps.unlockSpeech) deps.unlockSpeech();
+    unlockAudio();
     const item = feed[activeIndex];
     const slide = slides[activeIndex];
-    if (item && slide) beginSlideSequence(item, slide);
+    if (item && slide) runAudioFirstSequence(item, slide);
   }
 
   function slideVideos(slide) {
@@ -489,6 +501,12 @@
     root.addEventListener("pointercancel", onPointerUp);
     document.addEventListener("keydown", onKeyDown);
     window.addEventListener("resize", onResize);
+    document.addEventListener("touchend", onDocumentTap, { passive: true });
+    document.addEventListener("click", onDocumentTap);
+  }
+
+  function onDocumentTap() {
+    if (!interactionPrimed) onFirstInteraction();
   }
 
   function unmount() {
@@ -509,6 +527,8 @@
     root.removeEventListener("pointercancel", onPointerUp);
     document.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("resize", onResize);
+    document.removeEventListener("touchend", onDocumentTap);
+    document.removeEventListener("click", onDocumentTap);
   }
 
   window.TecladinhoReels = {
