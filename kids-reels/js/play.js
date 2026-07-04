@@ -3,7 +3,7 @@
   const CONFIG_KEY = "tecladinho-reels-config";
   const HOLD_MS = 2000;
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  const TW = () => window.TecladinhoTwemoji;
+  const ILLUS = () => window.TecladinhoIllus;
 
   const configPanel = document.getElementById("config-panel");
   const holdProgress = document.getElementById("hold-progress");
@@ -171,6 +171,7 @@
   }
 
   let config = loadConfig();
+  let variants = {};
   let currentAudio = null;
   let speechPrimed = false;
   let pendingSpeak = null;
@@ -189,7 +190,15 @@
   }
 
   function illus(type, id) {
-    return TW()?.[type]?.(id) || null;
+    return ILLUS()?.[type]?.(id) || null;
+  }
+
+  function animalSoundSrc(id) {
+    const sounds = variants[id]?.sounds;
+    if (sounds?.length) {
+      return assetUrl(sounds[Math.floor(Math.random() * sounds.length)]);
+    }
+    return assetUrl(`audio/sounds/${id}-1.mp3`);
   }
 
   function getEnabledAnimals() {
@@ -347,8 +356,8 @@
     }
   }
 
-  function playAudio(src, onEnd) {
-    stopSpeaking();
+  function playAudio(src, onEnd, { chain = false } = {}) {
+    if (!chain) stopSpeaking();
 
     let finished = false;
     let safety = null;
@@ -365,29 +374,42 @@
       onEnd?.();
     };
 
-    const queueRetry = () => {
-      if (safety) clearTimeout(safety);
-      pendingSpeak = () => playAudio(src, onEnd);
-    };
-
     audio.addEventListener("ended", done, { once: true });
     audio.addEventListener("error", () => {
-      if (!speechPrimed) {
-        queueRetry();
+      if (!speechPrimed && !chain) {
+        pendingSpeak = () => playAudio(src, onEnd, { chain });
         return;
       }
       done();
     }, { once: true });
 
     audio.play().then(() => {
+      pendingSpeak = null;
       safety = setTimeout(done, 6000);
     }).catch(() => {
-      if (!speechPrimed) {
-        queueRetry();
+      if (!speechPrimed && !chain) {
+        pendingSpeak = () => playAudio(src, onEnd, { chain });
         return;
       }
       done();
     });
+  }
+
+  function playAudioSequence(sources, onEnd) {
+    pendingSpeak = () => playAudioSequence(sources, onEnd);
+    let i = 0;
+    function next() {
+      if (i >= sources.length) {
+        pendingSpeak = null;
+        onEnd?.();
+        return;
+      }
+      const idx = i + 1;
+      const src = sources[i++];
+      playAudio(src, next, { chain: idx > 1 });
+    }
+    stopSpeaking();
+    next();
   }
 
   function unlockSpeech() {
@@ -404,32 +426,34 @@
     }
   }
 
-  function speakReelsItem(item, onEnd) {
+  function speakReelsItem(item) {
     if (item.type === "animal") {
-      playAudio(getAudioSrc(item.animalId, "animal"), onEnd);
+      playAudioSequence([
+        getAudioSrc(item.animalId, "animal"),
+        animalSoundSrc(item.animalId),
+      ]);
       return;
     }
     if (item.type === "color") {
-      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), onEnd);
+      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`));
       return;
     }
     if (item.type === "letter") {
       if (/[0-9]/.test(item.char)) {
-        playAudio(assetUrl(`audio/numbers/${wordToFile(NUMBER_NAMES[item.char])}.mp3`), onEnd);
+        playAudio(assetUrl(`audio/numbers/${wordToFile(NUMBER_NAMES[item.char])}.mp3`));
       } else {
-        playAudio(assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`), onEnd);
+        playAudio(assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`));
       }
       return;
     }
     if (item.type === "word") {
-      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), onEnd);
+      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`));
       return;
     }
     if (item.type === "body") {
-      playAudio(assetUrl(`audio/body/${wordToFile(item.name)}.mp3`), onEnd);
+      playAudio(assetUrl(`audio/body/${wordToFile(item.name)}.mp3`));
       return;
     }
-    onEnd?.();
   }
 
   function refreshReels() {
@@ -707,4 +731,17 @@
   }
 
   bootReels();
+  loadManifest();
+
+  async function loadManifest() {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 4000);
+      const res = await fetch(assetUrl("data/manifest.json"), { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (res.ok) variants = await res.json();
+    } catch {
+      /* optional */
+    }
+  }
 })();

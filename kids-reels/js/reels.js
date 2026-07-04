@@ -58,40 +58,16 @@
     if (deps.unlockSpeech) deps.unlockSpeech();
   }
 
-  function speakItem(item, onEnd) {
-    if (!item || !deps.speakItem) {
-      onEnd?.();
-      return;
-    }
-    deps.speakItem(item, onEnd);
-  }
-
-  function setSlideMediaHidden(slide, hidden) {
-    if (!slide) return;
-    slide.classList.toggle("is-media-hidden", hidden);
-    slide.classList.toggle("is-audio-pending", hidden);
-  }
-
-  function currentSlide() {
-    return slots[CURRENT_SLOT];
+  function speakItem(item) {
+    if (!item || !deps.speakItem) return;
+    deps.speakItem(item);
   }
 
   function onSlideActive() {
-    const item = feed[activeIndex];
-    const slide = currentSlide();
-    if (!item || !slide) return;
-
-    setSlideMediaHidden(slide, true);
-    speakItem(item, () => {
-      if (slots[CURRENT_SLOT] === slide) {
-        setSlideMediaHidden(slide, false);
-      }
-    });
-  }
-
-  function replayCurrentAudio() {
     stopSpeechNow();
-    onSlideActive();
+    const item = feed[activeIndex];
+    if (!item) return;
+    speakItem(item);
   }
 
   function buildIllusSlide(slot, item, typeClass) {
@@ -106,6 +82,7 @@
     img.src = item.illustration;
     img.alt = item.label;
     img.decoding = "async";
+    img.loading = "eager";
 
     stage.appendChild(img);
 
@@ -265,13 +242,8 @@
     const velocity = dy / Math.max(dt, 1);
     const fast = dt < SWIPE_MAX_MS;
 
-    if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS) {
-      if (currentSlide()?.classList.contains("is-audio-pending")) {
-        unlockSpeech();
-        replayCurrentAudio();
-        return;
-      }
-      if (handleTapZone(clientY)) return;
+    if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS && handleTapZone(clientY)) {
+      return;
     }
 
     if (dy < -SWIPE_THRESHOLD || velocity < -FLICK_VELOCITY || (fast && dy < -20)) {
@@ -299,10 +271,6 @@
     }
 
     unlockSpeech();
-
-    if (currentSlide()?.classList.contains("is-audio-pending")) {
-      replayCurrentAudio();
-    }
 
     dragging = true;
     pointerStartY = e.clientY;
