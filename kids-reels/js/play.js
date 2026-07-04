@@ -122,6 +122,14 @@
     { id: "preto", name: "preto", label: "Preto", hex: "#212121", shape: "triangle" },
     { id: "marrom", name: "marrom", label: "Marrom", hex: "#6D4C41", shape: "hexagon" },
     { id: "cinza", name: "cinza", label: "Cinza", hex: "#757575", shape: "diamond" },
+    { id: "anil", name: "anil", label: "Anil", hex: "#3949AB", shape: "pentagon" },
+    { id: "violeta", name: "violeta", label: "Violeta", hex: "#7E57C2", shape: "circle" },
+    { id: "turquesa", name: "turquesa", label: "Turquesa", hex: "#00ACC1", shape: "square" },
+    { id: "lilas", name: "lilás", label: "Lilás", hex: "#BA68C8", shape: "triangle" },
+    { id: "dourado", name: "dourado", label: "Dourado", hex: "#FFB300", text: "#333", shape: "hexagon" },
+    { id: "bege", name: "bege", label: "Bege", hex: "#D7CCC8", text: "#333", shape: "diamond", outline: true },
+    { id: "coral", name: "coral", label: "Coral", hex: "#FF7043", shape: "pentagon" },
+    { id: "vinho", name: "vinho", label: "Vinho", hex: "#AD1457", shape: "circle" },
   ];
 
   const REELS_LETTER_BACKGROUNDS = [
