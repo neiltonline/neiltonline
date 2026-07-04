@@ -116,6 +116,30 @@
     slot.append(stage, label);
   }
 
+  function buildColorSlide(slot, item) {
+    slot.classList.add("reels__slide--color");
+    slot.style.background = item.bg || "#ECEFF1";
+
+    const stage = document.createElement("div");
+    stage.className = "reels__shape-wrap";
+
+    const shape = document.createElement("div");
+    const shapeName = item.shape || "circle";
+    const outline = item.outline ? " reels__shape--outline" : "";
+    shape.className = `reels__shape reels__shape--${shapeName}${outline}`;
+    shape.style.setProperty("--shape-fill", item.hex || "#888");
+    shape.setAttribute("aria-hidden", "true");
+
+    stage.appendChild(shape);
+
+    const label = document.createElement("div");
+    label.className = "reels__label";
+    label.textContent = item.label;
+    if (item.text) label.style.color = item.text;
+
+    slot.append(stage, label);
+  }
+
   function fillSlot(slot, feedIndex) {
     if (slot.dataset.feedIndex === String(feedIndex)) return;
     const item = feed[feedIndex];
@@ -137,7 +161,7 @@
     }
 
     if (item.type === "color") {
-      buildIllusSlide(slot, item, "reels__slide--color");
+      buildColorSlide(slot, item);
       return;
     }
 

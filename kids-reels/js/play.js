@@ -84,17 +84,17 @@
   ];
 
   const COLORS = [
-    { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935", object: "Morango" },
-    { id: "azul", name: "azul", label: "Azul", hex: "#1E88E5", object: "Bola" },
-    { id: "amarelo", name: "amarelo", label: "Amarelo", hex: "#FDD835", text: "#333", object: "Banana" },
-    { id: "verde", name: "verde", label: "Verde", hex: "#43A047", object: "Maçã" },
-    { id: "laranja", name: "laranja", label: "Laranja", hex: "#FB8C00", object: "Laranja" },
-    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA", object: "Uva" },
-    { id: "rosa", name: "rosa", label: "Rosa", hex: "#EC407A", object: "Flor" },
-    { id: "branco", name: "branco", label: "Branco", hex: "#E8EAF6", text: "#333", object: "Nuvem" },
-    { id: "preto", name: "preto", label: "Preto", hex: "#212121", object: "Gato" },
-    { id: "marrom", name: "marrom", label: "Marrom", hex: "#6D4C41", object: "Urso" },
-    { id: "cinza", name: "cinza", label: "Cinza", hex: "#757575", object: "Elefante" },
+    { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935", shape: "circle" },
+    { id: "azul", name: "azul", label: "Azul", hex: "#1E88E5", shape: "square" },
+    { id: "amarelo", name: "amarelo", label: "Amarelo", hex: "#FDD835", text: "#333", shape: "triangle" },
+    { id: "verde", name: "verde", label: "Verde", hex: "#43A047", shape: "hexagon" },
+    { id: "laranja", name: "laranja", label: "Laranja", hex: "#FB8C00", shape: "diamond" },
+    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA", shape: "star" },
+    { id: "rosa", name: "rosa", label: "Rosa", hex: "#EC407A", shape: "circle" },
+    { id: "branco", name: "branco", label: "Branco", hex: "#FFFFFF", text: "#333", shape: "square", outline: true },
+    { id: "preto", name: "preto", label: "Preto", hex: "#212121", shape: "triangle" },
+    { id: "marrom", name: "marrom", label: "Marrom", hex: "#6D4C41", shape: "hexagon" },
+    { id: "cinza", name: "cinza", label: "Cinza", hex: "#757575", shape: "diamond" },
   ];
 
   const REELS_LETTER_BACKGROUNDS = [
@@ -220,14 +220,23 @@
 
   let feedResetGuard = false;
 
+  function shuffleInPlace(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
   function buildReelsFeed() {
-    const items = [];
+    const blocks = [];
 
     if (config.reelsCategories.animals) {
+      const animalItems = [];
       getEnabledAnimals().forEach((animal, i) => {
         const illustration = illus("animal", animal.id);
         if (!illustration) return;
-        items.push({
+        animalItems.push({
           type: "animal",
           animalId: animal.id,
           label: animal.label,
@@ -235,37 +244,30 @@
           bg: ANIMAL_BACKGROUNDS[i % ANIMAL_BACKGROUNDS.length],
         });
       });
+      if (animalItems.length) blocks.push(shuffleInPlace(animalItems));
     }
 
     if (config.reelsCategories.colors) {
-      for (const color of getEnabledColors()) {
-        const illustration = illus("color", color.id);
-        if (!illustration) continue;
-        items.push({
-          type: "color",
-          id: color.id,
-          label: color.label,
-          name: color.name,
-          hex: color.hex,
-          text: color.text,
-          illustration,
-          object: color.object,
-        });
-      }
-    }
-
-    if (config.reelsCategories.letters) {
-      LETTERS.split("").forEach((char, i) => {
-        const palette = REELS_LETTER_BACKGROUNDS[i % REELS_LETTER_BACKGROUNDS.length];
-        items.push({ type: "letter", char, bg: palette.bg, fg: palette.fg });
-      });
+      const colorItems = getEnabledColors().map((color) => ({
+        type: "color",
+        id: color.id,
+        label: color.label,
+        name: color.name,
+        hex: color.hex,
+        text: color.text,
+        shape: color.shape,
+        outline: color.outline,
+        bg: "#ECEFF1",
+      }));
+      if (colorItems.length) blocks.push(shuffleInPlace(colorItems));
     }
 
     if (config.reelsCategories.words) {
+      const wordItems = [];
       getEnabledWords().forEach((word, i) => {
         const illustration = illus("word", word.id);
         if (!illustration) return;
-        items.push({
+        wordItems.push({
           type: "word",
           wordId: word.id,
           label: word.label,
@@ -274,13 +276,15 @@
           bg: WORD_BACKGROUNDS[i % WORD_BACKGROUNDS.length],
         });
       });
+      if (wordItems.length) blocks.push(shuffleInPlace(wordItems));
     }
 
     if (config.reelsCategories.body) {
+      const bodyItems = [];
       for (const part of getEnabledBodyParts()) {
         const illustration = illus("body", part.id);
         if (!illustration) continue;
-        items.push({
+        bodyItems.push({
           type: "body",
           id: part.id,
           label: part.label,
@@ -289,12 +293,19 @@
           illustration,
         });
       }
+      if (bodyItems.length) blocks.push(shuffleInPlace(bodyItems));
     }
 
-    for (let i = items.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [items[i], items[j]] = [items[j], items[i]];
+    if (config.reelsCategories.letters) {
+      const letterItems = LETTERS.split("").map((char, i) => {
+        const palette = REELS_LETTER_BACKGROUNDS[i % REELS_LETTER_BACKGROUNDS.length];
+        return { type: "letter", char, bg: palette.bg, fg: palette.fg };
+      });
+      if (letterItems.length) blocks.push(shuffleInPlace(letterItems));
     }
+
+    shuffleInPlace(blocks);
+    const items = blocks.flat();
 
     if (items.length === 0) {
       if (!feedResetGuard) {
@@ -308,8 +319,6 @@
         return buildReelsFeed();
       }
       for (const color of COLORS) {
-        const illustration = illus("color", color.id);
-        if (!illustration) continue;
         items.push({
           type: "color",
           id: color.id,
@@ -317,8 +326,9 @@
           name: color.name,
           hex: color.hex,
           text: color.text,
-          illustration,
-          object: color.object,
+          shape: color.shape,
+          outline: color.outline,
+          bg: "#ECEFF1",
         });
       }
       LETTERS.split("").forEach((char, i) => {
@@ -396,6 +406,11 @@
       const probe = new Image();
       probe.src = item.illustration;
     }
+  }
+
+  function colorThumbHtml(color) {
+    const outline = color.outline ? " config__shape-preview--outline" : "";
+    return `<span class="config__shape-preview config__shape-preview--${color.shape}${outline}" style="--shape-fill:${color.hex}"></span>`;
   }
 
   function playAudio(src, onEnd, { chain = false } = {}) {
@@ -557,9 +572,8 @@
       label.className = "config__animal config__color";
       label.innerHTML = `
         <input type="checkbox" data-color="${color.id}" ${config.colors[color.id] ? "checked" : ""}>
-        ${thumbHtml("color", color.id, color.label.charAt(0))}
-        <span class="config__swatch" style="background:${color.hex}"></span>
-        <span>${color.label} · ${color.object}</span>
+        ${colorThumbHtml(color)}
+        <span>${color.label}</span>
       `;
       label.querySelector("input").addEventListener("change", (e) => {
         config.colors[color.id] = e.target.checked;

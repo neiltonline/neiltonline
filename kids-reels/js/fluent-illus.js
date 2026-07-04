@@ -75,20 +75,6 @@
     dente: f3("Tooth", "tooth"),
   };
 
-  const COLORS = {
-    vermelho: f3("Strawberry", "strawberry"),
-    azul: f3("Blue circle", "blue_circle"),
-    amarelo: f3("Banana", "banana"),
-    verde: f3("Green apple", "green_apple"),
-    laranja: f3("Tangerine", "tangerine"),
-    roxo: f3("Grapes", "grapes"),
-    rosa: f3("Cherry blossom", "cherry_blossom"),
-    branco: f3("Cloud", "cloud"),
-    preto: f3("Black cat", "black_cat"),
-    marrom: f3("Bear", "bear"),
-    cinza: f3("Elephant", "elephant"),
-  };
-
   const FALLBACK_NOTO = {
     animal: {
       gato: "1f408", cachorro: "1f415", vaca: "1f404", porco: "1f437",
@@ -104,7 +90,6 @@
     animal: (id) => ANIMALS[id] || null,
     word: (id) => WORDS[id] || null,
     body: (id) => BODY[id] || null,
-    color: (id) => COLORS[id] || null,
     fallback(type, id) {
       const code = FALLBACK_NOTO[type]?.[id];
       return code ? noto(code) : null;
