@@ -277,18 +277,21 @@
       [items[i], items[j]] = [items[j], items[i]];
     }
 
-    if (items.length === 0 && !feedResetGuard) {
-      feedResetGuard = true;
-      config.reelsCategories = defaultReelsCategories();
-      config.colors = defaultColorToggles();
-      config.words = defaultWordToggles();
-      config.body = defaultBodyToggles();
-      config.animals = defaultAnimalToggles();
-      saveConfig();
-      feedResetGuard = false;
-      return buildReelsFeed();
+    if (items.length === 0) {
+      if (!feedResetGuard) {
+        feedResetGuard = true;
+        config.reelsCategories = defaultReelsCategories();
+        config.colors = defaultColorToggles();
+        config.words = defaultWordToggles();
+        config.body = defaultBodyToggles();
+        config.animals = defaultAnimalToggles();
+        saveConfig();
+        return buildReelsFeed();
+      }
+      return items;
     }
 
+    feedResetGuard = false;
     return items;
   }
 
