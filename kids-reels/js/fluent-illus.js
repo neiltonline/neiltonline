@@ -33,6 +33,11 @@
     coruja: f3("Owl", "owl"),
     lobo: f3("Wolf", "wolf"),
     macaco: f3("Monkey", "monkey"),
+    coelho: f3("Rabbit", "rabbit"),
+    peixe: f3("Fish", "fish"),
+    pinguim: f3("Penguin", "penguin"),
+    tartaruga: f3("Turtle", "turtle"),
+    borboleta: f3("Butterfly", "butterfly"),
   };
 
   const WORDS = {
@@ -62,16 +67,11 @@
     dormir: f3("Sleeping face", "sleeping_face"),
     balao: f3("Balloon", "balloon"),
     bolha: f3("Bubbles", "bubbles"),
-    borboleta: f3("Butterfly", "butterfly"),
     carrossel: f3("Carousel horse", "carousel_horse"),
-    coelho: f3("Rabbit", "rabbit"),
     coracao: f3("Red heart", "red_heart"),
     festa: f3("Party popper", "party_popper"),
     musica: f3("Musical notes", "musical_notes"),
-    peixe: f3("Fish", "fish"),
-    pinguim: f3("Penguin", "penguin"),
     pirulito: f3("Lollipop", "lollipop"),
-    tartaruga: f3("Turtle", "turtle"),
     arcoiris: f3("Rainbow", "rainbow"),
   };
 
@@ -97,6 +97,8 @@
       urso: "1f43b", raposa: "1f98a", abelha: "1f41d", papagaio: "1f99c",
       jacare: "1f40a", cavalo: "1f434", ovelha: "1f411", coruja: "1f989",
       lobo: "1f43a", macaco: "1f412",
+      coelho: "1f430", peixe: "1f41f", pinguim: "1f427",
+      tartaruga: "1f422", borboleta: "1f98b",
     },
   };
 

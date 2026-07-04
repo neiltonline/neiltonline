@@ -72,6 +72,13 @@
       "videos/words/brincar-2.mp4"
     ]
   },
+  "borboleta": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/borboleta.mp3"
+    ],
+    "videos": []
+  },
   "cachorro": {
     "images": [
       "images/animals/cachorro-1.jpg",
@@ -101,6 +108,13 @@
       "videos/animals/cavalo-1.mp4",
       "videos/animals/cavalo-2.mp4"
     ]
+  },
+  "coelho": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/coelho.mp3"
+    ],
+    "videos": []
   },
   "coruja": {
     "images": [
@@ -301,6 +315,13 @@
       "videos/animals/ovelha-2.mp4"
     ]
   },
+  "pinguim": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/pinguim.mp3"
+    ],
+    "videos": []
+  },
   "pao": {
     "images": [],
     "sounds": [],
@@ -342,6 +363,13 @@
       "videos/animals/pato-2.mp4",
       "videos/animals/pato-3.mp4"
     ]
+  },
+  "peixe": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/peixe.mp3"
+    ],
+    "videos": []
   },
   "pinto": {
     "images": [
@@ -407,6 +435,13 @@
     "videos": [
       "videos/words/sol-1.mp4"
     ]
+  },
+  "tartaruga": {
+    "images": [],
+    "sounds": [
+      "audio/sounds/tartaruga.mp3"
+    ],
+    "videos": []
   },
   "tigre": {
     "images": [
