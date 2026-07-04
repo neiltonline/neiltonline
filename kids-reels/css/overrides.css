@@ -207,6 +207,10 @@ body.mode-reels .hold-progress {
   );
 }
 
+.reels__shape--pentagon {
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
 .reels__shape--outline {
   background: #fff !important;
   border: 6px solid var(--shape-fill, #888);
@@ -275,6 +279,10 @@ body.mode-reels .hold-progress {
     2% 35%,
     39% 35%
   );
+}
+
+.config__shape-preview--pentagon {
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
 }
 
 .config__shape-preview--outline {

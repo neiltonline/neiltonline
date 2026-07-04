@@ -57,6 +57,8 @@
     { id: "morango", name: "morango", label: "Morango" },
     { id: "banana", name: "banana", label: "Banana" },
     { id: "maca", name: "maçã", label: "Maçã" },
+    { id: "melancia", name: "melancia", label: "Melancia" },
+    { id: "laranja", name: "laranja", label: "Laranja" },
     { id: "agua", name: "água", label: "Água" },
     { id: "leite", name: "leite", label: "Leite" },
     { id: "estrela", name: "estrela", label: "Estrela" },
@@ -89,7 +91,7 @@
     { id: "amarelo", name: "amarelo", label: "Amarelo", hex: "#FDD835", text: "#333", shape: "triangle" },
     { id: "verde", name: "verde", label: "Verde", hex: "#43A047", shape: "hexagon" },
     { id: "laranja", name: "laranja", label: "Laranja", hex: "#FB8C00", shape: "diamond" },
-    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA", shape: "star" },
+    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA", shape: "pentagon" },
     { id: "rosa", name: "rosa", label: "Rosa", hex: "#EC407A", shape: "circle" },
     { id: "branco", name: "branco", label: "Branco", hex: "#FFFFFF", text: "#333", shape: "square", outline: true },
     { id: "preto", name: "preto", label: "Preto", hex: "#212121", shape: "triangle" },
@@ -250,6 +252,7 @@
           illustration,
           bg: ANIMAL_BACKGROUNDS[i % ANIMAL_BACKGROUNDS.length],
           wordAudio: animalWordSrc(animal.id),
+          soundAudio: pickAnimalSound(animal.id),
         });
       });
       if (animalItems.length) blocks.push(shuffleInPlace(animalItems));
@@ -396,19 +399,45 @@
   }
 
   function warmAudio(src) {
-    if (!src || audioPool.has(src)) return;
+    if (!src || audioPool.has(src)) return audioPool.get(src);
     const audio = new Audio();
     audio.preload = "auto";
     audio.src = src;
     audio.load();
     audioPool.set(src, audio);
+    return audio;
+  }
+
+  function preloadAudio(src) {
+    if (!src) return Promise.resolve(null);
+    const audio = warmAudio(src);
+    if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      return Promise.resolve(audio);
+    }
+    return new Promise((resolve) => {
+      let settled = false;
+      const done = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        audio.removeEventListener("canplaythrough", done);
+        audio.removeEventListener("canplay", done);
+        audio.removeEventListener("loadeddata", done);
+        resolve(audio);
+      };
+      const timer = setTimeout(done, 1000);
+      audio.addEventListener("canplaythrough", done, { once: true });
+      audio.addEventListener("canplay", done, { once: true });
+      audio.addEventListener("loadeddata", done, { once: true });
+      audio.load();
+    });
   }
 
   function audioSourcesForItem(item) {
     if (!item) return [];
     if (item.type === "animal") {
       const word = item.wordAudio || animalWordSrc(item.animalId);
-      const sound = pickAnimalSound(item.animalId);
+      const sound = item.soundAudio || pickAnimalSound(item.animalId);
       return [word, sound].filter(Boolean);
     }
     if (item.type === "color") {
@@ -431,16 +460,11 @@
 
   function warmItem(item) {
     if (!item) return;
-    audioSourcesForItem(item).forEach(warmAudio);
+    audioSourcesForItem(item).forEach((src) => preloadAudio(src));
     if (item.illustration) {
       const probe = new Image();
       probe.src = item.illustration;
     }
-  }
-
-  function colorThumbHtml(color) {
-    const outline = color.outline ? " config__shape-preview--outline" : "";
-    return `<span class="config__shape-preview config__shape-preview--${color.shape}${outline}" style="--shape-fill:${color.hex}"></span>`;
   }
 
   function playAudio(src, onEnd, { chain = false, gen } = {}) {
@@ -451,68 +475,75 @@
     const token = gen ?? speakGeneration;
     if (!chain) abortCurrentAudio();
 
-    warmAudio(src);
-    const audio = audioPool.get(src);
-    audio.currentTime = 0;
-    currentAudio = audio;
-
+    const audio = warmAudio(src);
     let ended = false;
+    let fallbackTimer = null;
+
     const finish = (invokeEnd = true) => {
       if (ended || token !== speakGeneration) return;
       ended = true;
+      if (fallbackTimer) clearTimeout(fallbackTimer);
       audio.onended = null;
       audio.onerror = null;
       if (currentAudio === audio) currentAudio = null;
       if (invokeEnd) onEnd?.();
     };
 
-    audio.onended = () => finish(true);
-    audio.onerror = () => finish(true);
-
-    const attempt = () => {
-      if (token !== speakGeneration) return;
+    const startPlay = () => {
+      if (ended || token !== speakGeneration) return;
+      audio.currentTime = 0;
+      currentAudio = audio;
+      audio.onended = () => finish(true);
+      audio.onerror = () => finish(true);
       const playPromise = audio.play();
       if (!playPromise) return;
       playPromise.then(() => {
         if (token === speakGeneration) pendingSpeak = null;
       }).catch(() => {
-        if (!speechPrimed || token !== speakGeneration) return;
-        finish(true);
+        if (token !== speakGeneration) return;
+        ended = true;
+        if (fallbackTimer) clearTimeout(fallbackTimer);
+        audio.onended = null;
+        audio.onerror = null;
+        if (currentAudio === audio) currentAudio = null;
       });
     };
 
-    if (audio.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
-      attempt();
+    const tryStart = () => {
+      if (ended || token !== speakGeneration) return;
+      if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        if (fallbackTimer) clearTimeout(fallbackTimer);
+        startPlay();
+      }
+    };
+
+    if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      tryStart();
     } else {
-      audio.addEventListener("canplaythrough", attempt, { once: true });
+      fallbackTimer = setTimeout(startPlay, 1200);
+      audio.addEventListener("canplaythrough", tryStart, { once: true });
+      audio.addEventListener("canplay", tryStart, { once: true });
+      audio.addEventListener("loadeddata", tryStart, { once: true });
+      audio.load();
     }
   }
 
-  function playAudioSequence(sources, onEnd, gen) {
-    const token = gen ?? speakGeneration;
-    const list = sources.filter(Boolean);
-    if (!list.length) {
-      if (token === speakGeneration) pendingSpeak = null;
-      onEnd?.();
-      return;
-    }
-    pendingSpeak = () => {
-      if (token === speakGeneration) playAudioSequence(list, onEnd, token);
-    };
-    list.forEach(warmAudio);
-    let i = 0;
-    const next = () => {
-      if (token !== speakGeneration) return;
-      if (i >= list.length) {
-        pendingSpeak = null;
-        onEnd?.();
-        return;
-      }
-      const chain = i > 0;
-      playAudio(list[i++], next, { chain, gen: token });
-    };
-    abortCurrentAudio();
-    next();
+  function speakAnimalItem(item, gen) {
+    const wordSrc = item.wordAudio || animalWordSrc(item.animalId);
+    const soundSrc = item.soundAudio || pickAnimalSound(item.animalId);
+
+    preloadAudio(wordSrc);
+    preloadAudio(soundSrc);
+
+    playAudio(wordSrc, () => {
+      if (gen !== speakGeneration) return;
+      playAudio(soundSrc, null, { chain: true, gen });
+    }, { gen });
+  }
+
+  function colorThumbHtml(color) {
+    const outline = color.outline ? " config__shape-preview--outline" : "";
+    return `<span class="config__shape-preview config__shape-preview--${color.shape}${outline}" style="--shape-fill:${color.hex}"></span>`;
   }
 
   function unlockSpeech() {
@@ -535,9 +566,7 @@
     warmItem(item);
 
     if (item.type === "animal") {
-      const wordSrc = item.wordAudio || animalWordSrc(item.animalId);
-      const soundSrc = pickAnimalSound(item.animalId);
-      playAudioSequence([wordSrc, soundSrc], null, gen);
+      speakAnimalItem(item, gen);
       return;
     }
     if (item.type === "color") {

@@ -379,6 +379,7 @@
       stopSpeechNow();
       return;
     }
+    spokeIndex = -1;
     onSlideActive();
   }
 

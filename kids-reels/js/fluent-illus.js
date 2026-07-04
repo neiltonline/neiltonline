@@ -43,12 +43,14 @@
     vovo: noto("1f475"),
     avo: noto("1f474"),
     bola: f3("Soccer ball", "soccer_ball"),
-    brincar: f3("Teddy bear", "teddy_bear"),
+    brincar: f3("Playground slide", "playground_slide"),
     lua: f3("Crescent moon", "crescent_moon"),
     sol: f3("Sun", "sun"),
     morango: f3("Strawberry", "strawberry"),
     banana: f3("Banana", "banana"),
     maca: f3("Red apple", "red_apple"),
+    melancia: f3("Watermelon", "watermelon"),
+    laranja: f3("Tangerine", "tangerine"),
     agua: f3("Droplet", "droplet"),
     leite: f3("Glass of milk", "glass_of_milk"),
     estrela: f3("Star", "star"),
@@ -61,7 +63,7 @@
   };
 
   const BODY = {
-    cabeca: f3("Bust in silhouette", "bust_in_silhouette"),
+    cabeca: f3("Smiling face with smiling eyes", "smiling_face_with_smiling_eyes"),
     pe: noto("1f9b6"),
     olhos: f3("Eyes", "eyes"),
     orelha: noto("1f442"),
@@ -70,7 +72,7 @@
     mao: noto("1f91a"),
     braco: noto("1f4aa"),
     perna: noto("1f9b5"),
-    barriga: f3("Anatomical heart", "anatomical_heart"),
+    barriga: f3("Yellow circle", "yellow_circle"),
     cabelo: noto("1f487"),
     dente: f3("Tooth", "tooth"),
   };
