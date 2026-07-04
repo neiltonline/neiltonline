@@ -127,3 +127,32 @@ body.mode-reels {
 .reels__slide.is-media-hidden.reels__slide--body {
   background: var(--slide-color, #111) !important;
 }
+
+.reels__tap-prompt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  display: none;
+  padding: 18px 28px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: 700;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.reels__tap-prompt.is-visible {
+  display: block;
+  animation: reelsTapPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes reelsTapPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.04); }
+}

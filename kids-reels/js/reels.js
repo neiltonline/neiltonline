@@ -10,7 +10,8 @@
   let activeIndex = 0;
   let feed = [];
   let audioUnlocked = false;
-  let speechUnlocked = false;
+  let interactionPrimed = false;
+  let tapPromptEl = null;
 
   let deps = {};
   let pointerStartY = 0;
@@ -20,15 +21,34 @@
   let activePointers = new Set();
   let speechGeneration = 0;
 
-  const videoCache = new Map();
-  const prefetchingVideos = new Set();
+  const prefetchedUrls = new Set();
   const prefetchedImages = new Set();
 
-  function revokeVideoCache() {
-    videoCache.forEach((blobUrl) => URL.revokeObjectURL(blobUrl));
-    videoCache.clear();
-    prefetchingVideos.clear();
+  function clearPrefetchState() {
+    prefetchedUrls.clear();
     prefetchedImages.clear();
+  }
+
+  function ensureTapPrompt() {
+    if (tapPromptEl || !root) return;
+    tapPromptEl = document.createElement("button");
+    tapPromptEl.type = "button";
+    tapPromptEl.className = "reels__tap-prompt";
+    tapPromptEl.textContent = "Toque para começar ✨";
+    tapPromptEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      onFirstInteraction();
+    });
+    root.appendChild(tapPromptEl);
+  }
+
+  function showTapPrompt() {
+    ensureTapPrompt();
+    tapPromptEl?.classList.add("is-visible");
+  }
+
+  function hideTapPrompt() {
+    tapPromptEl?.classList.remove("is-visible");
   }
 
   function prefetchImage(url) {
@@ -40,47 +60,14 @@
   }
 
   function prefetchVideo(url) {
-    if (!url || videoCache.has(url) || prefetchingVideos.has(url)) return Promise.resolve();
-    prefetchingVideos.add(url);
-    return fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.blob();
-      })
-      .then((blob) => {
-        if (!videoCache.has(url)) {
-          videoCache.set(url, URL.createObjectURL(blob));
-        }
-      })
-      .catch(() => {})
-      .finally(() => {
-        prefetchingVideos.delete(url);
-      });
-  }
-
-  function resolvedVideoSrc(url) {
-    return videoCache.get(url) || url;
-  }
-
-  function applyVideoSrc(video, url) {
-    video.dataset.originalSrc = url;
-    video.src = resolvedVideoSrc(url);
-    if (!videoCache.has(url)) {
-      prefetchVideo(url).then(() => {
-        const blobUrl = videoCache.get(url);
-        if (blobUrl && video.dataset.originalSrc === url) {
-          video.src = blobUrl;
-        }
-      });
-    }
+    if (!url || prefetchedUrls.has(url)) return;
+    prefetchedUrls.add(url);
+    fetch(url).catch(() => {});
   }
 
   function warmSlideVideos(slide) {
     slideVideos(slide).forEach((video) => {
       video.preload = "auto";
-      if (video.readyState < 2) {
-        video.load();
-      }
     });
   }
 
@@ -90,10 +77,8 @@
     if (!item) return;
     if (item.src && deps.assetUrl) {
       const url = deps.assetUrl(item.src);
-      prefetchVideo(url).then(() => {
-        const slide = slides[index];
-        if (slide) warmSlideVideos(slide);
-      });
+      prefetchVideo(url);
+      warmSlideVideos(slides[index]);
     }
     if (item.image && deps.assetUrl) {
       prefetchImage(deps.assetUrl(item.image));
@@ -128,14 +113,34 @@
     const gen = ++speechGeneration;
     setSlideMediaVisible(slide, false);
 
-    const afterSpeech = () => {
+    const reveal = () => {
       if (gen !== speechGeneration) return;
       revealSlideMedia(slide);
     };
 
-    if (speechUnlocked) {
-      speakItem(item, afterSpeech);
+    if (!interactionPrimed) {
+      showTapPrompt();
+      return;
     }
+
+    hideTapPrompt();
+    speakItem(item, reveal);
+
+    setTimeout(() => {
+      if (gen === speechGeneration && slide?.classList.contains("is-media-hidden")) {
+        reveal();
+      }
+    }, 5000);
+  }
+
+  function onFirstInteraction() {
+    if (interactionPrimed) return;
+    interactionPrimed = true;
+    hideTapPrompt();
+    if (deps.unlockSpeech) deps.unlockSpeech();
+    const item = feed[activeIndex];
+    const slide = slides[activeIndex];
+    if (item && slide) beginSlideSequence(item, slide);
   }
 
   function slideVideos(slide) {
@@ -180,19 +185,7 @@
   }
 
   function unlockSpeech() {
-    if (speechUnlocked) return;
-    speechUnlocked = true;
-    if (deps.unlockSpeech) deps.unlockSpeech();
-    const item = feed[activeIndex];
-    const slide = slides[activeIndex];
-    if (!item || !slide) return;
-
-    const gen = ++speechGeneration;
-    const afterSpeech = () => {
-      if (gen !== speechGeneration) return;
-      revealSlideMedia(slide);
-    };
-    speakItem(item, afterSpeech);
+    onFirstInteraction();
   }
 
   function unlockAudio() {
@@ -329,13 +322,13 @@
 
   function makeVideoElement(src, className) {
     const video = document.createElement("video");
+    video.src = src;
     video.className = className;
     video.playsInline = true;
     video.preload = "auto";
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
     video.muted = true;
-    applyVideoSrc(video, src);
     bindVideoLoop(video);
     return video;
   }
@@ -486,7 +479,8 @@
     root.setAttribute("aria-hidden", "false");
     document.body.classList.add("mode-reels");
     audioUnlocked = false;
-    speechUnlocked = false;
+    interactionPrimed = false;
+    ensureTapPrompt();
     render();
 
     root.addEventListener("pointerdown", onPointerDown);
@@ -499,14 +493,15 @@
 
   function unmount() {
     pauseAllVideos();
-    revokeVideoCache();
+    clearPrefetchState();
+    hideTapPrompt();
     root.classList.add("is-hidden");
     root.setAttribute("aria-hidden", "true");
     document.body.classList.remove("mode-reels");
     track.style.transform = "";
     track.innerHTML = "";
     audioUnlocked = false;
-    speechUnlocked = false;
+    interactionPrimed = false;
 
     root.removeEventListener("pointerdown", onPointerDown);
     root.removeEventListener("pointermove", onPointerMove);
@@ -535,9 +530,9 @@
 
     refresh() {
       pauseAllVideos();
-      revokeVideoCache();
+      clearPrefetchState();
       audioUnlocked = false;
-      speechUnlocked = false;
+      interactionPrimed = false;
       render();
     },
   };
