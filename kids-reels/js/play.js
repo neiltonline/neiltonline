@@ -198,16 +198,12 @@
 
   function animalVideos(id) {
     const list = variants[id]?.videos;
-    const fromManifest = list?.filter((p) => p.startsWith("videos/animals/")) || [];
-    if (fromManifest.length) return fromManifest;
-    return [`videos/animals/${id}-1.mp4`, `videos/animals/${id}.mp4`];
+    return list?.filter((p) => p.startsWith("videos/animals/")) || [];
   }
 
   function wordVideos(id) {
     const list = variants[id]?.videos;
-    const fromManifest = list?.filter((p) => p.startsWith("videos/words/")) || [];
-    if (fromManifest.length) return fromManifest;
-    return [`videos/words/${id}-1.mp4`];
+    return list?.filter((p) => p.startsWith("videos/words/")) || [];
   }
 
   let feedResetGuard = false;
