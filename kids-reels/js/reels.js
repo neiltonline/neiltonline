@@ -193,7 +193,7 @@
 
   function setTrackTransform(slotIndex, animate) {
     track.classList.toggle("is-animating", animate);
-    track.style.transform = translateY(slotIndex);
+    track.style.transform = translateX(slotIndex);
   }
 
   let transitionCb = null;
@@ -242,31 +242,40 @@
     return h > 0 ? h : window.innerHeight;
   }
 
+  function slideWidth() {
+    const w = Math.round(root?.clientWidth || window.innerWidth);
+    return w > 0 ? w : window.innerWidth;
+  }
+
   function updateViewportMetrics() {
     const h = slideHeight();
+    const w = slideWidth();
     document.documentElement.style.setProperty("--reels-h", `${h}px`);
+    document.documentElement.style.setProperty("--reels-w", `${w}px`);
     if (root) root.style.height = `${h}px`;
     slots.forEach((slide) => {
       slide.style.height = `${h}px`;
       slide.style.minHeight = `${h}px`;
+      slide.style.width = `${w}px`;
+      slide.style.minWidth = `${w}px`;
     });
     if (track && feed.length) {
-      track.style.transform = translateY(CURRENT_SLOT);
+      track.style.transform = translateX(CURRENT_SLOT);
     }
   }
 
-  function translateY(slotIndex, offsetPx = 0) {
-    return `translate3d(0, ${-(slotIndex * slideHeight()) + offsetPx}px, 0)`;
+  function translateX(slotIndex, offsetPx = 0) {
+    return `translate3d(${-(slotIndex * slideWidth()) + offsetPx}px, 0, 0)`;
   }
 
-  function handleTapZone(clientY) {
-    if (!IS_COARSE) return false;
-    const h = slideHeight();
-    if (clientY < h * 0.2) {
+  function handleTapZone(clientX) {
+    const w = slideWidth();
+    const edge = w * 0.22;
+    if (clientX < edge) {
       goPrev();
       return true;
     }
-    if (clientY > h * 0.8) {
+    if (clientX > w - edge) {
       goNext();
       return true;
     }
@@ -278,18 +287,18 @@
     const dx = clientX - pointerStartX;
     const dt = Date.now() - pointerStartTime;
     const dist = Math.hypot(dx, dy);
-    const velocity = dy / Math.max(dt, 1);
+    const velocity = dx / Math.max(dt, 1);
     const fast = dt < SWIPE_MAX_MS;
 
-    if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS && handleTapZone(clientY)) {
+    if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS && handleTapZone(clientX)) {
       return;
     }
 
-    if (dy < -SWIPE_THRESHOLD || velocity < -FLICK_VELOCITY || (fast && dy < -20)) {
+    if (dx < -SWIPE_THRESHOLD || velocity < -FLICK_VELOCITY || (fast && dx < -20)) {
       goNext();
       return;
     }
-    if (dy > SWIPE_THRESHOLD || velocity > FLICK_VELOCITY || (fast && dy > 20)) {
+    if (dx > SWIPE_THRESHOLD || velocity > FLICK_VELOCITY || (fast && dx > 20)) {
       goPrev();
       return;
     }
@@ -325,12 +334,12 @@
     if (!dragging) return;
     const dy = e.clientY - pointerStartY;
     const dx = e.clientX - pointerStartX;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) {
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12) {
       dragging = false;
       track.classList.remove("is-dragging");
       return;
     }
-    track.style.transform = translateY(CURRENT_SLOT, dy);
+    track.style.transform = translateX(CURRENT_SLOT, dx);
   }
 
   function onPointerUp(e) {
@@ -353,12 +362,12 @@
   }
 
   function onKeyDown(e) {
-    if (e.key === "ArrowDown" || e.key === "PageDown") {
+    if (e.key === "ArrowRight" || e.key === "PageDown") {
       e.preventDefault();
       unlockSpeech();
       goNext();
     }
-    if (e.key === "ArrowUp" || e.key === "PageUp") {
+    if (e.key === "ArrowLeft" || e.key === "PageUp") {
       e.preventDefault();
       unlockSpeech();
       goPrev();
