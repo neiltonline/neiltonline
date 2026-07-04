@@ -326,6 +326,15 @@
     return assetUrl(path);
   }
 
+  function stopSpeaking() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio.onended = null;
+      currentAudio = null;
+    }
+  }
+
   function playAudio(src, onEnd) {
     if (currentAudio) {
       currentAudio.pause();
@@ -654,6 +663,7 @@
         assetUrl,
         speakItem: speakReelsItem,
         unlockSpeech,
+        stopSpeak: stopSpeaking,
       });
       buildAnimalConfigList();
       buildColorConfigList();

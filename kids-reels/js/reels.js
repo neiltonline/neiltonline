@@ -5,17 +5,18 @@
   const FLICK_VELOCITY = 0.28;
   const TAP_MAX_MS = 280;
   const TAP_MAX_MOVE = 14;
-  const PREFETCH_AHEAD = IS_COARSE ? 1 : 3;
-  const PREFETCH_BEHIND = IS_COARSE ? 0 : 1;
   const SWIPED_KEY = "tecladinho-reels-swiped";
+  const CURRENT_SLOT = 1;
 
   let root = null;
   let track = null;
   let swipeHint = null;
-  let slides = [];
+  let slots = [];
   let activeIndex = 0;
   let feed = [];
   let audioUnlocked = false;
+  let speakTimer = null;
+  let transitionCb = null;
 
   let deps = {};
   let pointerStartY = 0;
@@ -24,12 +25,10 @@
   let dragging = false;
   let activePointers = new Set();
 
-  const prefetchedUrls = new Set();
-  const prefetchedImages = new Set();
-
-  function clearPrefetchState() {
-    prefetchedUrls.clear();
-    prefetchedImages.clear();
+  function wrapIndex(index) {
+    const n = feed.length;
+    if (!n) return 0;
+    return ((index % n) + n) % n;
   }
 
   function markSwiped() {
@@ -54,49 +53,10 @@
     }
   }
 
-  function prefetchImage(url) {
-    if (!url || prefetchedImages.has(url)) return;
-    prefetchedImages.add(url);
-    const img = new Image();
-    img.decoding = "async";
-    img.src = url;
-  }
-
-  function prefetchVideo(url) {
-    if (!url || prefetchedUrls.has(url)) return;
-    prefetchedUrls.add(url);
-    fetch(url).catch(() => {});
-  }
-
-  function warmSlideVideos(slide) {
-    slideVideos(slide).forEach((video) => {
-      video.preload = IS_COARSE ? "metadata" : "auto";
-    });
-  }
-
-  function prefetchFeedIndex(index) {
-    if (index < 0 || index >= feed.length) return;
-    const item = feed[index];
-    if (!item) return;
-    if (item.src && deps.assetUrl) {
-      const url = deps.assetUrl(item.src);
-      prefetchVideo(url);
-      warmSlideVideos(slides[index]);
-    }
-    if (item.image && deps.assetUrl) {
-      prefetchImage(deps.assetUrl(item.image));
-    }
-  }
-
-  function prefetchAround(index) {
-    if (!feed.length) return;
-    prefetchFeedIndex(index);
-    for (let i = 1; i <= PREFETCH_AHEAD; i++) {
-      prefetchFeedIndex((index + i) % feed.length);
-    }
-    for (let i = 1; i <= PREFETCH_BEHIND; i++) {
-      prefetchFeedIndex((index - i + feed.length) % feed.length);
-    }
+  function stopSpeechNow() {
+    clearTimeout(speakTimer);
+    speakTimer = null;
+    if (deps.stopSpeak) deps.stopSpeak();
   }
 
   function slideVideos(slide) {
@@ -104,7 +64,7 @@
   }
 
   function pauseAllVideos() {
-    slides.forEach((slide) => {
+    slots.forEach((slide) => {
       slideVideos(slide).forEach((video) => video.pause());
     });
   }
@@ -114,35 +74,19 @@
     deps.speakItem(item, () => {});
   }
 
+  function scheduleSpeak(item) {
+    clearTimeout(speakTimer);
+    stopSpeechNow();
+    speakTimer = setTimeout(() => {
+      speakTimer = null;
+      speakItem(item);
+    }, IS_COARSE ? 160 : 50);
+  }
+
   function playVideosForSlide(slide, muted) {
     slideVideos(slide).forEach((video) => {
-      if (IS_COARSE && video.classList.contains("reels__video-bg")) {
-        video.pause();
-        return;
-      }
       video.muted = muted;
       video.loop = true;
-      const play = () => video.play().catch(() => {});
-      if (video.readyState >= 2) {
-        play();
-      } else {
-        video.addEventListener("canplay", play, { once: true });
-        video.load();
-      }
-    });
-  }
-
-  function resetVideosForSlide(slide) {
-    slideVideos(slide).forEach((video) => {
-      video.pause();
-      video.currentTime = 0;
-    });
-  }
-
-  function bindVideoLoop(video) {
-    video.loop = true;
-    video.addEventListener("ended", () => {
-      video.currentTime = 0;
       video.play().catch(() => {});
     });
   }
@@ -154,30 +98,154 @@
   function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
-    const slide = slides[activeIndex];
-    if (slide) playVideosForSlide(slide, false);
+    playVideosForSlide(slots[CURRENT_SLOT], false);
   }
 
-  function playSlide(index) {
-    if (index < 0 || index >= slides.length) return;
-    activeIndex = index;
-    const item = feed[index];
-    const slide = slides[index];
+  function onSlideActive() {
+    pauseAllVideos();
+    const item = feed[activeIndex];
+    const slide = slots[CURRENT_SLOT];
+    if (!item || !slide) return;
+    slideVideos(slide).forEach((v) => { v.currentTime = 0; });
+    playVideosForSlide(slide, !audioUnlocked);
+    scheduleSpeak(item);
+  }
 
-    slides.forEach((s, i) => {
-      resetVideosForSlide(s);
-      s.classList.toggle("is-active", i === index);
-    });
+  function fillSlot(slot, feedIndex) {
+    if (slot.dataset.feedIndex === String(feedIndex)) return;
+    const item = feed[feedIndex];
+    if (!item) return;
 
-    if (slide) {
-      slideVideos(slide).forEach((video) => {
-        video.currentTime = 0;
-      });
-      playVideosForSlide(slide, !audioUnlocked);
-      speakItem(item);
+    slot.dataset.feedIndex = String(feedIndex);
+    slot.className = "reels__slide";
+    slot.replaceChildren();
+    slot.style.background = "";
+
+    if (item.type === "animal" || item.type === "word") {
+      slot.classList.add(item.type === "animal" ? "reels__slide--animal" : "reels__slide--word");
+      const stage = document.createElement("div");
+      stage.className = "reels__video-stage";
+      const video = document.createElement("video");
+      video.src = deps.assetUrl(item.src);
+      video.className = "reels__video-fg";
+      video.playsInline = true;
+      video.setAttribute("playsinline", "");
+      video.setAttribute("webkit-playsinline", "");
+      video.preload = "metadata";
+      video.muted = true;
+      video.loop = true;
+      stage.appendChild(video);
+      const label = document.createElement("div");
+      label.className = "reels__label";
+      label.textContent = item.label;
+      slot.append(stage, label);
+      return;
     }
 
-    prefetchAround(index);
+    if (item.type === "color") {
+      slot.classList.add("reels__slide--color");
+      slot.style.background = item.hex;
+      const stage = document.createElement("div");
+      stage.className = "reels__color-stage";
+      const img = document.createElement("img");
+      img.className = "reels__color-object";
+      img.src = deps.assetUrl(item.image);
+      img.alt = item.object || item.label;
+      img.decoding = "async";
+      const objectTag = document.createElement("div");
+      objectTag.className = "reels__color-object-name";
+      objectTag.textContent = item.object || "";
+      if (item.text) objectTag.style.color = item.text;
+      const label = document.createElement("div");
+      label.className = "reels__label";
+      label.textContent = item.label;
+      if (item.text) label.style.color = item.text;
+      stage.append(img, objectTag);
+      slot.append(stage, label);
+      return;
+    }
+
+    if (item.type === "body") {
+      slot.classList.add("reels__slide--body");
+      slot.style.background = item.bg;
+      const stage = document.createElement("div");
+      stage.className = "reels__color-stage";
+      const img = document.createElement("img");
+      img.className = "reels__color-object";
+      img.src = deps.assetUrl(item.image);
+      img.alt = item.label;
+      img.decoding = "async";
+      const label = document.createElement("div");
+      label.className = "reels__label";
+      label.textContent = item.label;
+      stage.append(img);
+      slot.append(stage, label);
+      return;
+    }
+
+    if (item.type === "letter") {
+      slot.classList.add("reels__slide--letter");
+      slot.style.background = item.bg;
+      const glyph = document.createElement("div");
+      glyph.className = "reels__letter";
+      glyph.textContent = item.char;
+      glyph.style.color = item.fg;
+      slot.appendChild(glyph);
+    }
+  }
+
+  function syncWindow() {
+    if (!feed.length || slots.length !== 3) return;
+    fillSlot(slots[0], wrapIndex(activeIndex - 1));
+    fillSlot(slots[1], wrapIndex(activeIndex));
+    fillSlot(slots[2], wrapIndex(activeIndex + 1));
+    slots.forEach((slot, i) => slot.classList.toggle("is-active", i === CURRENT_SLOT));
+    setTrackTransform(CURRENT_SLOT, false);
+  }
+
+  function setTrackTransform(slotIndex, animate) {
+    track.classList.toggle("is-animating", animate);
+    track.style.transform = translateY(slotIndex);
+  }
+
+  function onTransitionEnd(e) {
+    if (e.target !== track || e.propertyName !== "transform") return;
+    track.classList.remove("is-animating");
+    if (!transitionCb) return;
+    const cb = transitionCb;
+    transitionCb = null;
+    cb();
+  }
+
+  function goNext() {
+    if (feed.length < 2) return;
+    markSwiped();
+    stopSpeechNow();
+    pauseAllVideos();
+    setTrackTransform(2, true);
+    transitionCb = () => {
+      activeIndex = wrapIndex(activeIndex + 1);
+      syncWindow();
+      onSlideActive();
+    };
+  }
+
+  function goPrev() {
+    if (feed.length < 2) return;
+    markSwiped();
+    stopSpeechNow();
+    pauseAllVideos();
+    setTrackTransform(0, true);
+    transitionCb = () => {
+      activeIndex = wrapIndex(activeIndex - 1);
+      syncWindow();
+      onSlideActive();
+    };
+  }
+
+  function snapCurrent() {
+    setTrackTransform(CURRENT_SLOT, true);
+    transitionCb = () => onSlideActive();
   }
 
   function slideHeight() {
@@ -190,40 +258,17 @@
     const h = slideHeight();
     document.documentElement.style.setProperty("--reels-h", `${h}px`);
     if (root) root.style.height = `${h}px`;
-    syncSlideHeights();
-    if (track && slides.length) {
-      track.style.transform = translateY(activeIndex);
-    }
-  }
-
-  function translateY(index, offsetPx = 0) {
-    return `translate3d(0, ${-index * slideHeight() + offsetPx}px, 0)`;
-  }
-
-  function syncSlideHeights() {
-    const h = slideHeight();
-    slides.forEach((slide) => {
+    slots.forEach((slide) => {
       slide.style.height = `${h}px`;
       slide.style.minHeight = `${h}px`;
     });
+    if (track && feed.length) {
+      track.style.transform = translateY(CURRENT_SLOT);
+    }
   }
 
-  function goTo(index) {
-    const next = Math.max(0, Math.min(slides.length - 1, index));
-    playSlide(next);
-    track.style.transform = translateY(next);
-  }
-
-  function goNext() {
-    markSwiped();
-    if (activeIndex < slides.length - 1) goTo(activeIndex + 1);
-    else goTo(0);
-  }
-
-  function goPrev() {
-    markSwiped();
-    if (activeIndex > 0) goTo(activeIndex - 1);
-    else goTo(slides.length - 1);
+  function translateY(slotIndex, offsetPx = 0) {
+    return `translate3d(0, ${-(slotIndex * slideHeight()) + offsetPx}px, 0)`;
   }
 
   function handleTapZone(clientY) {
@@ -263,10 +308,8 @@
       goPrev();
       return;
     }
-    goTo(activeIndex);
+    snapCurrent();
   }
-
-  let pointerClientX = 0;
 
   function onPointerDown(e) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -274,23 +317,25 @@
     if (activePointers.size > 1) {
       dragging = false;
       track.classList.remove("is-dragging");
-      goTo(activeIndex);
+      transitionCb = null;
+      setTrackTransform(CURRENT_SLOT, false);
       return;
     }
+    stopSpeechNow();
     unlockSpeech();
     unlockAudio();
     dragging = true;
     pointerStartY = e.clientY;
     pointerStartX = e.clientX;
-    pointerClientX = e.clientX;
     pointerStartTime = Date.now();
     track.classList.add("is-dragging");
+    track.classList.remove("is-animating");
+    transitionCb = null;
     root.setPointerCapture(e.pointerId);
   }
 
   function onPointerMove(e) {
     if (!dragging) return;
-    pointerClientX = e.clientX;
     const dy = e.clientY - pointerStartY;
     const dx = e.clientX - pointerStartX;
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) {
@@ -298,7 +343,7 @@
       track.classList.remove("is-dragging");
       return;
     }
-    track.style.transform = translateY(activeIndex, dy);
+    track.style.transform = translateY(CURRENT_SLOT, dy);
   }
 
   function onPointerUp(e) {
@@ -332,164 +377,34 @@
   function onVisibilityChange() {
     if (document.visibilityState !== "visible") {
       pauseAllVideos();
+      stopSpeechNow();
       return;
     }
-    const slide = slides[activeIndex];
-    if (slide) playVideosForSlide(slide, !audioUnlocked);
-  }
-
-  function makeVideoElement(src, className) {
-    const video = document.createElement("video");
-    video.src = src;
-    video.className = className;
-    video.playsInline = true;
-    video.preload = IS_COARSE ? "metadata" : "auto";
-    video.setAttribute("playsinline", "");
-    video.setAttribute("webkit-playsinline", "");
-    video.setAttribute("disablepictureinpicture", "");
-    video.muted = true;
-    bindVideoLoop(video);
-    return video;
-  }
-
-  function createVideoSlide(item, slideClass) {
-    const slide = document.createElement("section");
-    slide.className = `reels__slide ${slideClass}`;
-
-    const stage = document.createElement("div");
-    stage.className = "reels__video-stage";
-
-    const src = deps.assetUrl(item.src);
-    stage.appendChild(makeVideoElement(src, "reels__video-bg"));
-    stage.appendChild(makeVideoElement(src, "reels__video-fg"));
-
-    const label = document.createElement("div");
-    label.className = "reels__label";
-    label.textContent = item.label;
-
-    slide.appendChild(stage);
-    slide.appendChild(label);
-    return slide;
-  }
-
-  function createAnimalSlide(item) {
-    return createVideoSlide(item, "reels__slide--animal");
-  }
-
-  function createWordSlide(item) {
-    return createVideoSlide(item, "reels__slide--word");
-  }
-
-  function createColorSlide(item) {
-    const slide = document.createElement("section");
-    slide.className = "reels__slide reels__slide--color";
-    slide.style.background = item.hex;
-    slide.style.setProperty("--slide-color", item.hex);
-
-    const stage = document.createElement("div");
-    stage.className = "reels__color-stage";
-
-    const img = document.createElement("img");
-    img.className = "reels__color-object";
-    img.src = deps.assetUrl(item.image);
-    img.alt = item.object || item.label;
-    img.draggable = false;
-    img.loading = "eager";
-    img.decoding = "async";
-
-    const objectTag = document.createElement("div");
-    objectTag.className = "reels__color-object-name";
-    objectTag.textContent = item.object || "";
-    if (item.text) objectTag.style.color = item.text;
-
-    const label = document.createElement("div");
-    label.className = "reels__label";
-    label.textContent = item.label;
-    if (item.text) label.style.color = item.text;
-
-    stage.appendChild(img);
-    stage.appendChild(objectTag);
-    slide.appendChild(stage);
-    slide.appendChild(label);
-    return slide;
-  }
-
-  function createBodySlide(item) {
-    const slide = document.createElement("section");
-    slide.className = "reels__slide reels__slide--body";
-    slide.style.background = item.bg;
-    slide.style.setProperty("--slide-color", item.bg);
-
-    const stage = document.createElement("div");
-    stage.className = "reels__color-stage";
-
-    const img = document.createElement("img");
-    img.className = "reels__color-object";
-    img.src = deps.assetUrl(item.image);
-    img.alt = item.label;
-    img.draggable = false;
-    img.loading = "eager";
-    img.decoding = "async";
-
-    const label = document.createElement("div");
-    label.className = "reels__label";
-    label.textContent = item.label;
-
-    stage.appendChild(img);
-    slide.appendChild(stage);
-    slide.appendChild(label);
-    return slide;
-  }
-
-  function createLetterSlide(item) {
-    const slide = document.createElement("section");
-    slide.className = "reels__slide reels__slide--letter";
-    slide.style.background = item.bg;
-
-    const glyph = document.createElement("div");
-    glyph.className = "reels__letter";
-    glyph.textContent = item.char;
-    glyph.style.color = item.fg;
-
-    slide.appendChild(glyph);
-    return slide;
+    onSlideActive();
   }
 
   function render() {
-    track.innerHTML = "";
-    slides = [];
     feed = deps.buildFeed ? deps.buildFeed() : [];
 
     if (feed.length === 0) {
       track.innerHTML = "<p class=\"reels__empty\">Nada para mostrar. Segure dois dedos por 2s para abrir configurações.</p>";
+      slots = [];
       return;
     }
 
-    feed.forEach((item, index) => {
-      let slide;
-      if (item.type === "animal") {
-        slide = createAnimalSlide(item);
-      } else if (item.type === "word") {
-        slide = createWordSlide(item);
-      } else if (item.type === "color") {
-        slide = createColorSlide(item);
-      } else if (item.type === "body") {
-        slide = createBodySlide(item);
-      } else if (item.type === "letter") {
-        slide = createLetterSlide(item);
-      } else {
-        return;
-      }
-      slide.dataset.index = String(index);
-      track.appendChild(slide);
-      slides.push(slide);
-    });
+    track.innerHTML = "";
+    slots = [];
+    for (let i = 0; i < 3; i++) {
+      const slot = document.createElement("section");
+      slot.className = "reels__slide";
+      track.appendChild(slot);
+      slots.push(slot);
+    }
 
-    track.style.transform = translateY(0);
     activeIndex = 0;
     updateViewportMetrics();
-    prefetchAround(0);
-    playSlide(0);
+    syncWindow();
+    onSlideActive();
   }
 
   function onResize() {
@@ -511,6 +426,7 @@
     root.addEventListener("pointerup", onPointerUp);
     root.addEventListener("pointercancel", onPointerUp);
     root.addEventListener("touchmove", onTouchMove, { passive: false });
+    track.addEventListener("transitionend", onTransitionEnd);
     document.addEventListener("keydown", onKeyDown);
     window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", onResize);
@@ -520,13 +436,14 @@
   }
 
   function unmount() {
+    stopSpeechNow();
     pauseAllVideos();
-    clearPrefetchState();
     root.classList.add("is-hidden");
     root.setAttribute("aria-hidden", "true");
     document.body.classList.remove("mode-reels");
     track.style.transform = "";
     track.innerHTML = "";
+    slots = [];
     audioUnlocked = false;
 
     root.removeEventListener("pointerdown", onPointerDown);
@@ -534,6 +451,7 @@
     root.removeEventListener("pointerup", onPointerUp);
     root.removeEventListener("pointercancel", onPointerUp);
     root.removeEventListener("touchmove", onTouchMove);
+    track.removeEventListener("transitionend", onTransitionEnd);
     document.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("resize", onResize);
     window.removeEventListener("orientationchange", onResize);
@@ -560,8 +478,8 @@
     },
 
     refresh() {
+      stopSpeechNow();
       pauseAllVideos();
-      clearPrefetchState();
       audioUnlocked = false;
       render();
     },
