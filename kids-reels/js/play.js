@@ -198,13 +198,19 @@
 
   function animalVideos(id) {
     const list = variants[id]?.videos;
-    return list?.filter((p) => p.startsWith("videos/animals/")) || [];
+    const fromManifest = list?.filter((p) => p.startsWith("videos/animals/")) || [];
+    if (fromManifest.length) return fromManifest;
+    return [`videos/animals/${id}-1.mp4`, `videos/animals/${id}.mp4`];
   }
 
   function wordVideos(id) {
     const list = variants[id]?.videos;
-    return list?.filter((p) => p.startsWith("videos/words/")) || [];
+    const fromManifest = list?.filter((p) => p.startsWith("videos/words/")) || [];
+    if (fromManifest.length) return fromManifest;
+    return [`videos/words/${id}-1.mp4`];
   }
+
+  let feedResetGuard = false;
 
   function buildReelsFeed() {
     const items = [];
@@ -269,6 +275,18 @@
     for (let i = items.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [items[i], items[j]] = [items[j], items[i]];
+    }
+
+    if (items.length === 0 && !feedResetGuard) {
+      feedResetGuard = true;
+      config.reelsCategories = defaultReelsCategories();
+      config.colors = defaultColorToggles();
+      config.words = defaultWordToggles();
+      config.body = defaultBodyToggles();
+      config.animals = defaultAnimalToggles();
+      saveConfig();
+      feedResetGuard = false;
+      return buildReelsFeed();
     }
 
     return items;
@@ -611,13 +629,6 @@
   }, { passive: true });
 
   async function init() {
-    try {
-      const res = await fetch(assetUrl("data/manifest.json"));
-      if (res.ok) variants = await res.json();
-    } catch {
-      /* manifest optional */
-    }
-
     window.TecladinhoReels.init({
       root: document.getElementById("reels"),
       buildFeed: buildReelsFeed,
@@ -631,6 +642,26 @@
     buildWordConfigList();
     buildBodyConfigList();
     window.TecladinhoReels.activate();
+
+    document.getElementById("reels-boot-btn")?.addEventListener("click", () => {
+      unlockSpeech();
+      document.getElementById("reels-boot")?.classList.add("is-hidden");
+    });
+
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 4000);
+      const res = await fetch(assetUrl("data/manifest.json"), { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (res.ok) {
+        variants = await res.json();
+        buildAnimalConfigList();
+        buildWordConfigList();
+        refreshReels();
+      }
+    } catch {
+      /* manifest optional */
+    }
   }
 
   init();

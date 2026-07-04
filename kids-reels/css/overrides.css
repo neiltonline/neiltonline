@@ -1,5 +1,10 @@
 /* Reels-specific overrides (shared base in ../kids/css/style.css) */
 
+.reels__track {
+  display: flex;
+  flex-direction: column;
+}
+
 .reels__video-stage {
   position: absolute;
   inset: 0;
@@ -101,64 +106,38 @@ body.mode-reels {
   background: #fff;
 }
 
-/* Audio first: hide video/illustration until speech finishes */
-.reels__slide.is-media-hidden .reels__video-stage,
-.reels__slide.is-media-hidden .reels__color-stage,
-.reels__slide.is-media-hidden .reels__letter,
-.reels__slide.is-media-hidden .reels__label {
-  opacity: 0;
-  visibility: hidden;
-  transform: scale(0.96);
-}
-
-.reels__video-stage,
-.reels__color-stage,
-.reels__letter,
-.reels__slide .reels__label {
-  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease;
-}
-
-.reels__slide.is-media-hidden.reels__slide--animal,
-.reels__slide.is-media-hidden.reels__slide--word {
-  background: #111 !important;
-}
-
-.reels__slide.is-media-hidden.reels__slide--color,
-.reels__slide.is-media-hidden.reels__slide--body {
-  background: var(--slide-color, #111) !important;
-}
-
-.reels__track {
-  display: flex;
-  flex-direction: column;
-}
-
-.reels__tap-prompt {
+.reels__boot {
   position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 100;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+}
+
+.reels__boot.is-hidden {
   display: none;
+}
+
+.reels__boot-btn {
   padding: 20px 32px;
   border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.98);
+  background: #fff;
   color: #222;
   font-size: clamp(20px, 5.5vw, 28px);
   font-weight: 800;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
   cursor: pointer;
-  pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
 }
 
-.reels__tap-prompt.is-visible {
-  display: block;
-  animation: reelsTapPulse 1.6s ease-in-out infinite;
-}
-
-@keyframes reelsTapPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.04); }
+.reels__empty {
+  color: #fff;
+  font-size: clamp(16px, 4.5vw, 20px);
+  line-height: 1.5;
+  text-align: center;
+  padding: 40px 24px;
 }

@@ -10,8 +10,6 @@
   let activeIndex = 0;
   let feed = [];
   let audioUnlocked = false;
-  let interactionPrimed = false;
-  let tapPromptEl = null;
 
   let deps = {};
   let pointerStartY = 0;
@@ -19,7 +17,6 @@
   let pointerStartTime = 0;
   let dragging = false;
   let activePointers = new Set();
-  let speechGeneration = 0;
 
   const prefetchedUrls = new Set();
   const prefetchedImages = new Set();
@@ -27,28 +24,6 @@
   function clearPrefetchState() {
     prefetchedUrls.clear();
     prefetchedImages.clear();
-  }
-
-  function ensureTapPrompt() {
-    if (tapPromptEl || !root) return;
-    tapPromptEl = document.createElement("button");
-    tapPromptEl.type = "button";
-    tapPromptEl.className = "reels__tap-prompt";
-    tapPromptEl.textContent = "Toque para começar ✨";
-    tapPromptEl.addEventListener("click", (e) => {
-      e.stopPropagation();
-      onFirstInteraction();
-    });
-    root.appendChild(tapPromptEl);
-  }
-
-  function showTapPrompt() {
-    ensureTapPrompt();
-    tapPromptEl?.classList.add("is-visible");
-  }
-
-  function hideTapPrompt() {
-    tapPromptEl?.classList.remove("is-visible");
   }
 
   function prefetchImage(url) {
@@ -96,65 +71,6 @@
     }
   }
 
-  function setSlideMediaVisible(slide, visible) {
-    if (!slide) return;
-    slide.classList.toggle("is-media-hidden", !visible);
-  }
-
-  function revealSlideMedia(slide) {
-    if (!slide) return;
-    setSlideMediaVisible(slide, true);
-    if (slideVideos(slide).length) {
-      playVideosForSlide(slide, !audioUnlocked);
-    }
-  }
-
-  function scheduleReveal(gen, slide, reveal, ms = 2200) {
-    setTimeout(() => {
-      if (gen !== speechGeneration) return;
-      if (slide?.classList.contains("is-media-hidden")) reveal();
-    }, ms);
-  }
-
-  function runAudioFirstSequence(item, slide) {
-    if (!item || !slide) return;
-    const gen = ++speechGeneration;
-    setSlideMediaVisible(slide, false);
-
-    const reveal = () => {
-      if (gen !== speechGeneration) return;
-      revealSlideMedia(slide);
-    };
-
-    hideTapPrompt();
-    speakItem(item, reveal);
-    scheduleReveal(gen, slide, reveal);
-  }
-
-  function beginSlideSequence(item, slide) {
-    if (!item || !slide) return;
-
-    if (!interactionPrimed) {
-      setSlideMediaVisible(slide, true);
-      if (slideVideos(slide).length) playVideosForSlide(slide, true);
-      showTapPrompt();
-      return;
-    }
-
-    runAudioFirstSequence(item, slide);
-  }
-
-  function onFirstInteraction() {
-    if (interactionPrimed) return;
-    interactionPrimed = true;
-    hideTapPrompt();
-    if (deps.unlockSpeech) deps.unlockSpeech();
-    unlockAudio();
-    const item = feed[activeIndex];
-    const slide = slides[activeIndex];
-    if (item && slide) runAudioFirstSequence(item, slide);
-  }
-
   function slideVideos(slide) {
     return slide ? [...slide.querySelectorAll("video")] : [];
   }
@@ -165,12 +81,9 @@
     });
   }
 
-  function speakItem(item, onEnd) {
-    if (!item || !deps.speakItem) {
-      onEnd?.();
-      return;
-    }
-    deps.speakItem(item, onEnd);
+  function speakItem(item) {
+    if (!item || !deps.speakItem) return;
+    deps.speakItem(item, () => {});
   }
 
   function playVideosForSlide(slide, muted) {
@@ -197,16 +110,14 @@
   }
 
   function unlockSpeech() {
-    onFirstInteraction();
+    if (deps.unlockSpeech) deps.unlockSpeech();
   }
 
   function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
     const slide = slides[activeIndex];
-    if (slide && !slide.classList.contains("is-media-hidden")) {
-      playVideosForSlide(slide, false);
-    }
+    if (slide) playVideosForSlide(slide, false);
   }
 
   function playSlide(index) {
@@ -216,24 +127,30 @@
     const slide = slides[index];
 
     slides.forEach((s, i) => {
-      if (i === index) {
-        slideVideos(s).forEach((video) => {
-          video.currentTime = 0;
-        });
-        resetVideosForSlide(s);
-      } else {
-        resetVideosForSlide(s);
-        setSlideMediaVisible(s, false);
-      }
+      resetVideosForSlide(s);
       s.classList.toggle("is-active", i === index);
     });
 
-    beginSlideSequence(item, slide);
+    if (slide) {
+      slideVideos(slide).forEach((video) => {
+        video.currentTime = 0;
+      });
+      playVideosForSlide(slide, !audioUnlocked);
+      speakItem(item);
+    }
+
     prefetchAround(index);
+    hideBootScreen();
+  }
+
+  function hideBootScreen() {
+    const boot = document.getElementById("reels-boot");
+    if (boot) boot.classList.add("is-hidden");
   }
 
   function slideHeight() {
-    return root?.clientHeight || window.innerHeight;
+    const h = root?.clientHeight || window.innerHeight;
+    return h > 0 ? h : window.innerHeight;
   }
 
   function translateY(index, offsetPx = 0) {
@@ -273,6 +190,7 @@
       return;
     }
     unlockSpeech();
+    unlockAudio();
     dragging = true;
     pointerStartY = e.clientY;
     pointerStartX = e.clientX;
@@ -450,7 +368,7 @@
     feed = deps.buildFeed ? deps.buildFeed() : [];
 
     if (feed.length === 0) {
-      track.innerHTML = "<p class=\"reels__empty\">Nada para mostrar. Ative categorias nas configurações.</p>";
+      track.innerHTML = "<p class=\"reels__empty\">Nada para mostrar. Segure dois dedos por 2s para abrir configurações.</p>";
       return;
     }
 
@@ -491,8 +409,6 @@
     root.setAttribute("aria-hidden", "false");
     document.body.classList.add("mode-reels");
     audioUnlocked = false;
-    interactionPrimed = false;
-    ensureTapPrompt();
     render();
 
     root.addEventListener("pointerdown", onPointerDown);
@@ -501,25 +417,17 @@
     root.addEventListener("pointercancel", onPointerUp);
     document.addEventListener("keydown", onKeyDown);
     window.addEventListener("resize", onResize);
-    document.addEventListener("touchend", onDocumentTap, { passive: true });
-    document.addEventListener("click", onDocumentTap);
-  }
-
-  function onDocumentTap() {
-    if (!interactionPrimed) onFirstInteraction();
   }
 
   function unmount() {
     pauseAllVideos();
     clearPrefetchState();
-    hideTapPrompt();
     root.classList.add("is-hidden");
     root.setAttribute("aria-hidden", "true");
     document.body.classList.remove("mode-reels");
     track.style.transform = "";
     track.innerHTML = "";
     audioUnlocked = false;
-    interactionPrimed = false;
 
     root.removeEventListener("pointerdown", onPointerDown);
     root.removeEventListener("pointermove", onPointerMove);
@@ -527,8 +435,6 @@
     root.removeEventListener("pointercancel", onPointerUp);
     document.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("resize", onResize);
-    document.removeEventListener("touchend", onDocumentTap);
-    document.removeEventListener("click", onDocumentTap);
   }
 
   window.TecladinhoReels = {
@@ -552,7 +458,6 @@
       pauseAllVideos();
       clearPrefetchState();
       audioUnlocked = false;
-      interactionPrimed = false;
       render();
     },
   };
