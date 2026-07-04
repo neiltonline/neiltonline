@@ -8,6 +8,10 @@
     "sounds": [
       "audio/sounds/abelha-1.mp3",
       "audio/sounds/abelha-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/abelha-1.mp4",
+      "videos/animals/abelha-2.mp4"
     ]
   },
   "cachorro": {
@@ -20,6 +24,10 @@
       "audio/sounds/cachorro-1.mp3",
       "audio/sounds/cachorro-2.mp3",
       "audio/sounds/cachorro-3.mp3"
+    ],
+    "videos": [
+      "videos/animals/cachorro-1.mp4",
+      "videos/animals/cachorro-2.mp4"
     ]
   },
   "cavalo": {
@@ -30,6 +38,10 @@
     "sounds": [
       "audio/sounds/cavalo-1.mp3",
       "audio/sounds/cavalo-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/cavalo-1.mp4",
+      "videos/animals/cavalo-2.mp4"
     ]
   },
   "coruja": {
@@ -41,6 +53,10 @@
     "sounds": [
       "audio/sounds/coruja-1.mp3",
       "audio/sounds/coruja-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/coruja-1.mp4",
+      "videos/animals/coruja-2.mp4"
     ]
   },
   "elefante": {
@@ -50,6 +66,11 @@
     ],
     "sounds": [
       "audio/sounds/elefante-1.mp3"
+    ],
+    "videos": [
+      "videos/animals/elefante-1.mp4",
+      "videos/animals/elefante-2.mp4",
+      "videos/animals/elefante-3.mp4"
     ]
   },
   "galinha": {
@@ -60,6 +81,10 @@
     "sounds": [
       "audio/sounds/galinha-1.mp3",
       "audio/sounds/galinha-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/galinha-1.mp4",
+      "videos/animals/galinha-2.mp4"
     ]
   },
   "galo": {
@@ -70,6 +95,10 @@
     "sounds": [
       "audio/sounds/galo-1.mp3",
       "audio/sounds/galo-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/galo-1.mp4",
+      "videos/animals/galo-2.mp4"
     ]
   },
   "gato": {
@@ -81,6 +110,11 @@
     "sounds": [
       "audio/sounds/gato-1.mp3",
       "audio/sounds/gato-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/gato-1.mp4",
+      "videos/animals/gato-2.mp4",
+      "videos/animals/gato-3.mp4"
     ]
   },
   "jacare": {
@@ -92,6 +126,10 @@
     "sounds": [
       "audio/sounds/jacare-1.mp3",
       "audio/sounds/jacare-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/jacare-1.mp4",
+      "videos/animals/jacare-2.mp4"
     ]
   },
   "leao": {
@@ -102,6 +140,10 @@
     "sounds": [
       "audio/sounds/leao-1.mp3",
       "audio/sounds/leao-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/leao-1.mp4",
+      "videos/animals/leao-2.mp4"
     ]
   },
   "lobo": {
@@ -111,6 +153,10 @@
     "sounds": [
       "audio/sounds/lobo-1.mp3",
       "audio/sounds/lobo-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/lobo-1.mp4",
+      "videos/animals/lobo-2.mp4"
     ]
   },
   "macaco": {
@@ -120,6 +166,9 @@
     ],
     "sounds": [
       "audio/sounds/macaco-1.mp3"
+    ],
+    "videos": [
+      "videos/animals/macaco-1.mp4"
     ]
   },
   "ovelha": {
@@ -130,6 +179,10 @@
     "sounds": [
       "audio/sounds/ovelha-1.mp3",
       "audio/sounds/ovelha-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/ovelha-1.mp4",
+      "videos/animals/ovelha-2.mp4"
     ]
   },
   "papagaio": {
@@ -139,6 +192,10 @@
     "sounds": [
       "audio/sounds/papagaio-1.mp3",
       "audio/sounds/papagaio-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/papagaio-1.mp4",
+      "videos/animals/papagaio-2.mp4"
     ]
   },
   "pato": {
@@ -149,6 +206,11 @@
     "sounds": [
       "audio/sounds/pato-1.mp3",
       "audio/sounds/pato-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/pato-1.mp4",
+      "videos/animals/pato-2.mp4",
+      "videos/animals/pato-3.mp4"
     ]
   },
   "pinto": {
@@ -160,6 +222,10 @@
     "sounds": [
       "audio/sounds/pinto-1.mp3",
       "audio/sounds/pinto-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/pinto-1.mp4",
+      "videos/animals/pinto-2.mp4"
     ]
   },
   "porco": {
@@ -171,6 +237,10 @@
     "sounds": [
       "audio/sounds/porco-1.mp3",
       "audio/sounds/porco-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/porco-1.mp4",
+      "videos/animals/porco-2.mp4"
     ]
   },
   "raposa": {
@@ -181,6 +251,10 @@
     ],
     "sounds": [
       "audio/sounds/raposa-1.mp3"
+    ],
+    "videos": [
+      "videos/animals/raposa-1.mp4",
+      "videos/animals/raposa-2.mp4"
     ]
   },
   "sapo": {
@@ -191,6 +265,10 @@
     "sounds": [
       "audio/sounds/sapo-1.mp3",
       "audio/sounds/sapo-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/sapo-1.mp4",
+      "videos/animals/sapo-2.mp4"
     ]
   },
   "tigre": {
@@ -202,6 +280,10 @@
     "sounds": [
       "audio/sounds/tigre-1.mp3",
       "audio/sounds/tigre-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/tigre-1.mp4",
+      "videos/animals/tigre-2.mp4"
     ]
   },
   "urso": {
@@ -212,6 +294,10 @@
     "sounds": [
       "audio/sounds/urso-1.mp3",
       "audio/sounds/urso-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/urso-1.mp4",
+      "videos/animals/urso-2.mp4"
     ]
   },
   "vaca": {
@@ -222,6 +308,9 @@
     "sounds": [
       "audio/sounds/vaca-1.mp3",
       "audio/sounds/vaca-2.mp3"
+    ],
+    "videos": [
+      "videos/animals/vaca-1.mp4"
     ]
   }
 }

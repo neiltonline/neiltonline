@@ -62,6 +62,7 @@
     lettersOnly: false,
     animalsOnly: false,
     singleCentered: false,
+    animalReels: false,
     animalSounds: true,
     animals: defaultAnimalToggles(),
   };
@@ -162,7 +163,18 @@
   }
 
   function applyBodyModes() {
-    document.body.classList.toggle("mode-single", config.singleCentered);
+    document.body.classList.toggle("mode-single", config.singleCentered && !config.animalReels);
+    if (config.animalReels && window.TecladinhoReels) {
+      window.TecladinhoReels.activate();
+    } else if (window.TecladinhoReels) {
+      window.TecladinhoReels.deactivate();
+    }
+  }
+
+  function refreshReelsIfActive() {
+    if (config.animalReels && window.TecladinhoReels) {
+      window.TecladinhoReels.refresh();
+    }
   }
 
   function buildAnimalConfigList() {
@@ -178,6 +190,7 @@
       label.querySelector("input").addEventListener("change", (e) => {
         config.animals[animal.id] = e.target.checked;
         saveConfig();
+        refreshReelsIfActive();
       });
       animalListEl.appendChild(label);
     });
@@ -187,6 +200,7 @@
     document.getElementById("cfg-letters-only").checked = config.lettersOnly;
     document.getElementById("cfg-animals-only").checked = config.animalsOnly;
     document.getElementById("cfg-single-centered").checked = config.singleCentered;
+    document.getElementById("cfg-animal-reels").checked = config.animalReels;
     document.getElementById("cfg-animal-sounds").checked = config.animalSounds;
     animalListEl.querySelectorAll("[data-animal]").forEach((input) => {
       input.checked = config.animals[input.dataset.animal];
@@ -450,6 +464,7 @@
   }
 
   function handlePlayInput(key) {
+    if (config.animalReels) return;
     if (config.animalsOnly) {
       showAnimal(pickAnimal());
       return;
@@ -473,6 +488,7 @@
   }
 
   function handleTouchPlay() {
+    if (config.animalReels) return;
     if (config.animalsOnly) {
       showAnimal(pickAnimal());
       return;
@@ -496,23 +512,47 @@
 
   document.getElementById("cfg-letters-only").addEventListener("change", (e) => {
     config.lettersOnly = e.target.checked;
-    if (config.lettersOnly) config.animalsOnly = false;
+    if (config.lettersOnly) {
+      config.animalsOnly = false;
+      config.animalReels = false;
+    }
     saveConfig();
     syncConfigUI();
+    applyBodyModes();
   });
 
   document.getElementById("cfg-animals-only").addEventListener("change", (e) => {
     config.animalsOnly = e.target.checked;
-    if (config.animalsOnly) config.lettersOnly = false;
+    if (config.animalsOnly) {
+      config.lettersOnly = false;
+      config.animalReels = false;
+    }
     saveConfig();
     syncConfigUI();
+    applyBodyModes();
   });
 
   document.getElementById("cfg-single-centered").addEventListener("change", (e) => {
     config.singleCentered = e.target.checked;
+    if (config.singleCentered) config.animalReels = false;
     saveConfig();
+    syncConfigUI();
     applyBodyModes();
     if (config.singleCentered) clearAllChars();
+  });
+
+  document.getElementById("cfg-animal-reels").addEventListener("change", (e) => {
+    config.animalReels = e.target.checked;
+    if (config.animalReels) {
+      config.lettersOnly = false;
+      config.animalsOnly = false;
+      config.singleCentered = false;
+      clearAllChars();
+    }
+    saveConfig();
+    syncConfigUI();
+    applyBodyModes();
+    refreshReelsIfActive();
   });
 
   document.getElementById("cfg-animal-sounds").addEventListener("change", (e) => {
@@ -524,12 +564,14 @@
     ANIMALS.forEach((a) => { config.animals[a.id] = true; });
     saveConfig();
     syncConfigUI();
+    refreshReelsIfActive();
   });
 
   document.getElementById("cfg-deselect-all-animals").addEventListener("click", () => {
     ANIMALS.forEach((a) => { config.animals[a.id] = false; });
     saveConfig();
     syncConfigUI();
+    refreshReelsIfActive();
   });
 
   document.addEventListener(
@@ -574,7 +616,10 @@
 
       if (activePointers.size >= 2) {
         startTouchHold();
+        return;
       }
+
+      if (config.animalReels) return;
     },
     { passive: true }
   );
@@ -597,6 +642,7 @@
 
       if (configOpen || wasTwoFinger) return;
       if (activePointers.size > 0) return;
+      if (config.animalReels) return;
 
       handleTouchPlay();
     },
@@ -633,6 +679,18 @@
       if (res.ok) variants = await res.json();
     } catch {
       /* fallback to single asset per animal */
+    }
+
+    if (window.TecladinhoReels) {
+      window.TecladinhoReels.init({
+        root: document.getElementById("reels"),
+        variants,
+        getEnabledAnimals,
+        assetUrl,
+        speakAnimalName: (animalId) => {
+          playAudio(getAudioSrc(animalId, "animal"));
+        },
+      });
     }
 
     buildAnimalConfigList();

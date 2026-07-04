@@ -14,6 +14,10 @@
     <div id="stage" aria-live="polite" aria-label="Área de brincadeira"></div>
     <div id="burst-layer" aria-hidden="true"></div>
     <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
+    <div id="reels" class="reels is-hidden" aria-hidden="true">
+        <div class="reels__track"></div>
+        <p class="reels__swipe-hint">Arraste para cima ou para baixo ↑↓</p>
+    </div>
     <p class="hint" id="hint">Toque na tela para brincar! ✨</p>
 
     <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
@@ -33,6 +37,10 @@
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-single-centered">
                     <span>Um item gigante no centro</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-animal-reels">
+                    <span>Vídeos dos animais (arraste tipo Reels)</span>
                 </label>
             </section>
 
@@ -56,6 +64,7 @@
         </div>
     </div>
 
+    <script src="./js/reels.js"></script>
     <script src="./js/play.js"></script>
 </body>
 
