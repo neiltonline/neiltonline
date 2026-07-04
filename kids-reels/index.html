@@ -14,7 +14,7 @@
     <title>Tecladinho Reels 🎬</title>
     <base href="/kids-reels/">
     <link rel="stylesheet" href="/kids/css/style.css">
-    <link rel="stylesheet" href="/kids-reels/css/overrides.css?v=17">
+    <link rel="stylesheet" href="/kids-reels/css/overrides.css?v=18">
     <style>
         .reels__boot-slide {
             display: flex;
@@ -97,6 +97,14 @@
                 </label>
             </section>
 
+            <section class="config__section">
+                <h3 class="config__label">Toque na tela</h3>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-tap-repeat" checked>
+                    <span>Toque no centro repete o som</span>
+                </label>
+            </section>
+
             <section class="config__section" id="cfg-reels-animals-section">
                 <div class="config__section-head">
                     <h3 class="config__label">Animais</h3>
@@ -150,7 +158,7 @@
 
     <script>
     (function () {
-        var BUILD = "17";
+        var BUILD = "18";
         function reloadFresh() {
             var url = new URL(location.href);
             url.searchParams.set("v", BUILD);
@@ -186,9 +194,9 @@
         }, 3000);
     })();
     </script>
-    <script src="/kids-reels/js/fluent-illus.js?v=17"></script>
-    <script src="/kids-reels/js/reels.js?v=17"></script>
-    <script src="/kids-reels/js/play.js?v=17"></script>
+    <script src="/kids-reels/js/fluent-illus.js?v=18"></script>
+    <script src="/kids-reels/js/reels.js?v=18"></script>
+    <script src="/kids-reels/js/play.js?v=18"></script>
 </body>
 
 </html>

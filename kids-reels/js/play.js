@@ -68,6 +68,19 @@
     { id: "abraco", name: "abraço", label: "Abraço" },
     { id: "beijo", name: "beijo", label: "Beijo" },
     { id: "dormir", name: "dormir", label: "Dormir" },
+    { id: "balao", name: "balão", label: "Balão" },
+    { id: "bolha", name: "bolha", label: "Bolha" },
+    { id: "borboleta", name: "borboleta", label: "Borboleta" },
+    { id: "carrossel", name: "carrossel", label: "Carrossel" },
+    { id: "coelho", name: "coelho", label: "Coelho" },
+    { id: "coracao", name: "coração", label: "Coração" },
+    { id: "festa", name: "festa", label: "Festa" },
+    { id: "musica", name: "música", label: "Música" },
+    { id: "peixe", name: "peixe", label: "Peixe" },
+    { id: "pinguim", name: "pinguim", label: "Pinguim" },
+    { id: "pirulito", name: "pirulito", label: "Pirulito" },
+    { id: "tartaruga", name: "tartaruga", label: "Tartaruga" },
+    { id: "arcoiris", name: "arco-íris", label: "Arco-íris" },
   ];
 
   const BODY_PARTS = [
@@ -147,6 +160,7 @@
     words: defaultWordToggles(),
     body: defaultBodyToggles(),
     reelsCategories: defaultReelsCategories(),
+    tapRepeat: true,
   };
 
   function cloneData(obj) {
@@ -166,6 +180,7 @@
         words: { ...defaultWordToggles(), ...parsed.words },
         body: { ...defaultBodyToggles(), ...parsed.body },
         reelsCategories: { ...defaultReelsCategories(), ...parsed.reelsCategories },
+        tapRepeat: parsed.tapRepeat !== false,
       };
     } catch {
       return cloneData(DEFAULT_CONFIG);
@@ -199,11 +214,33 @@
   }
 
   function pickAnimalSound(id) {
-    const sounds = variants[id]?.sounds;
-    if (sounds?.length) {
-      return assetUrl(sounds[Math.floor(Math.random() * sounds.length)]);
+    const canonical = `audio/sounds/${id}.mp3`;
+    const manifestSounds = (variants[id]?.sounds || []).filter((path) => {
+      const file = path.split("/").pop() || "";
+      return file === `${id}.mp3` || file.startsWith(`${id}-`);
+    });
+    const pool = manifestSounds.length
+      ? manifestSounds
+      : [canonical, `audio/sounds/${id}-1.mp3`];
+    const preferred = pool.find((path) => path.endsWith(`/${id}.mp3`));
+    return assetUrl(preferred || pool[0]);
+  }
+
+  function interleavePools(pools) {
+    const queues = pools.filter((pool) => pool.length > 0).map((pool) => [...pool]);
+    const items = [];
+    while (queues.length) {
+      shuffleInPlace(queues);
+      for (let i = queues.length - 1; i >= 0; i--) {
+        if (!queues[i].length) {
+          queues.splice(i, 1);
+          continue;
+        }
+        items.push(queues[i].shift());
+        if (!queues[i].length) queues.splice(i, 1);
+      }
     }
-    return assetUrl(`audio/sounds/${id}-1.mp3`);
+    return items;
   }
 
   function animalWordSrc(id) {
@@ -294,6 +331,18 @@
     if (config.reelsCategories.body) {
       const bodyItems = [];
       for (const part of getEnabledBodyParts()) {
+        if (part.id === "barriga") {
+          bodyItems.push({
+            type: "body",
+            id: part.id,
+            label: part.label,
+            name: part.name,
+            bg: part.bg,
+            illustration: null,
+            bodyBall: true,
+          });
+          continue;
+        }
         const illustration = illus("body", part.id);
         if (!illustration) continue;
         bodyItems.push({
@@ -303,6 +352,7 @@
           name: part.name,
           bg: part.bg,
           illustration,
+          bodyBall: false,
         });
       }
       if (bodyItems.length) blocks.push(shuffleInPlace(bodyItems));
@@ -316,8 +366,7 @@
       if (letterItems.length) blocks.push(shuffleInPlace(letterItems));
     }
 
-    shuffleInPlace(blocks);
-    const items = blocks.flat();
+    const items = interleavePools(blocks);
 
     if (items.length === 0) {
       if (!feedResetGuard) {
@@ -643,6 +692,13 @@
       : `<span class="config__word-fallback">${fallback}</span>`;
   }
 
+  function bodyThumbHtml(part) {
+    if (part.id === "barriga") {
+      return `<span class="config__shape-preview config__shape-preview--circle" style="--shape-fill:#FDD835"></span>`;
+    }
+    return thumbHtml("body", part.id, part.label.charAt(0));
+  }
+
   function buildBodyConfigList() {
     bodyListEl.innerHTML = "";
     BODY_PARTS.forEach((part) => {
@@ -650,7 +706,7 @@
       label.className = "config__animal";
       label.innerHTML = `
         <input type="checkbox" data-body="${part.id}" ${config.body[part.id] ? "checked" : ""}>
-        ${thumbHtml("body", part.id, part.label.charAt(0))}
+        ${bodyThumbHtml(part)}
         <span>${part.label}</span>
       `;
       label.querySelector("input").addEventListener("change", (e) => {
@@ -725,6 +781,7 @@
     document.getElementById("cfg-reels-letters").checked = config.reelsCategories.letters;
     document.getElementById("cfg-reels-words").checked = config.reelsCategories.words;
     document.getElementById("cfg-reels-body").checked = config.reelsCategories.body;
+    document.getElementById("cfg-tap-repeat").checked = config.tapRepeat;
     animalListEl.querySelectorAll("[data-animal]").forEach((input) => {
       input.checked = config.animals[input.dataset.animal];
     });
@@ -808,6 +865,11 @@
     });
   });
 
+  document.getElementById("cfg-tap-repeat").addEventListener("change", (e) => {
+    config.tapRepeat = e.target.checked;
+    saveConfig();
+  });
+
   document.getElementById("cfg-select-all-animals").addEventListener("click", () => {
     ANIMALS.forEach((a) => { config.animals[a.id] = true; });
     saveConfig();
@@ -888,6 +950,7 @@
         illusFallback,
         onTwoFingerHoldStart: startTouchHold,
         onTwoFingerHoldEnd: onTwoFingerHoldEnd,
+        tapToRepeat: () => config.tapRepeat,
       });
       buildAnimalConfigList();
       buildColorConfigList();

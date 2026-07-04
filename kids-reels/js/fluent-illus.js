@@ -60,6 +60,19 @@
     abraco: f3("Hugging face", "hugging_face"),
     beijo: f3("Kiss mark", "kiss_mark"),
     dormir: f3("Sleeping face", "sleeping_face"),
+    balao: f3("Balloon", "balloon"),
+    bolha: f3("Bubbles", "bubbles"),
+    borboleta: f3("Butterfly", "butterfly"),
+    carrossel: f3("Carousel horse", "carousel_horse"),
+    coelho: f3("Rabbit", "rabbit"),
+    coracao: f3("Red heart", "red_heart"),
+    festa: f3("Party popper", "party_popper"),
+    musica: f3("Musical notes", "musical_notes"),
+    peixe: f3("Fish", "fish"),
+    pinguim: f3("Penguin", "penguin"),
+    pirulito: f3("Lollipop", "lollipop"),
+    tartaruga: f3("Turtle", "turtle"),
+    arcoiris: f3("Rainbow", "rainbow"),
   };
 
   const BODY = {
@@ -72,7 +85,6 @@
     mao: noto("1f91a"),
     braco: noto("1f4aa"),
     perna: noto("1f9b5"),
-    barriga: f3("Yellow circle", "yellow_circle"),
     cabelo: noto("1f487"),
     dente: f3("Tooth", "tooth"),
   };

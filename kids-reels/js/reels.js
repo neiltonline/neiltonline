@@ -149,6 +149,27 @@
     slot.append(stage, label);
   }
 
+  function buildBodyBallSlide(slot, item) {
+    slot.classList.add("reels__slide--body", "reels__slide--body-ball");
+    slot.style.background = item.bg || "#DCEDC8";
+
+    const stage = document.createElement("div");
+    stage.className = "reels__shape-wrap";
+
+    const ball = document.createElement("div");
+    ball.className = "reels__shape reels__shape--circle reels__body-ball";
+    ball.style.setProperty("--shape-fill", "#FDD835");
+    ball.setAttribute("aria-hidden", "true");
+
+    stage.appendChild(ball);
+
+    const label = document.createElement("div");
+    label.className = "reels__label";
+    label.textContent = item.label;
+
+    slot.append(stage, label);
+  }
+
   function fillSlot(slot, feedIndex) {
     if (slot.dataset.feedIndex === String(feedIndex)) return;
     const item = feed[feedIndex];
@@ -175,7 +196,11 @@
     }
 
     if (item.type === "body") {
-      buildIllusSlide(slot, item, "reels__slide--body");
+      if (item.bodyBall) {
+        buildBodyBallSlide(slot, item);
+      } else {
+        buildIllusSlide(slot, item, "reels__slide--body");
+      }
       return;
     }
 
@@ -291,6 +316,18 @@
     return false;
   }
 
+  function handleCenterTap(clientX) {
+    if (!deps.tapToRepeat?.()) return false;
+    const w = slideWidth();
+    const edge = w * 0.22;
+    if (clientX <= edge || clientX >= w - edge) return false;
+    unlockSpeech();
+    const item = feed[activeIndex];
+    if (!item) return false;
+    speakItem(item, { immediate: true });
+    return true;
+  }
+
   function finishGesture(clientY, clientX) {
     const dy = clientY - pointerStartY;
     const dx = clientX - pointerStartX;
@@ -299,7 +336,10 @@
     const velocity = dx / Math.max(dt, 1);
     const fast = dt < SWIPE_MAX_MS;
 
-    if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS && handleTapZone(clientX)) {
+    if (dist < TAP_MAX_MOVE && dt < TAP_MAX_MS) {
+      if (handleTapZone(clientX)) return;
+      if (handleCenterTap(clientX)) return;
+      snapCurrent();
       return;
     }
 
