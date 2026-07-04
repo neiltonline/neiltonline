@@ -16,15 +16,10 @@ NUMBERS = {
     "5": "cinco", "6": "seis", "7": "sete", "8": "oito", "9": "nove",
 }
 
-EMOJI_WORDS = [
-    "gato", "cachorro", "sapo", "pinto", "peixe", "pato",
-    "abelha", "borboleta", "urso", "coelho", "vaca", "porco",
-    "leão", "tigre", "coala", "panda", "raposa", "tartaruga",
-    "polvo", "elefante", "girafa", "pinguim", "papagaio", "esquilo",
-    "jacaré",
-    "lua", "estrela", "sol", "arco-íris", "balão", "festa", "coração",
-    "maçã", "banana", "morango", "música",
-    "flor", "pirulito", "bolha", "carrossel", "melancia", "figurinha",
+ANIMAL_WORDS = [
+    "gato", "cachorro", "vaca", "porco", "galinha", "pinto", "pato", "galo",
+    "sapo", "leão", "tigre", "elefante", "urso", "raposa", "abelha", "papagaio",
+    "jacaré", "cavalo", "ovelha", "coruja", "lobo", "macaco",
 ]
 
 
@@ -51,7 +46,7 @@ async def main():
         path = os.path.join(AUDIO_DIR, "numbers", f"{word}.mp3")
         tasks.append(generate(word, path))
 
-    for word in EMOJI_WORDS:
+    for word in ANIMAL_WORDS:
         safe = word.replace(" ", "-")
         path = os.path.join(AUDIO_DIR, "words", f"{safe}.mp3")
         tasks.append(generate(word, path, force=True))

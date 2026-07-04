@@ -27,37 +27,28 @@
                     <span>Apenas letras e números</span>
                 </label>
                 <label class="config__toggle">
-                    <input type="checkbox" id="cfg-emojis-only">
-                    <span>Apenas emojis</span>
+                    <input type="checkbox" id="cfg-animals-only">
+                    <span>Apenas animais</span>
                 </label>
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-single-centered">
-                    <span>Um caractere gigante no centro</span>
+                    <span>Um item gigante no centro</span>
                 </label>
             </section>
 
             <section class="config__section">
-                <h3 class="config__label">Tipos de emoji</h3>
+                <div class="config__section-head">
+                    <h3 class="config__label">Animais</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-animals">Todos</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-animals">Nenhum</button>
+                    </div>
+                </div>
                 <label class="config__toggle">
-                    <input type="checkbox" id="cfg-cat-animals" checked>
-                    <span>Animais</span>
-                </label>
-                <label class="config__toggle config__toggle--indent" id="cfg-animal-sounds-wrap">
                     <input type="checkbox" id="cfg-animal-sounds" checked>
                     <span>Sons reais dos animais</span>
                 </label>
-                <label class="config__toggle">
-                    <input type="checkbox" id="cfg-cat-nature" checked>
-                    <span>Natureza</span>
-                </label>
-                <label class="config__toggle">
-                    <input type="checkbox" id="cfg-cat-food" checked>
-                    <span>Comida</span>
-                </label>
-                <label class="config__toggle">
-                    <input type="checkbox" id="cfg-cat-objects" checked>
-                    <span>Objetos e festa</span>
-                </label>
+                <div id="cfg-animal-list" class="config__animal-grid"></div>
             </section>
 
             <p class="config__hint">Celular: segure dois dedos na tela por 2 segundos. Teclado: segure qualquer tecla por 2 segundos.</p>

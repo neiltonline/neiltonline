@@ -11,38 +11,30 @@ API = "https://commons.wikimedia.org/w/api.php"
 USER_AGENT = "TecladinhoKids/1.0 (educational kids app; contact: neiltonline@gmail.com)"
 MAX_SECONDS = 3.5
 
-# slug -> ("wiki", filename) | ("url", direct_mp3_or_audio_url)
+# Only animals with iconic, recognizable vocalizations
 SOURCES = {
     "gato": ("wiki", "Meow.ogg"),
     "cachorro": ("wiki", "Barking of a dog.ogg"),
     "vaca": ("wiki", "Single Cow Moo.ogg"),
     "porco": ("wiki", "Pig grunt - Erdie.ogg"),
+    "galinha": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2015/04/Chicken-clucking.mp3"),
     "pinto": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2015/11/Baby-chicks-chirping-sound.mp3"),
-    "leao": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2018/02/Lion-roaring-sound.mp3"),
-    "elefante": ("wiki", "Elephant voice - trumpeting.ogg"),
     "pato": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2015/04/Duck-quack-sound.mp3"),
+    "galo": ("wiki", "Rooster crowing.ogg"),
     "sapo": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2022/03/Frog-sound-effect.mp3"),
-    "abelha": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2015/05/Bee-sounds.mp3"),
-    "urso": ("wiki", "Bear growl.ogg"),
+    "leao": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2018/02/Lion-roaring-sound.mp3"),
     "tigre": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2016/01/Tiger-roaring.mp3"),
-    "coala": ("wiki", "Perception-of-Male-Caller-Identity-in-Koalas-(Phascolarctos-cinereus)-Acoustic-Analysis-and-pone.0020329.s001.ogv"),
-    "panda": ("wiki", "Giant panda twittering.ogg"),
+    "elefante": ("wiki", "Elephant voice - trumpeting.ogg"),
+    "urso": ("wiki", "Bear growl.ogg"),
+    "raposa": ("wiki", "Red Fox (Vulpes vulpes) (W1CDR0001529 BD12).ogg"),
+    "abelha": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2015/05/Bee-sounds.mp3"),
     "papagaio": ("wiki", "Parrots perroquets.ogg"),
     "jacare": ("wiki", "Alligatorbellow1.ogg"),
-    "peixe": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2022/02/Small-water-splash-sound-effect.mp3"),
-    "coelho": ("wiki", "Rabbit oinks and squeaks.wav"),
-    "raposa": ("wiki", "Red Fox (Vulpes vulpes) (W1CDR0001529 BD12).ogg"),
-    "tartaruga": ("wiki", "Turtle-ar.wav"),
-    "polvo": ("wiki", "Octopus in Vezo.ogg"),
-    "girafa": ("wiki", "Q862089-ar.ogg"),
-    "pinguim": ("wiki", "20091121 Little Penguin calls at St Kilda Breakwater.ogg"),
-    "esquilo": ("wiki", "Three Squirrels chirping.ogg"),
-    "borboleta": ("wiki", "Neozephyrus quercus chrysalis sound after Noise filter.ogg"),
-}
-
-WIKI_SEARCH = {
-    "coala": "koala vocalization",
-    "panda": "giant panda bleat",
+    "cavalo": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2020/04/Horse-neigh-sound-effect.mp3"),
+    "ovelha": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2019/05/Sheep-bleating-noise.mp3"),
+    "coruja": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2016/10/Great-horned-owl-call.mp3"),
+    "lobo": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2020/04/Wolf-howling-sound.mp3"),
+    "macaco": ("url", "https://www.orangefreesounds.com/wp-content/uploads/2015/05/Mp3-monkey.mp3"),
 }
 
 
@@ -68,25 +60,6 @@ def wiki_file_url(filename):
     return page["imageinfo"][0]["url"]
 
 
-def wiki_search_file(term):
-    params = urllib.parse.urlencode({
-        "action": "query",
-        "list": "search",
-        "srsearch": f"filetype:audio {term}",
-        "srnamespace": "6",
-        "srlimit": "5",
-        "format": "json",
-    })
-    data = wiki_request(f"{API}?{params}")
-    for item in data.get("query", {}).get("search", []):
-        title = item["title"].replace("File:", "")
-        if title.lower().endswith((".ogg", ".mp3", ".wav", ".oga")):
-            url = wiki_file_url(title)
-            if url:
-                return url, title
-    return None, None
-
-
 def download(url, dest):
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req) as resp, open(dest, "wb") as out:
@@ -109,8 +82,6 @@ def to_mp3(src, dest):
 
 
 def resolve_source(slug):
-    if slug not in SOURCES:
-        return None
     kind, value = SOURCES[slug]
     if kind == "url":
         return value
@@ -126,11 +97,6 @@ def main():
         tmp = os.path.join(SOUNDS_DIR, f"_{slug}_tmp")
 
         url = resolve_source(slug)
-        if not url and slug in WIKI_SEARCH:
-            url, found = wiki_search_file(WIKI_SEARCH[slug])
-            if url:
-                print(f"SEARCH {slug} <- {found}", flush=True)
-
         if not url:
             print(f"SKIP {slug}", flush=True)
             skip += 1
@@ -140,7 +106,8 @@ def main():
             ext = os.path.splitext(urllib.parse.urlparse(url).path)[1] or ".bin"
             download(url, tmp + ext)
             to_mp3(tmp + ext, dest)
-            os.remove(tmp + ext)
+            if os.path.exists(tmp + ext):
+                os.remove(tmp + ext)
             print(f"OK {slug}", flush=True)
             ok += 1
         except Exception as e:

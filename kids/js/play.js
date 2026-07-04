@@ -4,10 +4,38 @@
   const hint = document.getElementById("hint");
   const configPanel = document.getElementById("config-panel");
   const holdProgress = document.getElementById("hold-progress");
+  const animalListEl = document.getElementById("cfg-animal-list");
 
   const HOLD_MS = 2000;
   const CHAR_LIFETIME_MS = 14000;
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  const ANIMALS = [
+    { id: "gato", name: "gato", label: "Gato", image: "images/animals/gato.jpg" },
+    { id: "cachorro", name: "cachorro", label: "Cachorro", image: "images/animals/cachorro.jpg" },
+    { id: "vaca", name: "vaca", label: "Vaca", image: "images/animals/vaca.jpg" },
+    { id: "porco", name: "porco", label: "Porco", image: "images/animals/porco.jpg" },
+    { id: "galinha", name: "galinha", label: "Galinha", image: "images/animals/galinha.jpg" },
+    { id: "pinto", name: "pinto", label: "Pintinho", image: "images/animals/pinto.jpg" },
+    { id: "pato", name: "pato", label: "Pato", image: "images/animals/pato.jpg" },
+    { id: "galo", name: "galo", label: "Galo", image: "images/animals/galo.jpg" },
+    { id: "sapo", name: "sapo", label: "Sapo", image: "images/animals/sapo.jpg" },
+    { id: "leao", name: "leão", label: "Leão", image: "images/animals/leao.jpg" },
+    { id: "tigre", name: "tigre", label: "Tigre", image: "images/animals/tigre.jpg" },
+    { id: "elefante", name: "elefante", label: "Elefante", image: "images/animals/elefante.jpg" },
+    { id: "urso", name: "urso", label: "Urso", image: "images/animals/urso.jpg" },
+    { id: "raposa", name: "raposa", label: "Raposa", image: "images/animals/raposa.jpg" },
+    { id: "abelha", name: "abelha", label: "Abelha", image: "images/animals/abelha.jpg" },
+    { id: "papagaio", name: "papagaio", label: "Papagaio", image: "images/animals/papagaio.jpg" },
+    { id: "jacare", name: "jacaré", label: "Jacaré", image: "images/animals/jacare.jpg" },
+    { id: "cavalo", name: "cavalo", label: "Cavalo", image: "images/animals/cavalo.jpg" },
+    { id: "ovelha", name: "ovelha", label: "Ovelha", image: "images/animals/ovelha.jpg" },
+    { id: "coruja", name: "coruja", label: "Coruja", image: "images/animals/coruja.jpg" },
+    { id: "lobo", name: "lobo", label: "Lobo", image: "images/animals/lobo.jpg" },
+    { id: "macaco", name: "macaco", label: "Macaco", image: "images/animals/macaco.jpg" },
+  ];
+
+  const ANIMALS_BY_ID = Object.fromEntries(ANIMALS.map((a) => [a.id, a]));
 
   const BURST_COLORS = [
     "#FF3366", "#FF6B35", "#FFD23F", "#3DD68C",
@@ -20,64 +48,27 @@
     "#84FFFF", "#FFE082",
   ];
 
-  const EMOJI_CATEGORIES = {
-    animals: [
-      "🐱", "🐶", "🐸", "🐥", "🐠", "🦆", "🐝", "🦋",
-      "🐻", "🐰", "🐮", "🐷", "🦁", "🐯", "🐨", "🐼",
-      "🦊", "🐢", "🐙", "🐘", "🦒", "🐧", "🦜", "🐿️", "🐊",
-    ],
-    nature: ["🌙", "🌛", "🌜", "⭐", "☀️", "🌈", "💫", "🌸"],
-    food: ["🍎", "🍌", "🍓", "🍉", "🍭"],
-    objects: ["🎈", "🎉", "💖", "🧸", "🎵", "🫧", "🎠"],
-  };
-
   const NUMBER_NAMES = {
     0: "zero", 1: "um", 2: "dois", 3: "três", 4: "quatro",
     5: "cinco", 6: "seis", 7: "sete", 8: "oito", 9: "nove",
   };
 
-  const EMOJI_NAMES = {
-    "🐱": "gato", "🐶": "cachorro", "🐸": "sapo", "🐥": "pinto",
-    "🐠": "peixe", "🦆": "pato", "🐝": "abelha", "🦋": "borboleta",
-    "🐻": "urso", "🐰": "coelho", "🐮": "vaca", "🐷": "porco",
-    "🦁": "leão", "🐯": "tigre", "🐨": "coala", "🐼": "panda",
-    "🦊": "raposa", "🐢": "tartaruga", "🐙": "polvo", "🐘": "elefante",
-    "🦒": "girafa", "🐧": "pinguim", "🦜": "papagaio", "🐿️": "esquilo",
-    "🐊": "jacaré",
-    "🌙": "lua", "🌛": "lua", "🌜": "lua", "⭐": "estrela", "☀️": "sol",
-    "🌈": "arco-íris", "🎈": "balão", "🎉": "festa", "💖": "coração",
-    "🍎": "maçã", "🍌": "banana", "🍓": "morango", "🧸": "urso",
-    "🎵": "música", "💫": "estrela", "🌸": "flor", "🍭": "pirulito",
-    "🫧": "bolha", "🎠": "carrossel", "🍉": "melancia",
-  };
-
-  const ANIMAL_SOUND_SLUGS = {
-    "🐱": "gato", "🐶": "cachorro", "🐸": "sapo", "🐥": "pinto",
-    "🐠": "peixe", "🦆": "pato", "🐝": "abelha", "🦋": "borboleta",
-    "🐻": "urso", "🐰": "coelho", "🐮": "vaca", "🐷": "porco",
-    "🦁": "leao", "🐯": "tigre", "🐨": "coala", "🐼": "panda",
-    "🦊": "raposa", "🐢": "tartaruga", "🐙": "polvo", "🐘": "elefante",
-    "🦒": "girafa", "🐧": "pinguim", "🦜": "papagaio", "🐿️": "esquilo",
-    "🐊": "jacare",
-  };
+  function defaultAnimalToggles() {
+    return Object.fromEntries(ANIMALS.map((a) => [a.id, true]));
+  }
 
   const DEFAULT_CONFIG = {
     lettersOnly: false,
-    emojisOnly: false,
+    animalsOnly: false,
     singleCentered: false,
     animalSounds: true,
-    categories: {
-      animals: true,
-      nature: true,
-      food: true,
-      objects: true,
-    },
+    animals: defaultAnimalToggles(),
   };
 
   let config = loadConfig();
   let activeChars = [];
   let hideHintTimer = null;
-  let lastEmoji = null;
+  let lastAnimalId = null;
   let currentAudio = null;
   let configOpen = false;
 
@@ -95,7 +86,18 @@
     try {
       const saved = localStorage.getItem("tecladinho-config");
       if (!saved) return structuredClone(DEFAULT_CONFIG);
-      return { ...DEFAULT_CONFIG, ...JSON.parse(saved), categories: { ...DEFAULT_CONFIG.categories, ...JSON.parse(saved).categories } };
+      const parsed = JSON.parse(saved);
+      const merged = {
+        ...DEFAULT_CONFIG,
+        ...parsed,
+        animals: { ...defaultAnimalToggles(), ...parsed.animals },
+      };
+      if (parsed.emojisOnly && merged.animalsOnly === undefined) {
+        merged.animalsOnly = parsed.emojisOnly;
+      }
+      delete merged.emojisOnly;
+      delete merged.categories;
+      return merged;
     } catch {
       return structuredClone(DEFAULT_CONFIG);
     }
@@ -109,23 +111,19 @@
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  function getAvailableEmojis() {
-    const pool = [];
-    for (const [cat, emojis] of Object.entries(EMOJI_CATEGORIES)) {
-      if (config.categories[cat]) pool.push(...emojis);
-    }
-    return pool;
+  function getEnabledAnimals() {
+    return ANIMALS.filter((a) => config.animals[a.id]);
   }
 
-  function pickEmoji() {
-    const pool = getAvailableEmojis();
-    if (pool.length === 0) return "⭐";
-    let emoji;
+  function pickAnimal() {
+    const pool = getEnabledAnimals();
+    if (pool.length === 0) return ANIMALS[0];
+    let animal;
     do {
-      emoji = pick(pool);
-    } while (emoji === lastEmoji && pool.length > 1);
-    lastEmoji = emoji;
-    return emoji;
+      animal = pick(pool);
+    } while (animal.id === lastAnimalId && pool.length > 1);
+    lastAnimalId = animal.id;
+    return animal;
   }
 
   function pickLetter() {
@@ -144,18 +142,33 @@
     document.body.classList.toggle("mode-single", config.singleCentered);
   }
 
+  function buildAnimalConfigList() {
+    animalListEl.innerHTML = "";
+    ANIMALS.forEach((animal) => {
+      const label = document.createElement("label");
+      label.className = "config__animal";
+      label.innerHTML = `
+        <input type="checkbox" data-animal="${animal.id}" ${config.animals[animal.id] ? "checked" : ""}>
+        <img src="${animal.image}" alt="" width="48" height="48" loading="lazy">
+        <span>${animal.label}</span>
+      `;
+      label.querySelector("input").addEventListener("change", (e) => {
+        config.animals[animal.id] = e.target.checked;
+        saveConfig();
+      });
+      animalListEl.appendChild(label);
+    });
+  }
+
   function syncConfigUI() {
     document.getElementById("cfg-letters-only").checked = config.lettersOnly;
-    document.getElementById("cfg-emojis-only").checked = config.emojisOnly;
+    document.getElementById("cfg-animals-only").checked = config.animalsOnly;
     document.getElementById("cfg-single-centered").checked = config.singleCentered;
     document.getElementById("cfg-animal-sounds").checked = config.animalSounds;
-    document.getElementById("cfg-cat-animals").checked = config.categories.animals;
-    document.getElementById("cfg-cat-nature").checked = config.categories.nature;
-    document.getElementById("cfg-cat-food").checked = config.categories.food;
-    document.getElementById("cfg-cat-objects").checked = config.categories.objects;
+    animalListEl.querySelectorAll("[data-animal]").forEach((input) => {
+      input.checked = config.animals[input.dataset.animal];
+    });
     applyBodyModes();
-    const soundsWrap = document.getElementById("cfg-animal-sounds-wrap");
-    soundsWrap.classList.toggle("is-disabled", !config.categories.animals);
   }
 
   function openConfig() {
@@ -248,9 +261,9 @@
 
   function getAudioSrc(content, type) {
     let path;
-    if (type === "emoji") {
-      const word = EMOJI_NAMES[content] || "figurinha";
-      path = `audio/words/${wordToFile(word)}.mp3`;
+    if (type === "animal") {
+      const animal = ANIMALS_BY_ID[content];
+      path = `audio/words/${wordToFile(animal.name)}.mp3`;
     } else if (/[0-9]/.test(content)) {
       const word = NUMBER_NAMES[content];
       path = `audio/numbers/${wordToFile(word)}.mp3`;
@@ -260,10 +273,8 @@
     return new URL(path, window.location.href).href;
   }
 
-  function getAnimalSoundSrc(emoji) {
-    const slug = ANIMAL_SOUND_SLUGS[emoji];
-    if (!slug) return null;
-    return new URL(`audio/sounds/${slug}.mp3`, window.location.href).href;
+  function getAnimalSoundSrc(animalId) {
+    return new URL(`audio/sounds/${animalId}.mp3`, window.location.href).href;
   }
 
   function playAudio(src, onEnd) {
@@ -284,10 +295,8 @@
     const src = getAudioSrc(content, type);
 
     const playAnimalSound = () => {
-      if (type !== "emoji" || !config.animalSounds || !config.categories.animals) return;
-      if (!EMOJI_CATEGORIES.animals.includes(content)) return;
-      const soundSrc = getAnimalSoundSrc(content);
-      if (soundSrc) playAudio(soundSrc);
+      if (type !== "animal" || !config.animalSounds) return;
+      playAudio(getAnimalSoundSrc(content));
     };
 
     playAudio(src, playAnimalSound);
@@ -352,21 +361,21 @@
     }
   }
 
-  function showOnScreen(content, type) {
+  function showLetter(content) {
     if (config.singleCentered) clearAllChars();
     else trimOldest();
 
     const burstColor = pick(BURST_COLORS);
-    const letterColor = type === "letter" ? pick(LETTER_COLORS) : null;
+    const letterColor = pick(LETTER_COLORS);
     const pos = config.singleCentered ? centerPosition() : randomPosition();
 
     const el = document.createElement("div");
-    el.className = `char char--${type}`;
+    el.className = "char char--letter";
     el.textContent = content;
     el.style.left = pos.x + "%";
     el.style.top = pos.y + "%";
     el.style.setProperty("--rot", pos.rot + "deg");
-    if (letterColor) el.style.color = letterColor;
+    el.style.color = letterColor;
 
     stage.appendChild(el);
     activeChars.push(el);
@@ -376,7 +385,38 @@
     }
 
     spawnBurst(pos.x, pos.y, burstColor);
-    speak(content, type);
+    speak(content, "letter");
+    hideHint();
+  }
+
+  function showAnimal(animal) {
+    if (config.singleCentered) clearAllChars();
+    else trimOldest();
+
+    const burstColor = pick(BURST_COLORS);
+    const pos = config.singleCentered ? centerPosition() : randomPosition();
+
+    const el = document.createElement("div");
+    el.className = "char char--animal";
+    el.style.left = pos.x + "%";
+    el.style.top = pos.y + "%";
+    el.style.setProperty("--rot", pos.rot + "deg");
+
+    const img = document.createElement("img");
+    img.src = animal.image;
+    img.alt = animal.label;
+    img.draggable = false;
+    el.appendChild(img);
+
+    stage.appendChild(el);
+    activeChars.push(el);
+
+    if (!config.singleCentered) {
+      setTimeout(() => removeChar(el), CHAR_LIFETIME_MS);
+    }
+
+    spawnBurst(pos.x, pos.y, burstColor);
+    speak(animal.id, "animal");
     hideHint();
   }
 
@@ -386,41 +426,41 @@
   }
 
   function handlePlayInput(key) {
-    if (config.emojisOnly) {
-      showOnScreen(pickEmoji(), "emoji");
+    if (config.animalsOnly) {
+      showAnimal(pickAnimal());
       return;
     }
 
     if (config.lettersOnly) {
       if (isLetterOrNumber(key)) {
-        showOnScreen(key.toUpperCase(), "letter");
+        showLetter(key.toUpperCase());
       } else {
-        showOnScreen(pickLetter(), "letter");
+        showLetter(pickLetter());
       }
       return;
     }
 
     if (isLetterOrNumber(key)) {
-      showOnScreen(key.toUpperCase(), "letter");
+      showLetter(key.toUpperCase());
       return;
     }
 
-    showOnScreen(pickEmoji(), "emoji");
+    showAnimal(pickAnimal());
   }
 
   function handleTouchPlay() {
-    if (config.emojisOnly) {
-      showOnScreen(pickEmoji(), "emoji");
+    if (config.animalsOnly) {
+      showAnimal(pickAnimal());
       return;
     }
     if (config.lettersOnly) {
-      showOnScreen(pickLetter(), "letter");
+      showLetter(pickLetter());
       return;
     }
     if (Math.random() < 0.55) {
-      showOnScreen(pickLetter(), "letter");
+      showLetter(pickLetter());
     } else {
-      showOnScreen(pickEmoji(), "emoji");
+      showAnimal(pickAnimal());
     }
   }
 
@@ -432,14 +472,14 @@
 
   document.getElementById("cfg-letters-only").addEventListener("change", (e) => {
     config.lettersOnly = e.target.checked;
-    if (config.lettersOnly) config.emojisOnly = false;
+    if (config.lettersOnly) config.animalsOnly = false;
     saveConfig();
     syncConfigUI();
   });
 
-  document.getElementById("cfg-emojis-only").addEventListener("change", (e) => {
-    config.emojisOnly = e.target.checked;
-    if (config.emojisOnly) config.lettersOnly = false;
+  document.getElementById("cfg-animals-only").addEventListener("change", (e) => {
+    config.animalsOnly = e.target.checked;
+    if (config.animalsOnly) config.lettersOnly = false;
     saveConfig();
     syncConfigUI();
   });
@@ -456,12 +496,16 @@
     saveConfig();
   });
 
-  ["animals", "nature", "food", "objects"].forEach((cat) => {
-    document.getElementById(`cfg-cat-${cat}`).addEventListener("change", (e) => {
-      config.categories[cat] = e.target.checked;
-      saveConfig();
-      syncConfigUI();
-    });
+  document.getElementById("cfg-select-all-animals").addEventListener("click", () => {
+    ANIMALS.forEach((a) => { config.animals[a.id] = true; });
+    saveConfig();
+    syncConfigUI();
+  });
+
+  document.getElementById("cfg-deselect-all-animals").addEventListener("click", () => {
+    ANIMALS.forEach((a) => { config.animals[a.id] = false; });
+    saveConfig();
+    syncConfigUI();
   });
 
   document.addEventListener(
@@ -559,6 +603,7 @@
     { passive: false }
   );
 
+  buildAnimalConfigList();
   applyBodyModes();
   hideHintTimer = setTimeout(hideHint, 4000);
 })();
