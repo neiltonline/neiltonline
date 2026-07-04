@@ -59,18 +59,27 @@
     if (deps.unlockSpeech) deps.unlockSpeech();
   }
 
-  function speakItem(item) {
+  function speakItem(item, options) {
     if (!item || !deps.speakItem) return;
-    deps.speakItem(item);
+    deps.speakItem(item, options);
   }
 
-  function onSlideActive() {
+  function speakItemAt(index, options) {
+    const item = feed[wrapIndex(index)];
+    if (!item) return;
+    spokeIndex = wrapIndex(index);
+    unlockSpeech();
+    speakItem(item, options);
+  }
+
+  function onSlideActive(options) {
     if (activeIndex === spokeIndex) return;
     spokeIndex = activeIndex;
     stopSpeechNow();
     const item = feed[activeIndex];
     if (!item) return;
-    speakItem(item);
+    unlockSpeech();
+    speakItem(item, options);
   }
 
   function warmNeighbors() {
@@ -210,25 +219,25 @@
   function goNext() {
     if (feed.length < 2) return;
     markSwiped();
-    stopSpeechNow();
+    const nextIndex = wrapIndex(activeIndex + 1);
     setTrackTransform(2, true);
     transitionCb = () => {
-      activeIndex = wrapIndex(activeIndex + 1);
+      activeIndex = nextIndex;
       syncWindow();
-      onSlideActive();
     };
+    speakItemAt(nextIndex, { immediate: true });
   }
 
   function goPrev() {
     if (feed.length < 2) return;
     markSwiped();
-    stopSpeechNow();
+    const prevIndex = wrapIndex(activeIndex - 1);
     setTrackTransform(0, true);
     transitionCb = () => {
-      activeIndex = wrapIndex(activeIndex - 1);
+      activeIndex = prevIndex;
       syncWindow();
-      onSlideActive();
     };
+    speakItemAt(prevIndex, { immediate: true });
   }
 
   function snapCurrent() {
@@ -320,6 +329,10 @@
 
     unlockSpeech();
 
+    if (spokeIndex !== activeIndex) {
+      onSlideActive({ immediate: true });
+    }
+
     dragging = true;
     pointerStartY = e.clientY;
     pointerStartX = e.clientX;
@@ -380,7 +393,7 @@
       return;
     }
     spokeIndex = -1;
-    onSlideActive();
+    onSlideActive({ immediate: true });
   }
 
   function render() {

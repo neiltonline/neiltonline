@@ -178,6 +178,7 @@
   let speechPrimed = false;
   let pendingSpeak = null;
   let speakGeneration = 0;
+  let audioCtx = null;
   const audioPool = new Map();
   let configOpen = false;
   let touchHoldTimer = null;
@@ -389,7 +390,7 @@
     abortCurrentAudio();
     const gen = speakGeneration;
     pendingSpeak = () => {
-      if (gen === speakGeneration) speakReelsItem(item);
+      if (gen === speakGeneration) speakReelsItem(item, { immediate: true });
     };
     return gen;
   }
@@ -467,7 +468,37 @@
     }
   }
 
-  function playAudio(src, onEnd, { chain = false, gen } = {}) {
+  function ensureAudioUnlocked() {
+    if (!audioCtx) {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch {
+        /* ignore */
+      }
+    }
+    if (audioCtx?.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+    if (!speechPrimed) {
+      speechPrimed = true;
+      if (audioCtx) {
+        try {
+          const buffer = audioCtx.createBuffer(1, 1, 22050);
+          const source = audioCtx.createBufferSource();
+          source.buffer = buffer;
+          source.connect(audioCtx.destination);
+          source.start(0);
+        } catch {
+          /* ignore */
+        }
+      }
+      const prime = warmAudio(assetUrl("audio/letters/a.mp3"));
+      prime.volume = 0.001;
+      prime.play().catch(() => {});
+    }
+  }
+
+  function playAudio(src, onEnd, { chain = false, gen, immediate = false } = {}) {
     if (!src) {
       onEnd?.();
       return;
@@ -477,12 +508,10 @@
 
     const audio = warmAudio(src);
     let ended = false;
-    let fallbackTimer = null;
 
     const finish = (invokeEnd = true) => {
       if (ended || token !== speakGeneration) return;
       ended = true;
-      if (fallbackTimer) clearTimeout(fallbackTimer);
       audio.onended = null;
       audio.onerror = null;
       if (currentAudio === audio) currentAudio = null;
@@ -501,34 +530,43 @@
         if (token === speakGeneration) pendingSpeak = null;
       }).catch(() => {
         if (token !== speakGeneration) return;
+        if (audio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+          const retry = () => {
+            if (token !== speakGeneration || !audio.paused) return;
+            startPlay();
+          };
+          audio.addEventListener("canplay", retry, { once: true });
+          audio.addEventListener("loadeddata", retry, { once: true });
+          return;
+        }
         ended = true;
-        if (fallbackTimer) clearTimeout(fallbackTimer);
         audio.onended = null;
         audio.onerror = null;
         if (currentAudio === audio) currentAudio = null;
       });
     };
 
-    const tryStart = () => {
-      if (ended || token !== speakGeneration) return;
-      if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-        if (fallbackTimer) clearTimeout(fallbackTimer);
-        startPlay();
-      }
-    };
+    if (immediate) {
+      startPlay();
+      return;
+    }
 
     if (audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-      tryStart();
+      startPlay();
     } else {
-      fallbackTimer = setTimeout(startPlay, 1200);
-      audio.addEventListener("canplaythrough", tryStart, { once: true });
-      audio.addEventListener("canplay", tryStart, { once: true });
-      audio.addEventListener("loadeddata", tryStart, { once: true });
+      const onReady = () => {
+        if (ended || token !== speakGeneration) return;
+        startPlay();
+      };
+      audio.addEventListener("canplaythrough", onReady, { once: true });
+      audio.addEventListener("canplay", onReady, { once: true });
+      audio.addEventListener("loadeddata", onReady, { once: true });
+      setTimeout(onReady, 800);
       audio.load();
     }
   }
 
-  function speakAnimalItem(item, gen) {
+  function speakAnimalItem(item, gen, immediate = false) {
     const wordSrc = item.wordAudio || animalWordSrc(item.animalId);
     const soundSrc = item.soundAudio || pickAnimalSound(item.animalId);
 
@@ -537,8 +575,8 @@
 
     playAudio(wordSrc, () => {
       if (gen !== speakGeneration) return;
-      playAudio(soundSrc, null, { chain: true, gen });
-    }, { gen });
+      playAudio(soundSrc, null, { chain: true, gen, immediate: true });
+    }, { gen, immediate });
   }
 
   function colorThumbHtml(color) {
@@ -547,12 +585,7 @@
   }
 
   function unlockSpeech() {
-    if (!speechPrimed) {
-      speechPrimed = true;
-      const prime = new Audio(assetUrl("audio/letters/a.mp3"));
-      prime.volume = 0.01;
-      prime.play().then(() => prime.pause()).catch(() => {});
-    }
+    ensureAudioUnlocked();
     if (pendingSpeak) {
       const retry = pendingSpeak;
       pendingSpeak = null;
@@ -560,33 +593,34 @@
     }
   }
 
-  function speakReelsItem(item) {
+  function speakReelsItem(item, options = {}) {
     if (!item) return;
+    const immediate = Boolean(options.immediate);
     const gen = startSpeech(item);
     warmItem(item);
 
     if (item.type === "animal") {
-      speakAnimalItem(item, gen);
+      speakAnimalItem(item, gen, immediate);
       return;
     }
     if (item.type === "color") {
-      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), null, { gen });
+      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), null, { gen, immediate });
       return;
     }
     if (item.type === "letter") {
       if (/[0-9]/.test(item.char)) {
-        playAudio(assetUrl(`audio/numbers/${wordToFile(NUMBER_NAMES[item.char])}.mp3`), null, { gen });
+        playAudio(assetUrl(`audio/numbers/${wordToFile(NUMBER_NAMES[item.char])}.mp3`), null, { gen, immediate });
       } else {
-        playAudio(assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`), null, { gen });
+        playAudio(assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`), null, { gen, immediate });
       }
       return;
     }
     if (item.type === "word") {
-      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), null, { gen });
+      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`), null, { gen, immediate });
       return;
     }
     if (item.type === "body") {
-      playAudio(assetUrl(`audio/body/${wordToFile(item.name)}.mp3`), null, { gen });
+      playAudio(assetUrl(`audio/body/${wordToFile(item.name)}.mp3`), null, { gen, immediate });
       return;
     }
   }
