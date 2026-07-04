@@ -449,7 +449,11 @@ body.mode-single .char.is-leaving {
 .reels {
   position: fixed;
   inset: 0;
-  z-index: 10;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  height: 100svh;
+  z-index: 20;
   overflow: hidden;
   background: #000;
   touch-action: none;
@@ -460,7 +464,6 @@ body.mode-single .char.is-leaving {
 }
 
 .reels__track {
-  height: 100%;
   transition: transform 0.38s cubic-bezier(0.25, 0.9, 0.35, 1);
   will-change: transform;
 }
@@ -474,18 +477,21 @@ body.mode-single .char.is-leaving {
   width: 100%;
   height: 100vh;
   height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 100svh;
+  flex-shrink: 0;
+  overflow: hidden;
   background: #000;
 }
 
 .reels__slide video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   pointer-events: none;
-  background: #111;
+  background: #000;
 }
 
 .reels__label {
@@ -532,9 +538,16 @@ body.mode-single .char.is-leaving {
   100% { opacity: 0; }
 }
 
+body.mode-reels {
+  background: #000 !important;
+  animation: none;
+  overflow: hidden;
+}
+
 body.mode-reels #stage,
 body.mode-reels #burst-layer,
-body.mode-reels > .hint {
+body.mode-reels > .hint,
+body.mode-reels .hold-progress {
   visibility: hidden;
   pointer-events: none;
 }

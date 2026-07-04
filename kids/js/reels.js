@@ -86,10 +86,25 @@
     });
   }
 
+  function slideHeight() {
+    return root?.clientHeight || window.innerHeight;
+  }
+
+  function translateY(index, offsetPx = 0) {
+    return `translateY(${-index * slideHeight() + offsetPx}px)`;
+  }
+
+  function syncSlideHeights() {
+    const h = slideHeight();
+    slides.forEach((slide) => {
+      slide.style.height = `${h}px`;
+    });
+  }
+
   function goTo(index) {
     const next = Math.max(0, Math.min(slides.length - 1, index));
     playSlide(next);
-    track.style.transform = `translateY(${-next * 100}vh)`;
+    track.style.transform = translateY(next);
   }
 
   function goNext() {
