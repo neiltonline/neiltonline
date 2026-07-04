@@ -538,6 +538,45 @@ body.mode-single .char.is-leaving {
   100% { opacity: 0; }
 }
 
+.reels__slide--color .reels__color-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.reels__slide--letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reels__letter {
+  font-size: clamp(120px, 40vw, 320px);
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.config__swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.config__color span:last-child {
+  line-height: 1.2;
+}
+
+.is-disabled-section {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 body.mode-reels {
   background: #000 !important;
   animation: none;

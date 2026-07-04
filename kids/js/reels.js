@@ -7,83 +7,48 @@
   let slides = [];
   let activeIndex = 0;
   let feed = [];
-  let observer = null;
   let audioUnlocked = false;
-  let currentNameAudio = null;
 
   let deps = {};
   let pointerStartY = 0;
   let pointerStartX = 0;
   let pointerStartTime = 0;
   let dragging = false;
-  let dragOffset = 0;
   let activePointers = new Set();
 
-  function shuffle(arr) {
-    const copy = [...arr];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  }
-
-  function buildFeed() {
-    const items = [];
-    for (const animal of deps.getEnabledAnimals()) {
-      const videos = deps.variants[animal.id]?.videos || [];
-      for (const src of videos) {
-        items.push({
-          animalId: animal.id,
-          label: animal.label,
-          name: animal.name,
-          src,
-        });
-      }
-    }
-    return shuffle(items);
-  }
-
-  function pauseAll() {
+  function pauseAllVideos() {
     slides.forEach((slide) => {
       const video = slide.querySelector("video");
-      if (video) {
-        video.pause();
-      }
+      if (video) video.pause();
     });
-    if (currentNameAudio) {
-      currentNameAudio.pause();
-      currentNameAudio = null;
-    }
   }
 
-  function speakName(item) {
-    if (!deps.speakAnimalName) return;
-    deps.speakAnimalName(item.animalId);
+  function speakItem(item) {
+    if (!item || !deps.speakItem) return;
+    deps.speakItem(item);
   }
 
   function playSlide(index) {
     if (index < 0 || index >= slides.length) return;
     activeIndex = index;
+    const item = feed[index];
 
     slides.forEach((slide, i) => {
       const video = slide.querySelector("video");
-      if (!video) return;
-      if (i === index) {
-        video.currentTime = 0;
-        video.muted = !audioUnlocked;
-        const playPromise = video.play();
-        if (playPromise) playPromise.catch(() => {});
-        speakName(feed[i]);
-      } else {
-        video.pause();
-        video.currentTime = 0;
+      if (video) {
+        if (i === index) {
+          video.currentTime = 0;
+          video.muted = !audioUnlocked;
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+          video.currentTime = 0;
+        }
       }
-    });
-
-    slides.forEach((slide, i) => {
       slide.classList.toggle("is-active", i === index);
     });
+
+    speakItem(item);
   }
 
   function slideHeight() {
@@ -120,8 +85,7 @@
   function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
-    const slide = slides[activeIndex];
-    const video = slide?.querySelector("video");
+    const video = slides[activeIndex]?.querySelector("video");
     if (video) {
       video.muted = false;
       video.play().catch(() => {});
@@ -141,7 +105,6 @@
     pointerStartY = e.clientY;
     pointerStartX = e.clientX;
     pointerStartTime = Date.now();
-    dragOffset = 0;
     track.classList.add("is-dragging");
     root.setPointerCapture(e.pointerId);
   }
@@ -155,8 +118,7 @@
       track.classList.remove("is-dragging");
       return;
     }
-    dragOffset = dy;
-    track.style.transform = `translateY(calc(${-activeIndex * 100}vh + ${dy}px))`;
+    track.style.transform = translateY(activeIndex, dy);
   }
 
   function onPointerUp(e) {
@@ -195,49 +157,105 @@
     }
   }
 
+  function createAnimalSlide(item) {
+    const slide = document.createElement("section");
+    slide.className = "reels__slide reels__slide--animal";
+
+    const video = document.createElement("video");
+    video.src = deps.assetUrl(item.src);
+    video.playsInline = true;
+    video.loop = true;
+    video.preload = "metadata";
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.muted = true;
+
+    const label = document.createElement("div");
+    label.className = "reels__label";
+    label.textContent = item.label;
+
+    slide.appendChild(video);
+    slide.appendChild(label);
+    return slide;
+  }
+
+  function createColorSlide(item) {
+    const slide = document.createElement("section");
+    slide.className = "reels__slide reels__slide--color";
+    slide.style.background = item.hex;
+
+    const swatch = document.createElement("div");
+    swatch.className = "reels__color-fill";
+    swatch.style.background = item.hex;
+
+    const label = document.createElement("div");
+    label.className = "reels__label";
+    label.textContent = item.label;
+    if (item.text) label.style.color = item.text;
+
+    slide.appendChild(swatch);
+    slide.appendChild(label);
+    return slide;
+  }
+
+  function createLetterSlide(item) {
+    const slide = document.createElement("section");
+    slide.className = "reels__slide reels__slide--letter";
+    slide.style.background = item.bg;
+
+    const glyph = document.createElement("div");
+    glyph.className = "reels__letter";
+    glyph.textContent = item.char;
+    glyph.style.color = item.fg;
+
+    slide.appendChild(glyph);
+    return slide;
+  }
+
   function render() {
     track.innerHTML = "";
     slides = [];
-    feed = buildFeed();
+    feed = deps.buildFeed ? deps.buildFeed() : [];
 
     if (feed.length === 0) {
-      track.innerHTML = '<p class="reels__empty">Nenhum vídeo disponível. Ative animais nas configurações.</p>';
+      track.innerHTML = "<p class=\"reels__empty\">Nada para mostrar. Ative categorias nas configurações.</p>";
       return;
     }
 
     feed.forEach((item, index) => {
-      const slide = document.createElement("section");
-      slide.className = "reels__slide";
+      let slide;
+      if (item.type === "animal") {
+        slide = createAnimalSlide(item);
+        if (index < 2) slide.querySelector("video").preload = "auto";
+      } else if (item.type === "color") {
+        slide = createColorSlide(item);
+      } else if (item.type === "letter") {
+        slide = createLetterSlide(item);
+      } else {
+        return;
+      }
       slide.dataset.index = String(index);
-
-      const video = document.createElement("video");
-      video.src = deps.assetUrl(item.src);
-      video.playsInline = true;
-      video.loop = true;
-      video.preload = index < 2 ? "auto" : "metadata";
-      video.setAttribute("playsinline", "");
-      video.setAttribute("webkit-playsinline", "");
-      video.muted = true;
-
-      const label = document.createElement("div");
-      label.className = "reels__label";
-      label.textContent = item.label;
-
-      slide.appendChild(video);
-      slide.appendChild(label);
       track.appendChild(slide);
       slides.push(slide);
     });
 
-    track.style.transform = `translateY(0)`;
+    track.style.transform = translateY(0);
     activeIndex = 0;
+    syncSlideHeights();
     playSlide(0);
+  }
+
+  function onResize() {
+    if (!document.body.classList.contains("mode-reels")) return;
+    syncSlideHeights();
+    track.style.transform = translateY(activeIndex);
   }
 
   function mount() {
     root.classList.remove("is-hidden");
     root.setAttribute("aria-hidden", "false");
     document.body.classList.add("mode-reels");
+    audioUnlocked = false;
     render();
 
     root.addEventListener("pointerdown", onPointerDown);
@@ -245,21 +263,24 @@
     root.addEventListener("pointerup", onPointerUp);
     root.addEventListener("pointercancel", onPointerUp);
     document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onResize);
   }
 
   function unmount() {
-    pauseAll();
+    pauseAllVideos();
     root.classList.add("is-hidden");
     root.setAttribute("aria-hidden", "true");
     document.body.classList.remove("mode-reels");
     track.style.transform = "";
     track.innerHTML = "";
+    audioUnlocked = false;
 
     root.removeEventListener("pointerdown", onPointerDown);
     root.removeEventListener("pointermove", onPointerMove);
     root.removeEventListener("pointerup", onPointerUp);
     root.removeEventListener("pointercancel", onPointerUp);
     document.removeEventListener("keydown", onKeyDown);
+    window.removeEventListener("resize", onResize);
   }
 
   window.TecladinhoReels = {
@@ -281,7 +302,8 @@
 
     refresh() {
       if (!document.body.classList.contains("mode-reels")) return;
-      pauseAll();
+      pauseAllVideos();
+      audioUnlocked = false;
       render();
     },
   };

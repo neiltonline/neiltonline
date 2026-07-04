@@ -16,6 +16,11 @@ NUMBERS = {
     "5": "cinco", "6": "seis", "7": "sete", "8": "oito", "9": "nove",
 }
 
+COLOR_WORDS = [
+    "vermelho", "azul", "amarelo", "verde", "laranja",
+    "roxo", "rosa", "branco", "preto", "marrom", "cinza",
+]
+
 ANIMAL_WORDS = [
     "gato", "cachorro", "vaca", "porco", "galinha", "pinto", "pato", "galo",
     "sapo", "leão", "tigre", "elefante", "urso", "raposa", "abelha", "papagaio",
@@ -49,6 +54,10 @@ async def main():
     for word in ANIMAL_WORDS:
         safe = word.replace(" ", "-")
         path = os.path.join(AUDIO_DIR, "words", f"{safe}.mp3")
+        tasks.append(generate(word, path, force=True))
+
+    for word in COLOR_WORDS:
+        path = os.path.join(AUDIO_DIR, "words", f"{word}.mp3")
         tasks.append(generate(word, path, force=True))
 
     for i in range(0, len(tasks), 5):

@@ -5,6 +5,9 @@
   const configPanel = document.getElementById("config-panel");
   const holdProgress = document.getElementById("hold-progress");
   const animalListEl = document.getElementById("cfg-animal-list");
+  const colorListEl = document.getElementById("cfg-color-list");
+  const reelsAnimalsSection = document.getElementById("cfg-reels-animals-section");
+  const reelsColorsSection = document.getElementById("cfg-reels-colors-section");
 
   const HOLD_MS = 2000;
   const CHAR_LIFETIME_MS = 14000;
@@ -36,6 +39,30 @@
   ];
 
   const ANIMALS_BY_ID = Object.fromEntries(ANIMALS.map((a) => [a.id, a]));
+
+  const COLORS = [
+    { id: "vermelho", name: "vermelho", label: "Vermelho", hex: "#E53935" },
+    { id: "azul", name: "azul", label: "Azul", hex: "#1E88E5" },
+    { id: "amarelo", name: "amarelo", label: "Amarelo", hex: "#FDD835", text: "#333" },
+    { id: "verde", name: "verde", label: "Verde", hex: "#43A047" },
+    { id: "laranja", name: "laranja", label: "Laranja", hex: "#FB8C00" },
+    { id: "roxo", name: "roxo", label: "Roxo", hex: "#8E24AA" },
+    { id: "rosa", name: "rosa", label: "Rosa", hex: "#EC407A" },
+    { id: "branco", name: "branco", label: "Branco", hex: "#F5F5F5", text: "#333" },
+    { id: "preto", name: "preto", label: "Preto", hex: "#212121" },
+    { id: "marrom", name: "marrom", label: "Marrom", hex: "#6D4C41" },
+    { id: "cinza", name: "cinza", label: "Cinza", hex: "#757575" },
+  ];
+
+  const REELS_LETTER_BACKGROUNDS = [
+    { bg: "#5C6BC0", fg: "#FFFFFF" },
+    { bg: "#26A69A", fg: "#FFFFFF" },
+    { bg: "#EF5350", fg: "#FFFFFF" },
+    { bg: "#FFA726", fg: "#333333" },
+    { bg: "#AB47BC", fg: "#FFFFFF" },
+    { bg: "#42A5F5", fg: "#FFFFFF" },
+  ];
+
   let variants = {};
 
   const BURST_COLORS = [
@@ -58,6 +85,14 @@
     return Object.fromEntries(ANIMALS.map((a) => [a.id, true]));
   }
 
+  function defaultColorToggles() {
+    return Object.fromEntries(COLORS.map((c) => [c.id, true]));
+  }
+
+  function defaultReelsCategories() {
+    return { animals: true, colors: true, letters: true };
+  }
+
   const DEFAULT_CONFIG = {
     lettersOnly: false,
     animalsOnly: false,
@@ -65,6 +100,8 @@
     animalReels: false,
     animalSounds: true,
     animals: defaultAnimalToggles(),
+    colors: defaultColorToggles(),
+    reelsCategories: defaultReelsCategories(),
   };
 
   let config = loadConfig();
@@ -93,6 +130,8 @@
         ...DEFAULT_CONFIG,
         ...parsed,
         animals: { ...defaultAnimalToggles(), ...parsed.animals },
+        colors: { ...defaultColorToggles(), ...parsed.colors },
+        reelsCategories: { ...defaultReelsCategories(), ...parsed.reelsCategories },
       };
       if (parsed.emojisOnly && merged.animalsOnly === undefined) {
         merged.animalsOnly = parsed.emojisOnly;
@@ -139,6 +178,82 @@
     return ANIMALS.filter((a) => config.animals[a.id]);
   }
 
+  function getEnabledColors() {
+    return COLORS.filter((c) => config.colors[c.id]);
+  }
+
+  function animalVideos(id) {
+    const list = variants[id]?.videos;
+    return list?.length ? list : [];
+  }
+
+  function buildReelsFeed() {
+    const items = [];
+
+    if (config.reelsCategories.animals) {
+      for (const animal of getEnabledAnimals()) {
+        for (const src of animalVideos(animal.id)) {
+          items.push({
+            type: "animal",
+            animalId: animal.id,
+            label: animal.label,
+            src,
+          });
+        }
+      }
+    }
+
+    if (config.reelsCategories.colors) {
+      for (const color of getEnabledColors()) {
+        items.push({
+          type: "color",
+          id: color.id,
+          label: color.label,
+          name: color.name,
+          hex: color.hex,
+          text: color.text,
+        });
+      }
+    }
+
+    if (config.reelsCategories.letters) {
+      LETTERS.split("").forEach((char, i) => {
+        const palette = REELS_LETTER_BACKGROUNDS[i % REELS_LETTER_BACKGROUNDS.length];
+        items.push({
+          type: "letter",
+          char,
+          bg: palette.bg,
+          fg: palette.fg,
+        });
+      });
+    }
+
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+
+    return items;
+  }
+
+  function speakReelsItem(item) {
+    if (item.type === "animal") {
+      playAudio(getAudioSrc(item.animalId, "animal"));
+      return;
+    }
+    if (item.type === "color") {
+      playAudio(assetUrl(`audio/words/${wordToFile(item.name)}.mp3`));
+      return;
+    }
+    if (item.type === "letter") {
+      if (/[0-9]/.test(item.char)) {
+        playAudio(assetUrl(`audio/numbers/${wordToFile(NUMBER_NAMES[item.char])}.mp3`));
+      } else {
+        playAudio(assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`));
+      }
+    }
+  }
+
   function pickAnimal() {
     const pool = getEnabledAnimals();
     if (pool.length === 0) return ANIMALS[0];
@@ -177,6 +292,30 @@
     }
   }
 
+  function buildColorConfigList() {
+    colorListEl.innerHTML = "";
+    COLORS.forEach((color) => {
+      const label = document.createElement("label");
+      label.className = "config__animal config__color";
+      label.innerHTML = `
+        <input type="checkbox" data-color="${color.id}" ${config.colors[color.id] ? "checked" : ""}>
+        <span class="config__swatch" style="background:${color.hex}"></span>
+        <span>${color.label}</span>
+      `;
+      label.querySelector("input").addEventListener("change", (e) => {
+        config.colors[color.id] = e.target.checked;
+        saveConfig();
+        refreshReelsIfActive();
+      });
+      colorListEl.appendChild(label);
+    });
+  }
+
+  function syncReelsConfigSections() {
+    reelsAnimalsSection.classList.toggle("is-disabled-section", !config.reelsCategories.animals);
+    reelsColorsSection.classList.toggle("is-disabled-section", !config.reelsCategories.colors);
+  }
+
   function buildAnimalConfigList() {
     animalListEl.innerHTML = "";
     ANIMALS.forEach((animal) => {
@@ -201,11 +340,18 @@
     document.getElementById("cfg-animals-only").checked = config.animalsOnly;
     document.getElementById("cfg-single-centered").checked = config.singleCentered;
     document.getElementById("cfg-animal-reels").checked = config.animalReels;
+    document.getElementById("cfg-reels-animals").checked = config.reelsCategories.animals;
+    document.getElementById("cfg-reels-colors").checked = config.reelsCategories.colors;
+    document.getElementById("cfg-reels-letters").checked = config.reelsCategories.letters;
     document.getElementById("cfg-animal-sounds").checked = config.animalSounds;
     animalListEl.querySelectorAll("[data-animal]").forEach((input) => {
       input.checked = config.animals[input.dataset.animal];
     });
+    colorListEl.querySelectorAll("[data-color]").forEach((input) => {
+      input.checked = config.colors[input.dataset.color];
+    });
     applyBodyModes();
+    syncReelsConfigSections();
   }
 
   function openConfig() {
@@ -574,6 +720,29 @@
     refreshReelsIfActive();
   });
 
+  document.getElementById("cfg-select-all-colors").addEventListener("click", () => {
+    COLORS.forEach((c) => { config.colors[c.id] = true; });
+    saveConfig();
+    syncConfigUI();
+    refreshReelsIfActive();
+  });
+
+  document.getElementById("cfg-deselect-all-colors").addEventListener("click", () => {
+    COLORS.forEach((c) => { config.colors[c.id] = false; });
+    saveConfig();
+    syncConfigUI();
+    refreshReelsIfActive();
+  });
+
+  ["animals", "colors", "letters"].forEach((cat) => {
+    document.getElementById(`cfg-reels-${cat}`).addEventListener("change", (e) => {
+      config.reelsCategories[cat] = e.target.checked;
+      saveConfig();
+      syncConfigUI();
+      refreshReelsIfActive();
+    });
+  });
+
   document.addEventListener(
     "keydown",
     (e) => {
@@ -684,16 +853,14 @@
     if (window.TecladinhoReels) {
       window.TecladinhoReels.init({
         root: document.getElementById("reels"),
-        variants,
-        getEnabledAnimals,
+        buildFeed: buildReelsFeed,
         assetUrl,
-        speakAnimalName: (animalId) => {
-          playAudio(getAudioSrc(animalId, "animal"));
-        },
+        speakItem: speakReelsItem,
       });
     }
 
     buildAnimalConfigList();
+    buildColorConfigList();
     applyBodyModes();
     hideHintTimer = setTimeout(hideHint, 4000);
   }

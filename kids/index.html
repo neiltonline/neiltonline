@@ -40,11 +40,27 @@
                 </label>
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-animal-reels">
-                    <span>Vídeos dos animais (arraste tipo Reels)</span>
+                    <span>Vídeos e arraste tipo Reels</span>
                 </label>
             </section>
 
-            <section class="config__section">
+            <section class="config__section" id="cfg-reels-categories-section">
+                <h3 class="config__label">No modo Reels, mostrar</h3>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-reels-animals" checked>
+                    <span>Animais (vídeos)</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-reels-colors" checked>
+                    <span>Cores (fala o nome)</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-reels-letters" checked>
+                    <span>Letras e números</span>
+                </label>
+            </section>
+
+            <section class="config__section" id="cfg-reels-animals-section">
                 <div class="config__section-head">
                     <h3 class="config__label">Animais</h3>
                     <div class="config__bulk-actions">
@@ -57,6 +73,17 @@
                     <span>Sons reais dos animais</span>
                 </label>
                 <div id="cfg-animal-list" class="config__animal-grid"></div>
+            </section>
+
+            <section class="config__section" id="cfg-reels-colors-section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Cores</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-colors">Todas</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-colors">Nenhuma</button>
+                    </div>
+                </div>
+                <div id="cfg-color-list" class="config__animal-grid"></div>
             </section>
 
             <p class="config__hint">Celular: segure dois dedos na tela por 2 segundos. Teclado: segure qualquer tecla por 2 segundos.</p>
