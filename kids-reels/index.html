@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <title>Tecladinho Reels 🎬</title>
+    <link rel="stylesheet" href="../kids/css/style.css">
+    <link rel="stylesheet" href="./css/overrides.css">
+</head>
+
+<body class="mode-reels">
+    <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
+    <div id="reels" class="reels" aria-hidden="false">
+        <div class="reels__track"></div>
+        <p class="reels__swipe-hint">Arraste para cima ou para baixo ↑↓</p>
+    </div>
+
+    <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
+        <div class="config__card">
+            <h2 class="config__title">Configurações</h2>
+
+            <section class="config__section">
+                <h3 class="config__label">Mostrar no feed</h3>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-reels-animals" checked>
+                    <span>Animais (vídeos)</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-reels-colors" checked>
+                    <span>Cores (fala o nome)</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-reels-letters" checked>
+                    <span>Letras e números</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-reels-words" checked>
+                    <span>Palavras (vídeos)</span>
+                </label>
+            </section>
+
+            <section class="config__section" id="cfg-reels-animals-section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Animais</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-animals">Todos</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-animals">Nenhum</button>
+                    </div>
+                </div>
+                <div id="cfg-animal-list" class="config__animal-grid"></div>
+            </section>
+
+            <section class="config__section" id="cfg-reels-colors-section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Cores</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-colors">Todas</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-colors">Nenhuma</button>
+                    </div>
+                </div>
+                <div id="cfg-color-list" class="config__animal-grid"></div>
+            </section>
+
+            <section class="config__section" id="cfg-reels-words-section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Palavras</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-words">Todas</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-words">Nenhuma</button>
+                    </div>
+                </div>
+                <p class="config__section-note">Palavras simples para crianças pequenas — família, objetos e natureza.</p>
+                <div id="cfg-word-list" class="config__animal-grid"></div>
+            </section>
+
+            <p class="config__hint">Segure dois dedos na tela por 2 segundos para abrir esta tela.</p>
+            <button type="button" class="config__close" id="config-close">Fechar</button>
+        </div>
+    </div>
+
+    <script src="./js/reels.js"></script>
+    <script src="./js/play.js"></script>
+</body>
+
+</html>

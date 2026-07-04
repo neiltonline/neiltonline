@@ -1,0 +1,52 @@
+/* Reels-specific overrides (shared base in ../kids/css/style.css) */
+
+.reels__video-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+}
+
+.reels__video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: blur(32px) brightness(0.4) saturate(1.2);
+  transform: scale(1.12);
+  pointer-events: none;
+}
+
+.reels__video-fg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+
+.reels__slide--animal video,
+.reels__slide--word video {
+  position: static;
+  inset: auto;
+}
+
+.reels__slide--animal .reels__video-stage,
+.reels__slide--word .reels__video-stage {
+  z-index: 0;
+}
+
+.reels__label {
+  z-index: 2;
+}
+
+body.mode-reels {
+  background: #000 !important;
+}

@@ -8,6 +8,7 @@
   let activeIndex = 0;
   let feed = [];
   let audioUnlocked = false;
+  let speechUnlocked = false;
 
   let deps = {};
   let pointerStartY = 0;
@@ -16,10 +17,13 @@
   let dragging = false;
   let activePointers = new Set();
 
+  function slideVideos(slide) {
+    return slide ? [...slide.querySelectorAll("video")] : [];
+  }
+
   function pauseAllVideos() {
     slides.forEach((slide) => {
-      const video = slide.querySelector("video");
-      if (video) video.pause();
+      slideVideos(slide).forEach((video) => video.pause());
     });
   }
 
@@ -28,27 +32,61 @@
     deps.speakItem(item);
   }
 
+  function playVideosForSlide(slide, muted) {
+    slideVideos(slide).forEach((video) => {
+      video.muted = muted;
+      video.loop = true;
+      video.play().catch(() => {});
+    });
+  }
+
+  function resetVideosForSlide(slide) {
+    slideVideos(slide).forEach((video) => {
+      video.pause();
+      video.currentTime = 0;
+    });
+  }
+
+  function bindVideoLoop(video) {
+    video.loop = true;
+    video.addEventListener("ended", () => {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    });
+  }
+
+  function unlockSpeech() {
+    if (speechUnlocked) return;
+    speechUnlocked = true;
+    if (deps.unlockSpeech) deps.unlockSpeech();
+    speakItem(feed[activeIndex]);
+  }
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    const slide = slides[activeIndex];
+    if (slide) playVideosForSlide(slide, false);
+  }
+
   function playSlide(index) {
     if (index < 0 || index >= slides.length) return;
     activeIndex = index;
     const item = feed[index];
 
     slides.forEach((slide, i) => {
-      const video = slide.querySelector("video");
-      if (video) {
-        if (i === index) {
+      if (i === index) {
+        slideVideos(slide).forEach((video) => {
           video.currentTime = 0;
-          video.muted = !audioUnlocked;
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-          video.currentTime = 0;
-        }
+        });
+        playVideosForSlide(slide, !audioUnlocked);
+      } else {
+        resetVideosForSlide(slide);
       }
       slide.classList.toggle("is-active", i === index);
     });
 
-    speakItem(item);
+    if (speechUnlocked) speakItem(item);
   }
 
   function slideHeight() {
@@ -82,16 +120,6 @@
     else goTo(slides.length - 1);
   }
 
-  function unlockAudio() {
-    if (audioUnlocked) return;
-    audioUnlocked = true;
-    const video = slides[activeIndex]?.querySelector("video");
-    if (video) {
-      video.muted = false;
-      video.play().catch(() => {});
-    }
-  }
-
   function onPointerDown(e) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
     activePointers.add(e.pointerId);
@@ -101,6 +129,7 @@
       goTo(activeIndex);
       return;
     }
+    unlockSpeech();
     dragging = true;
     pointerStartY = e.clientY;
     pointerStartX = e.clientX;
@@ -131,6 +160,7 @@
     const dt = Date.now() - pointerStartTime;
     const fast = dt < SWIPE_MAX_MS;
 
+    unlockSpeech();
     unlockAudio();
 
     if (dy < -SWIPE_THRESHOLD || (fast && dy < -24)) {
@@ -147,36 +177,57 @@
   function onKeyDown(e) {
     if (e.key === "ArrowDown" || e.key === "PageDown") {
       e.preventDefault();
+      unlockSpeech();
       unlockAudio();
       goNext();
     }
     if (e.key === "ArrowUp" || e.key === "PageUp") {
       e.preventDefault();
+      unlockSpeech();
       unlockAudio();
       goPrev();
     }
   }
 
-  function createAnimalSlide(item) {
-    const slide = document.createElement("section");
-    slide.className = "reels__slide reels__slide--animal";
-
+  function makeVideoElement(src, className) {
     const video = document.createElement("video");
-    video.src = deps.assetUrl(item.src);
+    video.src = src;
+    video.className = className;
     video.playsInline = true;
-    video.loop = true;
     video.preload = "metadata";
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
     video.muted = true;
+    bindVideoLoop(video);
+    return video;
+  }
+
+  function createVideoSlide(item, slideClass) {
+    const slide = document.createElement("section");
+    slide.className = `reels__slide ${slideClass}`;
+
+    const stage = document.createElement("div");
+    stage.className = "reels__video-stage";
+
+    const src = deps.assetUrl(item.src);
+    stage.appendChild(makeVideoElement(src, "reels__video-bg"));
+    stage.appendChild(makeVideoElement(src, "reels__video-fg"));
 
     const label = document.createElement("div");
     label.className = "reels__label";
     label.textContent = item.label;
 
-    slide.appendChild(video);
+    slide.appendChild(stage);
     slide.appendChild(label);
     return slide;
+  }
+
+  function createAnimalSlide(item) {
+    return createVideoSlide(item, "reels__slide--animal");
+  }
+
+  function createWordSlide(item) {
+    return createVideoSlide(item, "reels__slide--word");
   }
 
   function createColorSlide(item) {
@@ -212,28 +263,6 @@
     return slide;
   }
 
-  function createWordSlide(item) {
-    const slide = document.createElement("section");
-    slide.className = "reels__slide reels__slide--word";
-
-    const video = document.createElement("video");
-    video.src = deps.assetUrl(item.src);
-    video.playsInline = true;
-    video.loop = true;
-    video.preload = "metadata";
-    video.setAttribute("playsinline", "");
-    video.setAttribute("webkit-playsinline", "");
-    video.muted = true;
-
-    const label = document.createElement("div");
-    label.className = "reels__label";
-    label.textContent = item.label;
-
-    slide.appendChild(video);
-    slide.appendChild(label);
-    return slide;
-  }
-
   function render() {
     track.innerHTML = "";
     slides = [];
@@ -248,10 +277,10 @@
       let slide;
       if (item.type === "animal") {
         slide = createAnimalSlide(item);
-        if (index < 2) slide.querySelector("video").preload = "auto";
+        if (index < 2) slideVideos(slide).forEach((v) => { v.preload = "auto"; });
       } else if (item.type === "word") {
         slide = createWordSlide(item);
-        if (index < 2) slide.querySelector("video").preload = "auto";
+        if (index < 2) slideVideos(slide).forEach((v) => { v.preload = "auto"; });
       } else if (item.type === "color") {
         slide = createColorSlide(item);
       } else if (item.type === "letter") {
@@ -271,7 +300,6 @@
   }
 
   function onResize() {
-    if (!document.body.classList.contains("mode-reels")) return;
     syncSlideHeights();
     track.style.transform = translateY(activeIndex);
   }
@@ -281,6 +309,7 @@
     root.setAttribute("aria-hidden", "false");
     document.body.classList.add("mode-reels");
     audioUnlocked = false;
+    speechUnlocked = false;
     render();
 
     root.addEventListener("pointerdown", onPointerDown);
@@ -299,6 +328,7 @@
     track.style.transform = "";
     track.innerHTML = "";
     audioUnlocked = false;
+    speechUnlocked = false;
 
     root.removeEventListener("pointerdown", onPointerDown);
     root.removeEventListener("pointermove", onPointerMove);
@@ -326,9 +356,9 @@
     },
 
     refresh() {
-      if (!document.body.classList.contains("mode-reels")) return;
       pauseAllVideos();
       audioUnlocked = false;
+      speechUnlocked = false;
       render();
     },
   };

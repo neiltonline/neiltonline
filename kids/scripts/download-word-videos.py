@@ -11,7 +11,14 @@ VIDEOS_DIR = os.path.join(os.path.dirname(__file__), "..", "videos", "words")
 API = "https://commons.wikimedia.org/w/api.php"
 USER_AGENT = "TecladinhoKids/1.0 (educational kids app; contact: neiltonline@gmail.com)"
 MAX_SECONDS = 10
-MAX_WIDTH = 640
+REELS_VF = (
+    "crop="
+    "'if(gt(iw/ih\\,9/16)\\,ih*9/16\\,iw)':"
+    "'if(gt(iw/ih\\,9/16)\\,ih\\,iw*16/9)':"
+    "'if(gt(iw/ih\\,9/16)\\,(iw-ih*9/16)/2\\,0)':"
+    "'if(gt(iw/ih\\,9/16)\\,0\\,(ih-iw*16/9)/2)',"
+    "scale=720:-2"
+)
 
 # slug -> list of Wikimedia filenames (CC / public domain)
 WIKI_VIDEOS = {
@@ -125,7 +132,7 @@ def to_mp4(src, dest):
         [
             "ffmpeg", "-y", "-i", src,
             "-t", str(MAX_SECONDS),
-            "-vf", f"scale='min({MAX_WIDTH},iw)':-2",
+            "-vf", REELS_VF,
             "-c:v", "libx264", "-preset", "fast", "-crf", "28",
             "-c:a", "aac", "-b:a", "64k", "-ac", "1",
             "-movflags", "+faststart",

@@ -14,10 +14,6 @@
     <div id="stage" aria-live="polite" aria-label="Área de brincadeira"></div>
     <div id="burst-layer" aria-hidden="true"></div>
     <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
-    <div id="reels" class="reels is-hidden" aria-hidden="true">
-        <div class="reels__track"></div>
-        <p class="reels__swipe-hint">Arraste para cima ou para baixo ↑↓</p>
-    </div>
     <p class="hint" id="hint">Toque na tela para brincar! ✨</p>
 
     <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
@@ -38,33 +34,9 @@
                     <input type="checkbox" id="cfg-single-centered">
                     <span>Um item gigante no centro</span>
                 </label>
-                <label class="config__toggle">
-                    <input type="checkbox" id="cfg-animal-reels">
-                    <span>Vídeos e arraste tipo Reels</span>
-                </label>
             </section>
 
-            <section class="config__section" id="cfg-reels-categories-section">
-                <h3 class="config__label">No modo Reels, mostrar</h3>
-                <label class="config__toggle">
-                    <input type="checkbox" id="cfg-reels-animals" checked>
-                    <span>Animais (vídeos)</span>
-                </label>
-                <label class="config__toggle">
-                    <input type="checkbox" id="cfg-reels-colors" checked>
-                    <span>Cores (fala o nome)</span>
-                </label>
-                <label class="config__toggle">
-                    <input type="checkbox" id="cfg-reels-letters" checked>
-                    <span>Letras e números</span>
-                </label>
-                <label class="config__toggle">
-                    <input type="checkbox" id="cfg-reels-words" checked>
-                    <span>Palavras (vídeos)</span>
-                </label>
-            </section>
-
-            <section class="config__section" id="cfg-reels-animals-section">
+            <section class="config__section">
                 <div class="config__section-head">
                     <h3 class="config__label">Animais</h3>
                     <div class="config__bulk-actions">
@@ -79,35 +51,12 @@
                 <div id="cfg-animal-list" class="config__animal-grid"></div>
             </section>
 
-            <section class="config__section" id="cfg-reels-colors-section">
-                <div class="config__section-head">
-                    <h3 class="config__label">Cores</h3>
-                    <div class="config__bulk-actions">
-                        <button type="button" class="config__link-btn" id="cfg-select-all-colors">Todas</button>
-                        <button type="button" class="config__link-btn" id="cfg-deselect-all-colors">Nenhuma</button>
-                    </div>
-                </div>
-                <div id="cfg-color-list" class="config__animal-grid"></div>
-            </section>
-
-            <section class="config__section" id="cfg-reels-words-section">
-                <div class="config__section-head">
-                    <h3 class="config__label">Palavras</h3>
-                    <div class="config__bulk-actions">
-                        <button type="button" class="config__link-btn" id="cfg-select-all-words">Todas</button>
-                        <button type="button" class="config__link-btn" id="cfg-deselect-all-words">Nenhuma</button>
-                    </div>
-                </div>
-                <p class="config__section-note">Palavras simples para crianças pequenas — família, objetos e natureza.</p>
-                <div id="cfg-word-list" class="config__animal-grid"></div>
-            </section>
-
             <p class="config__hint">Celular: segure dois dedos na tela por 2 segundos. Teclado: segure qualquer tecla por 2 segundos.</p>
+            <p class="config__section-note">Modo Reels (vídeos): <a href="../kids-reels/">kids-reels</a></p>
             <button type="button" class="config__close" id="config-close">Fechar</button>
         </div>
     </div>
 
-    <script src="./js/reels.js"></script>
     <script src="./js/play.js"></script>
 </body>
 
