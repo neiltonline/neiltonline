@@ -19,6 +19,7 @@ NUMBERS = {
 COLOR_WORDS = [
     "vermelho", "azul", "amarelo", "verde", "laranja",
     "roxo", "rosa", "branco", "preto", "marrom", "cinza",
+    "anil", "violeta", "turquesa", "lilás", "dourado", "bege", "coral", "vinho",
 ]
 
 ANIMAL_WORDS = [
