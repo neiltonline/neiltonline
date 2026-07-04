@@ -1,8 +1,41 @@
-/* Reels-specific overrides (shared base in ../kids/css/style.css) */
+/* Reels mobile-first overrides (shared base in ../kids/css/style.css) */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body.mode-reels {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+}
+
+body.mode-reels {
+  background: #000 !important;
+  touch-action: manipulation;
+}
+
+.reels {
+  height: var(--reels-h, 100dvh);
+  height: var(--reels-h, 100svh);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  -webkit-tap-highlight-color: transparent;
+}
 
 .reels__track {
   display: flex;
   flex-direction: column;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.reels__slide {
+  height: var(--reels-h, 100dvh) !important;
+  min-height: var(--reels-h, 100dvh) !important;
 }
 
 .reels__video-stage {
@@ -22,8 +55,8 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  filter: blur(32px) brightness(0.4) saturate(1.2);
-  transform: scale(1.12);
+  filter: blur(28px) brightness(0.35) saturate(1.15);
+  transform: scale(1.1);
   pointer-events: none;
 }
 
@@ -32,6 +65,7 @@
   z-index: 1;
   width: 100%;
   height: 100%;
+  max-height: 100%;
   object-fit: cover;
   object-position: center;
   pointer-events: none;
@@ -50,10 +84,37 @@
 
 .reels__label {
   z-index: 2;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(20px, calc(env(safe-area-inset-bottom) + 8px));
+  max-width: calc(100% - 32px);
+  font-size: clamp(20px, 6vw, 30px);
+  padding: 12px 20px;
 }
 
-body.mode-reels {
-  background: #000 !important;
+.reels__swipe-hint {
+  top: max(16px, env(safe-area-inset-top));
+  padding: 10px 18px;
+  font-size: clamp(13px, 3.8vw, 15px);
+  font-weight: 600;
+  z-index: 5;
+  white-space: nowrap;
+}
+
+.reels:not(.has-swiped) .reels__swipe-hint {
+  animation: reelsHintPulse 2.4s ease-in-out infinite;
+  opacity: 1;
+}
+
+.reels__swipe-hint.is-dismissed {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+@keyframes reelsHintPulse {
+  0%, 100% { opacity: 0.88; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(-3px); }
 }
 
 .reels__slide--color {
@@ -69,32 +130,39 @@ body.mode-reels {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(12px, 3vw, 24px);
-  padding: max(48px, 10vh) 6% max(100px, 14vh);
+  gap: clamp(10px, 2.5vw, 20px);
+  padding: max(56px, 12vh) 5% max(88px, calc(env(safe-area-inset-bottom) + 72px));
   box-sizing: border-box;
 }
 
 .reels__color-object {
   flex: 1 1 auto;
-  width: min(78vw, 380px);
-  max-height: 58vh;
+  width: min(82vw, 360px);
+  max-height: 52vh;
   object-fit: contain;
-  border-radius: 20px;
-  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.38));
+  border-radius: 18px;
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.35));
   pointer-events: none;
 }
 
 .reels__color-object-name {
   flex-shrink: 0;
-  padding: 8px 20px;
+  padding: 10px 18px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.3);
   color: #fff;
-  font-size: clamp(16px, 4.5vw, 22px);
+  font-size: clamp(17px, 4.8vw, 22px);
   font-weight: 700;
   letter-spacing: 0.02em;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   pointer-events: none;
+}
+
+.reels__letter {
+  font-size: clamp(96px, 36vw, 280px);
+  padding: 0 4vw;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .config__color-thumb {
@@ -108,8 +176,75 @@ body.mode-reels {
 
 .reels__empty {
   color: #fff;
-  font-size: clamp(16px, 4.5vw, 20px);
+  font-size: clamp(17px, 4.8vw, 20px);
   line-height: 1.5;
   text-align: center;
-  padding: 40px 24px;
+  padding: max(40px, 10vh) 24px;
+}
+
+/* Mobile portrait: show full vertical video without cropping */
+@media (pointer: coarse) and (orientation: portrait) {
+  .reels__video-fg {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .reels__video-bg {
+    filter: blur(20px) brightness(0.3);
+  }
+}
+
+/* Tap zones hint (subtle) until first swipe */
+.reels:not(.has-swiped)::before,
+.reels:not(.has-swiped)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 18%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.reels:not(.has-swiped)::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.06), transparent);
+}
+
+.reels:not(.has-swiped)::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.06), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reels:not(.has-swiped) .reels__swipe-hint {
+    animation: none;
+  }
+}
+
+/* Config panel: easier to use on phones */
+@media (pointer: coarse) {
+  .config__card {
+    max-height: min(88dvh, calc(var(--reels-h, 100dvh) - 24px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+
+  .config__close {
+    min-height: 48px;
+    font-size: 17px;
+  }
+
+  .config__toggle,
+  .config__animal {
+    min-height: 48px;
+  }
+
+  .config__link-btn {
+    min-height: 40px;
+    padding: 8px 12px;
+  }
 }
