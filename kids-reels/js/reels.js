@@ -1,6 +1,8 @@
 (function () {
   const SWIPE_THRESHOLD = 56;
   const SWIPE_MAX_MS = 700;
+  const PREFETCH_AHEAD = 3;
+  const PREFETCH_BEHIND = 1;
 
   let root = null;
   let track = null;
@@ -17,6 +19,97 @@
   let dragging = false;
   let activePointers = new Set();
   let speechGeneration = 0;
+
+  const videoCache = new Map();
+  const prefetchingVideos = new Set();
+  const prefetchedImages = new Set();
+
+  function revokeVideoCache() {
+    videoCache.forEach((blobUrl) => URL.revokeObjectURL(blobUrl));
+    videoCache.clear();
+    prefetchingVideos.clear();
+    prefetchedImages.clear();
+  }
+
+  function prefetchImage(url) {
+    if (!url || prefetchedImages.has(url)) return;
+    prefetchedImages.add(url);
+    const img = new Image();
+    img.decoding = "async";
+    img.src = url;
+  }
+
+  function prefetchVideo(url) {
+    if (!url || videoCache.has(url) || prefetchingVideos.has(url)) return Promise.resolve();
+    prefetchingVideos.add(url);
+    return fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.blob();
+      })
+      .then((blob) => {
+        if (!videoCache.has(url)) {
+          videoCache.set(url, URL.createObjectURL(blob));
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        prefetchingVideos.delete(url);
+      });
+  }
+
+  function resolvedVideoSrc(url) {
+    return videoCache.get(url) || url;
+  }
+
+  function applyVideoSrc(video, url) {
+    video.dataset.originalSrc = url;
+    video.src = resolvedVideoSrc(url);
+    if (!videoCache.has(url)) {
+      prefetchVideo(url).then(() => {
+        const blobUrl = videoCache.get(url);
+        if (blobUrl && video.dataset.originalSrc === url) {
+          video.src = blobUrl;
+        }
+      });
+    }
+  }
+
+  function warmSlideVideos(slide) {
+    slideVideos(slide).forEach((video) => {
+      video.preload = "auto";
+      if (video.readyState < 2) {
+        video.load();
+      }
+    });
+  }
+
+  function prefetchFeedIndex(index) {
+    if (index < 0 || index >= feed.length) return;
+    const item = feed[index];
+    if (!item) return;
+    if (item.src && deps.assetUrl) {
+      const url = deps.assetUrl(item.src);
+      prefetchVideo(url).then(() => {
+        const slide = slides[index];
+        if (slide) warmSlideVideos(slide);
+      });
+    }
+    if (item.image && deps.assetUrl) {
+      prefetchImage(deps.assetUrl(item.image));
+    }
+  }
+
+  function prefetchAround(index) {
+    if (!feed.length) return;
+    prefetchFeedIndex(index);
+    for (let i = 1; i <= PREFETCH_AHEAD; i++) {
+      prefetchFeedIndex((index + i) % feed.length);
+    }
+    for (let i = 1; i <= PREFETCH_BEHIND; i++) {
+      prefetchFeedIndex((index - i + feed.length) % feed.length);
+    }
+  }
 
   function setSlideMediaVisible(slide, visible) {
     if (!slide) return;
@@ -131,6 +224,7 @@
     });
 
     beginSlideSequence(item, slide);
+    prefetchAround(index);
   }
 
   function slideHeight() {
@@ -235,13 +329,13 @@
 
   function makeVideoElement(src, className) {
     const video = document.createElement("video");
-    video.src = src;
     video.className = className;
     video.playsInline = true;
-    video.preload = "metadata";
+    video.preload = "auto";
     video.setAttribute("playsinline", "");
     video.setAttribute("webkit-playsinline", "");
     video.muted = true;
+    applyVideoSrc(video, src);
     bindVideoLoop(video);
     return video;
   }
@@ -359,10 +453,8 @@
       let slide;
       if (item.type === "animal") {
         slide = createAnimalSlide(item);
-        if (index < 2) slideVideos(slide).forEach((v) => { v.preload = "auto"; });
       } else if (item.type === "word") {
         slide = createWordSlide(item);
-        if (index < 2) slideVideos(slide).forEach((v) => { v.preload = "auto"; });
       } else if (item.type === "color") {
         slide = createColorSlide(item);
       } else if (item.type === "body") {
@@ -380,6 +472,7 @@
     track.style.transform = translateY(0);
     activeIndex = 0;
     syncSlideHeights();
+    prefetchAround(0);
     playSlide(0);
   }
 
@@ -406,6 +499,7 @@
 
   function unmount() {
     pauseAllVideos();
+    revokeVideoCache();
     root.classList.add("is-hidden");
     root.setAttribute("aria-hidden", "true");
     document.body.classList.remove("mode-reels");
@@ -441,6 +535,7 @@
 
     refresh() {
       pauseAllVideos();
+      revokeVideoCache();
       audioUnlocked = false;
       speechUnlocked = false;
       render();
