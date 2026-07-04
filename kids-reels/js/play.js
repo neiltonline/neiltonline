@@ -6,10 +6,6 @@
   const ILLUS = () => window.TecladinhoIllus;
 
   const configPanel = document.getElementById("config-panel");
-  const parentGate = document.getElementById("parent-gate");
-  const parentGateQuestion = document.getElementById("parent-gate-question");
-  const parentGateAnswerInput = document.getElementById("parent-gate-answer");
-  const parentGateError = document.getElementById("parent-gate-error");
   const holdProgress = document.getElementById("hold-progress");
   const animalListEl = document.getElementById("cfg-animal-list");
   const colorListEl = document.getElementById("cfg-color-list");
@@ -200,7 +196,6 @@
   let audioCtx = null;
   const audioPool = new Map();
   let configOpen = false;
-  let parentGateAnswer = 0;
   let parentHoldRaf = null;
 
   function saveConfig() {
@@ -800,18 +795,10 @@
     syncReelsConfigSections();
   }
 
-  function newParentQuestion() {
-    const a = 2 + Math.floor(Math.random() * 8);
-    const b = 2 + Math.floor(Math.random() * 8);
-    parentGateAnswer = a + b;
-    return `${a} + ${b}`;
-  }
-
   function showParentHoldProgress(pct) {
     holdProgress.classList.add("is-active");
     holdProgress.setAttribute("aria-hidden", "false");
     holdProgress.style.setProperty("--hold-deg", `${pct * 360}deg`);
-    delete holdProgress.dataset.taps;
   }
 
   function hideParentHoldProgress() {
@@ -820,36 +807,6 @@
     holdProgress.style.setProperty("--hold-deg", "0deg");
     if (parentHoldRaf) cancelAnimationFrame(parentHoldRaf);
     parentHoldRaf = null;
-  }
-
-  function showParentGate() {
-    hideParentHoldProgress();
-    parentGateQuestion.textContent = `Quanto é ${newParentQuestion()}?`;
-    parentGateAnswerInput.value = "";
-    parentGateError.hidden = true;
-    parentGate.classList.add("is-open");
-    parentGate.setAttribute("aria-hidden", "false");
-    parentGateAnswerInput.focus();
-  }
-
-  function hideParentGate() {
-    parentGate.classList.remove("is-open");
-    parentGate.setAttribute("aria-hidden", "true");
-    parentGateAnswerInput.value = "";
-    parentGateError.hidden = true;
-  }
-
-  function submitParentGate() {
-    const value = Number.parseInt(parentGateAnswerInput.value, 10);
-    if (value === parentGateAnswer) {
-      hideParentGate();
-      openConfig();
-      return;
-    }
-    parentGateError.hidden = false;
-    parentGateQuestion.textContent = `Quanto é ${newParentQuestion()}?`;
-    parentGateAnswerInput.value = "";
-    parentGateAnswerInput.focus();
   }
 
   function openConfig() {
@@ -869,14 +826,6 @@
   }
 
   document.getElementById("config-close").addEventListener("click", closeConfig);
-  document.getElementById("parent-gate-submit").addEventListener("click", submitParentGate);
-  document.getElementById("parent-gate-cancel").addEventListener("click", hideParentGate);
-  parentGateAnswerInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") submitParentGate();
-  });
-  parentGate.addEventListener("click", (e) => {
-    if (e.target === parentGate) hideParentGate();
-  });
   configPanel.addEventListener("click", (e) => {
     if (e.target === configPanel) closeConfig();
   });
@@ -966,10 +915,10 @@
         stopSpeak: stopSpeaking,
         warmItem,
         illusFallback,
-        onParentHoldComplete: showParentGate,
+        onParentHoldComplete: openConfig,
         onParentHoldProgress: showParentHoldProgress,
         onParentHoldCancel: hideParentHoldProgress,
-        isConfigOpen: () => configOpen || parentGate.classList.contains("is-open"),
+        isConfigOpen: () => configOpen,
         parentHoldMs: () => PARENT_HOLD_MS,
         tapToRepeat: () => config.tapRepeat,
       });
