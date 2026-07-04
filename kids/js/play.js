@@ -11,31 +11,32 @@
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   const ANIMALS = [
-    { id: "gato", name: "gato", label: "Gato", image: "images/animals/gato.jpg" },
-    { id: "cachorro", name: "cachorro", label: "Cachorro", image: "images/animals/cachorro.jpg" },
-    { id: "vaca", name: "vaca", label: "Vaca", image: "images/animals/vaca.jpg" },
-    { id: "porco", name: "porco", label: "Porco", image: "images/animals/porco.jpg" },
-    { id: "galinha", name: "galinha", label: "Galinha", image: "images/animals/galinha.jpg" },
-    { id: "pinto", name: "pinto", label: "Pintinho", image: "images/animals/pinto.jpg" },
-    { id: "pato", name: "pato", label: "Pato", image: "images/animals/pato.jpg" },
-    { id: "galo", name: "galo", label: "Galo", image: "images/animals/galo.jpg" },
-    { id: "sapo", name: "sapo", label: "Sapo", image: "images/animals/sapo.jpg" },
-    { id: "leao", name: "leão", label: "Leão", image: "images/animals/leao.jpg" },
-    { id: "tigre", name: "tigre", label: "Tigre", image: "images/animals/tigre.jpg" },
-    { id: "elefante", name: "elefante", label: "Elefante", image: "images/animals/elefante.jpg" },
-    { id: "urso", name: "urso", label: "Urso", image: "images/animals/urso.jpg" },
-    { id: "raposa", name: "raposa", label: "Raposa", image: "images/animals/raposa.jpg" },
-    { id: "abelha", name: "abelha", label: "Abelha", image: "images/animals/abelha.jpg" },
-    { id: "papagaio", name: "papagaio", label: "Papagaio", image: "images/animals/papagaio.jpg" },
-    { id: "jacare", name: "jacaré", label: "Jacaré", image: "images/animals/jacare.jpg" },
-    { id: "cavalo", name: "cavalo", label: "Cavalo", image: "images/animals/cavalo.jpg" },
-    { id: "ovelha", name: "ovelha", label: "Ovelha", image: "images/animals/ovelha.jpg" },
-    { id: "coruja", name: "coruja", label: "Coruja", image: "images/animals/coruja.jpg" },
-    { id: "lobo", name: "lobo", label: "Lobo", image: "images/animals/lobo.jpg" },
-    { id: "macaco", name: "macaco", label: "Macaco", image: "images/animals/macaco.jpg" },
+    { id: "gato", name: "gato", label: "Gato" },
+    { id: "cachorro", name: "cachorro", label: "Cachorro" },
+    { id: "vaca", name: "vaca", label: "Vaca" },
+    { id: "porco", name: "porco", label: "Porco" },
+    { id: "galinha", name: "galinha", label: "Galinha" },
+    { id: "pinto", name: "pinto", label: "Pintinho" },
+    { id: "pato", name: "pato", label: "Pato" },
+    { id: "galo", name: "galo", label: "Galo" },
+    { id: "sapo", name: "sapo", label: "Sapo" },
+    { id: "leao", name: "leão", label: "Leão" },
+    { id: "tigre", name: "tigre", label: "Tigre" },
+    { id: "elefante", name: "elefante", label: "Elefante" },
+    { id: "urso", name: "urso", label: "Urso" },
+    { id: "raposa", name: "raposa", label: "Raposa" },
+    { id: "abelha", name: "abelha", label: "Abelha" },
+    { id: "papagaio", name: "papagaio", label: "Papagaio" },
+    { id: "jacare", name: "jacaré", label: "Jacaré" },
+    { id: "cavalo", name: "cavalo", label: "Cavalo" },
+    { id: "ovelha", name: "ovelha", label: "Ovelha" },
+    { id: "coruja", name: "coruja", label: "Coruja" },
+    { id: "lobo", name: "lobo", label: "Lobo" },
+    { id: "macaco", name: "macaco", label: "Macaco" },
   ];
 
   const ANIMALS_BY_ID = Object.fromEntries(ANIMALS.map((a) => [a.id, a]));
+  let variants = {};
 
   const BURST_COLORS = [
     "#FF3366", "#FF6B35", "#FFD23F", "#3DD68C",
@@ -111,6 +112,28 @@
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
+  function animalImages(id) {
+    const list = variants[id]?.images;
+    return list?.length ? list : [`images/animals/${id}.jpg`];
+  }
+
+  function animalSounds(id) {
+    const list = variants[id]?.sounds;
+    return list?.length ? list : [`audio/sounds/${id}.mp3`];
+  }
+
+  function pickAnimalImage(id) {
+    return pick(animalImages(id));
+  }
+
+  function pickAnimalSound(id) {
+    return pick(animalSounds(id));
+  }
+
+  function assetUrl(path) {
+    return new URL(path, window.location.href).href;
+  }
+
   function getEnabledAnimals() {
     return ANIMALS.filter((a) => config.animals[a.id]);
   }
@@ -149,7 +172,7 @@
       label.className = "config__animal";
       label.innerHTML = `
         <input type="checkbox" data-animal="${animal.id}" ${config.animals[animal.id] ? "checked" : ""}>
-        <img src="${animal.image}" alt="" width="48" height="48" loading="lazy">
+        <img src="${animalImages(animal.id)[0]}" alt="" width="48" height="48" loading="lazy">
         <span>${animal.label}</span>
       `;
       label.querySelector("input").addEventListener("change", (e) => {
@@ -273,8 +296,8 @@
     return new URL(path, window.location.href).href;
   }
 
-  function getAnimalSoundSrc(animalId) {
-    return new URL(`audio/sounds/${animalId}.mp3`, window.location.href).href;
+  function getAnimalSoundSrc(animalId, soundPath) {
+    return assetUrl(soundPath || pickAnimalSound(animalId));
   }
 
   function playAudio(src, onEnd) {
@@ -291,12 +314,12 @@
     audio.play().catch(() => onEnd?.());
   }
 
-  function speak(content, type) {
+  function speak(content, type, soundPath) {
     const src = getAudioSrc(content, type);
 
     const playAnimalSound = () => {
       if (type !== "animal" || !config.animalSounds) return;
-      playAudio(getAnimalSoundSrc(content));
+      playAudio(getAnimalSoundSrc(content, soundPath));
     };
 
     playAudio(src, playAnimalSound);
@@ -403,7 +426,8 @@
     el.style.setProperty("--rot", pos.rot + "deg");
 
     const img = document.createElement("img");
-    img.src = animal.image;
+    const soundPath = pickAnimalSound(animal.id);
+    img.src = pickAnimalImage(animal.id);
     img.alt = animal.label;
     img.draggable = false;
     el.appendChild(img);
@@ -416,7 +440,7 @@
     }
 
     spawnBurst(pos.x, pos.y, burstColor);
-    speak(animal.id, "animal");
+    speak(animal.id, "animal", soundPath);
     hideHint();
   }
 
@@ -603,7 +627,18 @@
     { passive: false }
   );
 
-  buildAnimalConfigList();
-  applyBodyModes();
-  hideHintTimer = setTimeout(hideHint, 4000);
+  async function init() {
+    try {
+      const res = await fetch(assetUrl("data/manifest.json"));
+      if (res.ok) variants = await res.json();
+    } catch {
+      /* fallback to single asset per animal */
+    }
+
+    buildAnimalConfigList();
+    applyBodyModes();
+    hideHintTimer = setTimeout(hideHint, 4000);
+  }
+
+  init();
 })();
