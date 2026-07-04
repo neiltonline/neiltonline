@@ -175,6 +175,7 @@
   let currentAudio = null;
   let speechPrimed = false;
   let pendingSpeak = null;
+  const audioPool = new Map();
   let configOpen = false;
   let touchHoldTimer = null;
   let touchHoldStart = null;
@@ -348,66 +349,118 @@
 
   function stopSpeaking() {
     if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
       currentAudio.onended = null;
       currentAudio.onerror = null;
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
       currentAudio = null;
     }
   }
 
-  function playAudio(src, onEnd, { chain = false } = {}) {
-    if (!chain) stopSpeaking();
-
-    let finished = false;
-    let safety = null;
+  function warmAudio(src) {
+    if (!src || audioPool.has(src)) return;
     const audio = new Audio();
     audio.preload = "auto";
     audio.src = src;
+    audio.load();
+    audioPool.set(src, audio);
+  }
+
+  function audioSourcesForItem(item) {
+    if (!item) return [];
+    if (item.type === "animal") {
+      return [getAudioSrc(item.animalId, "animal"), animalSoundSrc(item.animalId)];
+    }
+    if (item.type === "color") {
+      return [assetUrl(`audio/words/${wordToFile(item.name)}.mp3`)];
+    }
+    if (item.type === "letter") {
+      if (/[0-9]/.test(item.char)) {
+        return [assetUrl(`audio/numbers/${wordToFile(NUMBER_NAMES[item.char])}.mp3`)];
+      }
+      return [assetUrl(`audio/letters/${item.char.toLowerCase()}.mp3`)];
+    }
+    if (item.type === "word") {
+      return [assetUrl(`audio/words/${wordToFile(item.name)}.mp3`)];
+    }
+    if (item.type === "body") {
+      return [assetUrl(`audio/body/${wordToFile(item.name)}.mp3`)];
+    }
+    return [];
+  }
+
+  function warmItem(item) {
+    if (!item) return;
+    audioSourcesForItem(item).forEach(warmAudio);
+    if (item.illustration) {
+      const probe = new Image();
+      probe.src = item.illustration;
+    }
+  }
+
+  function playAudio(src, onEnd, { chain = false } = {}) {
+    if (!src) {
+      onEnd?.();
+      return;
+    }
+    if (!chain) stopSpeaking();
+
+    warmAudio(src);
+    const audio = audioPool.get(src);
+    audio.currentTime = 0;
     currentAudio = audio;
 
-    const done = () => {
-      if (finished) return;
-      finished = true;
-      if (safety) clearTimeout(safety);
+    let ended = false;
+    const finish = () => {
+      if (ended) return;
+      ended = true;
+      audio.onended = null;
+      audio.onerror = null;
       if (currentAudio === audio) currentAudio = null;
       onEnd?.();
     };
 
-    audio.addEventListener("ended", done, { once: true });
-    audio.addEventListener("error", () => {
-      if (!speechPrimed && !chain) {
-        pendingSpeak = () => playAudio(src, onEnd, { chain });
-        return;
-      }
-      done();
-    }, { once: true });
+    audio.onended = finish;
+    audio.onerror = finish;
 
-    audio.play().then(() => {
-      pendingSpeak = null;
-      safety = setTimeout(done, 6000);
-    }).catch(() => {
-      if (!speechPrimed && !chain) {
-        pendingSpeak = () => playAudio(src, onEnd, { chain });
-        return;
-      }
-      done();
-    });
+    const attempt = () => {
+      const playPromise = audio.play();
+      if (!playPromise) return;
+      playPromise.then(() => {
+        pendingSpeak = null;
+      }).catch(() => {
+        if (!speechPrimed) return;
+        finish();
+      });
+    };
+
+    if (audio.readyState >= HTMLMediaElement.HAVE_ENOUGH_DATA) {
+      attempt();
+    } else {
+      audio.addEventListener("canplaythrough", attempt, { once: true });
+      attempt();
+    }
   }
 
   function playAudioSequence(sources, onEnd) {
-    pendingSpeak = () => playAudioSequence(sources, onEnd);
+    const list = sources.filter(Boolean);
+    if (!list.length) {
+      pendingSpeak = null;
+      onEnd?.();
+      return;
+    }
+    pendingSpeak = () => playAudioSequence(list, onEnd);
+    list.forEach(warmAudio);
     let i = 0;
-    function next() {
-      if (i >= sources.length) {
+    const next = () => {
+      if (i >= list.length) {
         pendingSpeak = null;
         onEnd?.();
         return;
       }
-      const idx = i + 1;
-      const src = sources[i++];
-      playAudio(src, next, { chain: idx > 1 });
-    }
+      const chain = i > 0;
+      playAudio(list[i++], next, { chain });
+    };
     stopSpeaking();
     next();
   }
@@ -427,6 +480,10 @@
   }
 
   function speakReelsItem(item) {
+    if (!item) return;
+    pendingSpeak = () => speakReelsItem(item);
+    warmItem(item);
+
     if (item.type === "animal") {
       playAudioSequence([
         getAudioSrc(item.animalId, "animal"),
@@ -703,6 +760,11 @@
     else if (remainingPointers === 0) cancelTouchHold();
   }
 
+  function illusFallback(item) {
+    if (!item || item.type !== "animal") return null;
+    return ILLUS()?.fallback?.("animal", item.animalId) || null;
+  }
+
   function bootReels() {
     try {
       window.TecladinhoReels.init({
@@ -711,6 +773,8 @@
         speakItem: speakReelsItem,
         unlockSpeech,
         stopSpeak: stopSpeaking,
+        warmItem,
+        illusFallback,
         onTwoFingerHoldStart: startTouchHold,
         onTwoFingerHoldEnd: onTwoFingerHoldEnd,
       });

@@ -14,6 +14,7 @@
   let slots = [];
   let activeIndex = 0;
   let feed = [];
+  let spokeIndex = -1;
 
   let deps = {};
   let pointerStartY = 0;
@@ -64,10 +65,19 @@
   }
 
   function onSlideActive() {
+    if (activeIndex === spokeIndex) return;
+    spokeIndex = activeIndex;
     stopSpeechNow();
     const item = feed[activeIndex];
     if (!item) return;
     speakItem(item);
+  }
+
+  function warmNeighbors() {
+    if (!deps.warmItem || !feed.length) return;
+    for (let offset = -1; offset <= 1; offset++) {
+      deps.warmItem(feed[wrapIndex(activeIndex + offset)]);
+    }
   }
 
   function buildIllusSlide(slot, item, typeClass) {
@@ -83,6 +93,10 @@
     img.alt = item.label;
     img.decoding = "async";
     img.loading = "eager";
+    img.addEventListener("error", () => {
+      const fallback = deps.illusFallback?.(item);
+      if (fallback && img.src !== fallback) img.src = fallback;
+    }, { once: true });
 
     stage.appendChild(img);
 
@@ -150,6 +164,7 @@
     fillSlot(slots[2], wrapIndex(activeIndex + 1));
     slots.forEach((slot, i) => slot.classList.toggle("is-active", i === CURRENT_SLOT));
     setTrackTransform(CURRENT_SLOT, false);
+    warmNeighbors();
   }
 
   function setTrackTransform(slotIndex, animate) {
@@ -353,6 +368,7 @@
     }
 
     activeIndex = 0;
+    spokeIndex = -1;
     updateViewportMetrics();
     syncWindow();
     onSlideActive();
@@ -427,6 +443,7 @@
 
     refresh() {
       stopSpeechNow();
+      spokeIndex = -1;
       render();
     },
   };

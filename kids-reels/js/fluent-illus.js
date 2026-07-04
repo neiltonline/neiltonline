@@ -1,13 +1,13 @@
 (function () {
   const FLUENT = "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets";
-  const TW512 = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/512x512";
+  const NOTO512 = "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/png/512";
 
   function f3(folder, file) {
     return `${FLUENT}/${encodeURIComponent(folder)}/3D/${file}_3d.png`;
   }
 
-  function t512(code) {
-    return `${TW512}/${code}.png`;
+  function noto(code) {
+    return `${NOTO512}/emoji_u${code.replace(/-/g, "_")}.png`;
   }
 
   const ANIMALS = {
@@ -36,12 +36,12 @@
   };
 
   const WORDS = {
-    papai: t512("1f468"),
-    mamae: t512("1f469"),
-    titio: t512("1f9d1-200d-1f9b0"),
-    titia: t512("1f469-200d-1f9b0"),
-    vovo: t512("1f475"),
-    avo: t512("1f474"),
+    papai: noto("1f468"),
+    mamae: noto("1f469"),
+    titio: noto("1f9d1-200d-1f9b0"),
+    titia: noto("1f469-200d-1f9b0"),
+    vovo: noto("1f475"),
+    avo: noto("1f474"),
     bola: f3("Soccer ball", "soccer_ball"),
     brincar: f3("Teddy bear", "teddy_bear"),
     lua: f3("Crescent moon", "crescent_moon"),
@@ -53,7 +53,7 @@
     leite: f3("Glass of milk", "glass_of_milk"),
     estrela: f3("Star", "star"),
     flor: f3("Cherry blossom", "cherry_blossom"),
-    bebe: t512("1f476"),
+    bebe: noto("1f476"),
     pao: f3("Bread", "bread"),
     abraco: f3("Hugging face", "hugging_face"),
     beijo: f3("Kiss mark", "kiss_mark"),
@@ -62,16 +62,16 @@
 
   const BODY = {
     cabeca: f3("Bust in silhouette", "bust_in_silhouette"),
-    pe: t512("1f9b6"),
+    pe: noto("1f9b6"),
     olhos: f3("Eyes", "eyes"),
-    orelha: t512("1f442"),
-    nariz: t512("1f443"),
+    orelha: noto("1f442"),
+    nariz: noto("1f443"),
     boca: f3("Mouth", "mouth"),
-    mao: t512("1f91a"),
-    braco: t512("1f4aa"),
-    perna: t512("1f9b5"),
+    mao: noto("1f91a"),
+    braco: noto("1f4aa"),
+    perna: noto("1f9b5"),
     barriga: f3("Anatomical heart", "anatomical_heart"),
-    cabelo: t512("1f487"),
+    cabelo: noto("1f487"),
     dente: f3("Tooth", "tooth"),
   };
 
@@ -89,10 +89,25 @@
     cinza: f3("Elephant", "elephant"),
   };
 
+  const FALLBACK_NOTO = {
+    animal: {
+      gato: "1f408", cachorro: "1f415", vaca: "1f404", porco: "1f437",
+      galinha: "1f414", pinto: "1f425", pato: "1f986", galo: "1f413",
+      sapo: "1f438", leao: "1f981", tigre: "1f42f", elefante: "1f418",
+      urso: "1f43b", raposa: "1f98a", abelha: "1f41d", papagaio: "1f99c",
+      jacare: "1f40a", cavalo: "1f434", ovelha: "1f411", coruja: "1f989",
+      lobo: "1f43a", macaco: "1f412",
+    },
+  };
+
   window.TecladinhoIllus = {
     animal: (id) => ANIMALS[id] || null,
     word: (id) => WORDS[id] || null,
     body: (id) => BODY[id] || null,
     color: (id) => COLORS[id] || null,
+    fallback(type, id) {
+      const code = FALLBACK_NOTO[type]?.[id];
+      return code ? noto(code) : null;
+    },
   };
 })();
