@@ -176,9 +176,18 @@
     }
 
     round = { target, choices, pool };
-    renderChoices(choices);
     acceptingInput = false;
+    showWaiting();
     playQuestion(false);
+  }
+
+  function showWaiting() {
+    choicesEl.className = "ache__choices ache__choices--waiting";
+    choicesEl.removeAttribute("data-count");
+    choicesEl.innerHTML = `
+      <div class="ache__waiting" aria-live="polite">
+        <span class="ache__waiting-ear" aria-hidden="true">👂</span>
+      </div>`;
   }
 
   function renderChoices(choices) {
@@ -227,6 +236,8 @@
       btn.addEventListener("click", () => onChoice(item));
       choicesEl.appendChild(btn);
     });
+    choicesEl.classList.remove("ache__choices--waiting");
+    choicesEl.classList.add("is-ready");
   }
 
   function getChoiceButton(uid) {
@@ -280,10 +291,16 @@
     if (!round) return;
     audioGen += 1;
     const gen = audioGen;
-    choicesEl.querySelectorAll(".is-hint").forEach((el) => el.classList.remove("is-hint"));
+    acceptingInput = false;
+    stopTimer();
+    showWaiting();
 
     deps.speakQuestion?.(round.target, { gen, isRetry }).then(() => {
       if (gen !== audioGen) return;
+      renderChoices(round.choices);
+      if (missCount >= (deps.getConfig().hintAfterMisses || 2)) {
+        getChoiceButton(round.target.uid)?.classList.add("is-hint");
+      }
       acceptingInput = true;
       startTimer();
     });
@@ -339,7 +356,7 @@
     burstEl = root.querySelector(".ache__burst");
 
     root.querySelector(".ache__repeat")?.addEventListener("click", () => {
-      if (!round) return;
+      if (!round || !acceptingInput) return;
       deps.unlockAudio?.();
       playQuestion(true);
     });

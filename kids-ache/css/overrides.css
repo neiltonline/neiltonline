@@ -115,6 +115,47 @@ body.mode-ache .hold-progress.is-active {
   min-height: 0;
 }
 
+.ache__choices--waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-template-columns: unset;
+  grid-template-rows: unset;
+}
+
+.ache__waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ache__waiting-ear {
+  font-size: clamp(52px, 16vw, 80px);
+  line-height: 1;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
+  animation: ache-listen 1.1s ease-in-out infinite;
+}
+
+@keyframes ache-listen {
+  0%, 100% { transform: scale(1); opacity: 0.82; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.ache__choices.is-ready .ache__choice {
+  animation: ache-choice-in 0.38s cubic-bezier(0.25, 0.9, 0.35, 1) both;
+}
+
+@keyframes ache-choice-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .ache__choices[data-count="4"],
 .ache__choices[data-count="6"],
 .ache__choices[data-count="9"],
@@ -348,6 +389,8 @@ body.mode-ache .hold-progress.is-active {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ache__waiting-ear,
+  .ache__choices.is-ready .ache__choice,
   .ache__choice.is-hint,
   .ache__choice.is-wrong,
   .ache__star {
