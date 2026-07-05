@@ -173,6 +173,7 @@
 
   function questionSources(target) {
     const sources = [];
+    const article = C().articleForItem(target);
     if (target.kind === "letter") {
       sources.push(assetUrl("audio/quiz/onde-esta-a.mp3"));
       sources.push(assetUrl("audio/quiz/letra.mp3"));
@@ -180,11 +181,11 @@
       return sources;
     }
     if (target.kind === "number") {
-      sources.push(assetUrl(`audio/quiz/onde-esta-${target.article}.mp3`));
+      sources.push(assetUrl(`audio/quiz/onde-esta-${target.article || "o"}.mp3`));
       sources.push(assetUrl(`audio/numbers/${C().wordToFile(target.name)}.mp3`));
       return sources;
     }
-    sources.push(assetUrl(`audio/quiz/onde-esta-${target.article}.mp3`));
+    sources.push(assetUrl(`audio/quiz/onde-esta-${article}.mp3`));
     if (target.kind === "body") {
       sources.push(assetUrl(wordAudioPath(target.name, "body")));
     } else {

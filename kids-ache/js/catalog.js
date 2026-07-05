@@ -1,11 +1,11 @@
 (function () {
   const FEMININE = new Set([
     "vaca", "galinha", "raposa", "abelha", "ovelha", "coruja", "borboleta",
-    "baleia", "cabra", "girafa", "zebra",
+    "baleia", "cabra", "girafa", "zebra", "tartaruga", "lhama",
     "mamae", "titia", "vovo", "bola", "lua", "maca", "banana", "melancia",
     "agua", "flor", "estrela", "musica", "festa", "bolha", "nuvem",
     "cabeca", "orelha", "boca", "mao", "perna",
-    "rosa", "laranja", "violeta", "turquesa", "vinho",
+    "rosa", "laranja", "violeta", "turquesa", "lilas", "vinho",
   ]);
 
   const ANIMALS = [
@@ -163,7 +163,15 @@
   const CHOICE_COUNTS = [2, 3, 4, 6, 9, 12];
 
   function articleFor(id) {
-    return FEMININE.has(id) ? "a" : "o";
+    if (FEMININE.has(id)) return "a";
+    if (id.endsWith("a")) return "a";
+    return "o";
+  }
+
+  function articleForItem(item) {
+    if (item?.article) return item.article;
+    if (item?.id) return articleFor(item.id);
+    return "o";
   }
 
   function wordToFile(word) {
@@ -173,7 +181,7 @@
   function questionPromptText(item) {
     if (item.kind === "letter") return `Onde está a letra ${item.char}?`;
     if (item.kind === "number") return `Onde está o ${item.name}?`;
-    return `Onde está ${item.article} ${item.name}?`;
+    return `Onde está ${articleForItem(item)} ${item.name}?`;
   }
 
   function gridFor(count) {
@@ -199,6 +207,7 @@
     CHOICE_COUNTS,
     CHOICE_BACKGROUNDS,
     articleFor,
+    articleForItem,
     wordToFile,
     questionPromptText,
     gridFor,
