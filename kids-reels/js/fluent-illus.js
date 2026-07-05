@@ -90,7 +90,7 @@
   };
 
   const BODY = {
-    cabeca: f3("Smiling face with smiling eyes", "smiling_face_with_smiling_eyes"),
+    cabeca: f3("Bust in silhouette", "bust_in_silhouette"),
     pe: noto("1f9b6"),
     olhos: f3("Eyes", "eyes"),
     orelha: noto("1f442"),
