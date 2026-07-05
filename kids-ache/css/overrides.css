@@ -1,0 +1,569 @@
+/* Ache! — mini jogo para crianças pequenas */
+
+html,
+body.mode-ache {
+  overscroll-behavior: none;
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+body.mode-ache {
+  background: linear-gradient(165deg, #1a237e 0%, #283593 40%, #3949ab 100%) !important;
+  animation: none !important;
+  touch-action: manipulation;
+}
+
+body.mode-ache .hold-progress {
+  visibility: visible;
+  pointer-events: none;
+  z-index: 60;
+  top: max(16px, env(safe-area-inset-top));
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-left: -28px;
+  opacity: 0;
+}
+
+body.mode-ache .hold-progress.is-active {
+  opacity: 1;
+}
+
+.ache {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+  z-index: 1;
+}
+
+.ache__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.ache__title {
+  font: 800 clamp(22px, 6vw, 32px)/1.1 system-ui, sans-serif;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.ache__repeat {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  backdrop-filter: blur(6px);
+}
+
+.config__select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 16px;
+  background: #fff;
+}
+
+.ache__timer {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-bottom: 16px;
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
+
+.ache__timer.is-active {
+  opacity: 1;
+}
+
+.ache__timer::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: calc(var(--timer-pct, 0) * 100%);
+  background: linear-gradient(90deg, #ffeb3b, #ff9800);
+  border-radius: inherit;
+  transition: width 0.85s linear;
+}
+
+.ache__prompt {
+  flex-shrink: 0;
+  margin: 0 0 12px;
+  min-height: 2.8em;
+  text-align: center;
+  font: 700 clamp(20px, 5.5vw, 30px)/1.3 system-ui, sans-serif;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.ache__choices.is-hidden {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.ache__choices {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols, 1), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--grid-rows, 2), minmax(0, 1fr));
+  gap: 14px;
+  min-height: 0;
+}
+
+.ache__choices--waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-template-columns: unset;
+  grid-template-rows: unset;
+}
+
+.ache__glyph {
+  font: 800 clamp(48px, 16vw, 96px)/1 system-ui, sans-serif;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.ache__choices[data-count="4"],
+.ache__choices[data-count="6"],
+.ache__choices[data-count="9"],
+.ache__choices[data-count="12"] {
+  gap: 10px;
+}
+
+.ache__choices[data-count="9"],
+.ache__choices[data-count="12"] {
+  gap: 8px;
+}
+
+.ache__choice {
+  position: relative;
+  border: none;
+  border-radius: 28px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 4px rgba(255, 255, 255, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  min-height: 0;
+  overflow: visible;
+}
+
+.ache__choices[data-count="6"] .ache__choice,
+.ache__choices[data-count="9"] .ache__choice,
+.ache__choices[data-count="12"] .ache__choice {
+  border-radius: 20px;
+  padding: 8px;
+}
+
+.ache__choices[data-count="9"] .ache__choice,
+.ache__choices[data-count="12"] .ache__choice {
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+.ache__choice--color {
+  padding: 0;
+  min-height: 48px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.28);
+}
+
+.ache__choices[data-count="6"] .ache__choice--color,
+.ache__choices[data-count="9"] .ache__choice--color,
+.ache__choices[data-count="12"] .ache__choice--color {
+  padding: 0;
+}
+
+.ache__choice--color-light {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.1),
+    0 0 0 2px rgba(0, 0, 0, 0.14);
+}
+
+.ache__choice--color.is-correct {
+  box-shadow:
+    0 14px 36px rgba(67, 160, 71, 0.45),
+    inset 0 0 0 5px #66bb6a,
+    0 0 0 6px rgba(129, 199, 132, 0.55);
+}
+
+.ache__choice--color.is-wrong {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 5px #e53935;
+}
+
+.ache__choice--color.is-hint {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 5px #43a047;
+}
+
+.ache__choice:active {
+  transform: scale(0.97);
+}
+
+.ache__choice.is-pressed {
+  animation: ache-tap 0.32s cubic-bezier(0.25, 0.9, 0.35, 1);
+}
+
+.ache__choice.is-pressed::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  animation: ache-ripple 0.45s ease-out forwards;
+  pointer-events: none;
+}
+
+.ache__choice.is-correct {
+  animation: ache-correct 0.65s cubic-bezier(0.25, 0.9, 0.35, 1);
+  box-shadow:
+    0 14px 36px rgba(67, 160, 71, 0.45),
+    inset 0 0 0 5px #66bb6a,
+    0 0 0 6px rgba(129, 199, 132, 0.55);
+  z-index: 2;
+}
+
+.ache__choice-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.ache__choice-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: clamp(18px, 5vw, 28px);
+  transform: translate(-50%, -50%);
+  animation: ache-spark 0.75s ease-out forwards;
+}
+
+@keyframes ache-tap {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ache-ripple {
+  from {
+    opacity: 0.95;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes ache-correct {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.08) rotate(-1deg); }
+  55% { transform: scale(1.04) rotate(1deg); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ache-spark {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  35% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--spark-x, 0px)), calc(-50% + var(--spark-y, 0px))) scale(1.1);
+  }
+}
+
+.ache__choice.is-wrong {
+  animation: ache-shake 0.45s ease;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 5px #e53935;
+}
+
+.ache__choice.is-hint {
+  animation: ache-wiggle 0.8s ease-in-out infinite;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 5px #43a047;
+}
+
+.ache__choice.is-reveal {
+  animation: ache-reveal 0.7s ease-in-out 2;
+  box-shadow:
+    0 12px 32px rgba(67, 160, 71, 0.4),
+    inset 0 0 0 5px #66bb6a,
+    0 0 0 5px rgba(129, 199, 132, 0.5);
+  z-index: 2;
+}
+
+@keyframes ache-reveal {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@keyframes ache-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+@keyframes ache-wiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-2deg) scale(1.02); }
+  75% { transform: rotate(2deg) scale(1.02); }
+}
+
+.ache__choice-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.ache__illus {
+  width: min(42vw, 180px);
+  height: min(42vw, 180px);
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+  pointer-events: none;
+}
+
+.ache__choices.is-ready .ache__choice {
+  animation: ache-choice-in 0.38s cubic-bezier(0.25, 0.9, 0.35, 1) both;
+}
+
+@keyframes ache-choice-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ache__choices[data-count="4"] .ache__glyph {
+  font-size: clamp(40px, 12vw, 72px);
+}
+
+.ache__choices[data-count="6"] .ache__glyph {
+  font-size: clamp(34px, 10vw, 60px);
+}
+
+.ache__choices[data-count="9"] .ache__glyph {
+  font-size: clamp(28px, 8vw, 48px);
+}
+
+.ache__choices[data-count="12"] .ache__glyph {
+  font-size: clamp(22px, 6vw, 40px);
+}
+
+.ache__choices[data-count="4"] .ache__illus,
+.ache__choices[data-count="4"] .ache__body-ball {
+  width: min(28vw, 120px);
+  height: min(28vw, 120px);
+}
+
+.ache__choices[data-count="6"] .ache__illus,
+.ache__choices[data-count="6"] .ache__body-ball {
+  width: min(24vw, 100px);
+  height: min(24vw, 100px);
+}
+
+.ache__choices[data-count="9"] .ache__illus,
+.ache__choices[data-count="9"] .ache__body-ball {
+  width: min(20vw, 80px);
+  height: min(20vw, 80px);
+}
+
+.ache__choices[data-count="12"] .ache__illus,
+.ache__choices[data-count="12"] .ache__body-ball {
+  width: min(16vw, 64px);
+  height: min(16vw, 64px);
+}
+
+.ache__body-ball {
+  width: min(38vw, 160px);
+  height: min(38vw, 160px);
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 50%;
+  background: #ffeb3b;
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.08);
+}
+
+.ache__burst {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.ache__star {
+  position: absolute;
+  font-size: clamp(28px, 8vw, 48px);
+  animation: ache-star 0.9s ease-out forwards;
+}
+
+.ache__star--card {
+  position: fixed;
+  font-size: clamp(22px, 6vw, 36px);
+  z-index: 6;
+}
+
+@keyframes ache-star {
+  from {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px) rotate(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.15) translateY(-40px) rotate(15deg);
+  }
+}
+
+.ache__empty {
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  font: 600 18px/1.4 system-ui, sans-serif;
+  align-self: center;
+  padding: 24px;
+}
+
+.config__thumb--ball {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffeb3b;
+}
+
+.config__shape-preview {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: var(--shape-fill, #888);
+  vertical-align: middle;
+}
+
+.config__shape-preview--circle { border-radius: 50%; }
+.config__shape-preview--square { border-radius: 4px; }
+.config__shape-preview--triangle {
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 24px solid var(--shape-fill, #888);
+  background: transparent;
+}
+.config__shape-preview--hexagon {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+.config__shape-preview--diamond {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.config__shape-preview--pentagon {
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+.config__shape-preview--outline {
+  background: #fff !important;
+  border: 2px solid var(--shape-fill, #888);
+}
+
+.config__radio-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.config__radio-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ache__choices.is-ready .ache__choice,
+  .ache__choice.is-hint,
+  .ache__choice.is-wrong,
+  .ache__choice.is-pressed,
+  .ache__choice.is-correct,
+  .ache__choice.is-reveal,
+  .ache__choice-spark,
+  .ache__star {
+    animation: none;
+  }
+
+  .ache__choice.is-pressed::after {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .config__card {
+    max-height: min(88dvh, calc(100dvh - 24px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+
+  .config__close {
+    min-height: 48px;
+    font-size: 17px;
+  }
+
+  .config__toggle,
+  .config__animal {
+    min-height: 48px;
+  }
+}

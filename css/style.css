@@ -1,6 +1,6 @@
 :root {
-  --primary: #5b3fe3;
-  --black: #000000;
+  --primary: #76e59f;
+  --black: #161616;
   --white: #ffffff;
 }
 ::selection {
@@ -40,10 +40,15 @@ h2 {
 a {
   font-weight: 300;
   text-decoration: none;
+  color: var(--white);
 }
 
 .bold {
   font-weight: 600;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 *,
@@ -56,7 +61,7 @@ body {
   line-height: 120%;
   box-sizing: border-box;
   z-index: 1;
-  color: var(--white);
+  /* color: var(--white); */
 }
 
 img {
@@ -66,51 +71,265 @@ img {
 html {
   scroll-behavior: smooth;
   background-color: var(--black);
+  color: var(--white);
 }
 
-.nav-mobile {
+.hamburger-button {
   display: none;
 }
 
-.content {
+.sticky-content {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.video {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+.nav-mobile {
+  height: 100%;
+  width: 100%;
+  overflow: hidden !important;
   position: fixed;
   top: 0;
-  z-index: -2;
+  right: -100%;
+  background-color: #00000080;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  padding: 15% 40px 5%;
+  transition: 0.7s ease;
+  z-index: 2;
+}
+.nav-mobile-visible {
+  right: 0;
 }
 
-.video video {
-  object-fit: cover;
-  width: 100vw;
-  height: 100vh;
+.nav-mobile nav {
+  font-size: 45px;
+  font-weight: 200;
+  display: grid;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+.nav-mobile nav a {
+  padding: 10px 0;
+  display: block;
+  font-weight: 600;
+}
+
+.nav-mobile nav span:first-child {
+  font-size: 18px;
   opacity: 0.3;
+  padding: 20px 0 20px;
+}
+
+.nav-mobile nav span {
+  font-size: 18px;
+  opacity: 0.3;
+  padding: 20px 0 20px;
+}
+
+.nav-mobile nav h3 {
+  font-weight: 200;
+  font-size: 20px;
+  text-decoration: underline;
+  margin: 0;
+  padding: 0 0 20px 0;
 }
 
 .menu {
   width: 100%;
+  height: 140px;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  position: fixed;
-  top: 0;
-  padding: 12px 35px;
-  place-items: center;
-  z-index: 2;
+  padding: 0 35px;
+  margin: 20px 0;
   user-select: none;
+  animation: menuIn 1.5s ease;
 }
-.menu img {
-  margin: 15px 0;
+@keyframes menuIn {
+  0%,
+  50% {
+    transform: translateY(-300px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.menuLeft,
+.menuCenter,
+.menuRight {
+  width: 33.3333%;
+  display: flex;
+  z-index: 3;
+}
+
+.embreve {
+  color: rgba(255, 255, 255, 0.2);
+  position: relative;
+  cursor: not-allowed;
+}
+.embreve::after {
+  content: "COMING SOON";
+  font-size: 13px;
+  width: 150px;
+  font-weight: 200;
+  letter-spacing: 5px;
+  color: white;
+  position: absolute;
+  top: 20%;
+  left: calc(52% - 150px / 2);
+}
+
+.menuLeft {
+  justify-content: start;
+}
+.menuCenter {
+  justify-content: center;
+}
+
+.menuRight {
+  justify-content: flex-end;
+}
+
+.memoji {
+  /* grid-column: 2; */
+  transform: scale(0.86);
+  z-index: 3;
+  width: 140px;
+  height: 140px;
+  /* justify-self: center; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.3s ease;
+  position: fixed;
+}
+.memoji video {
+  border-radius: 50%;
+  width: 100px;
+  position: absolute;
+}
+
+.memoji img {
+  animation: rotate 15s linear infinite;
+  width: 140px;
+  height: 140px;
+}
+
+.memoji:hover {
+  transform: scale(1);
+  transition: 0.3s ease;
+}
+
+.memoji-fixed {
+  transform: translateY(-30px) scale(0.6);
+  animation: memojiAnimation 1s ease;
+}
+.memoji-fixed:hover {
+  transform: translateY(-30px) scale(0.8);
+  transition: 0.3s ease-in-out;
+}
+
+@keyframes memojiAnimation {
+  0% {
+    transform: translateY(0) scale(0.86);
+  }
+  50% {
+    transform: translateY(-15px) scale(0.1);
+  }
+  100% {
+    transform: translateY(-30px) scale(0.6);
+  }
+}
+
+/* MENU MOBILE 2.0 */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.mailBox .mail {
+  min-width: 24px;
+  padding-right: 15px;
+}
+
+.mailBox {
+  grid-column: 1;
+  z-index: 3;
+  display: flex;
+  overflow: hidden;
+  justify-self: start;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.menuViewBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  background-color: #222222;
+  border-radius: 50%;
+}
+
+.menuLine {
+  position: relative;
+  width: 30px;
+  background-color: white;
+  height: 2px;
+  transition: 0.4s ease;
+  box-sizing: border-box;
+}
+
+.menuLine::before,
+.menuLine::after {
+  position: absolute;
+  content: "";
+  width: 30px;
+  background-color: white;
+  height: 2px;
+  transition: 0.4s ease;
+}
+
+.menuLine::before {
+  transform: translate(0, -8px);
+}
+
+.menuLine::after {
+  transform: translateY(8px);
+}
+
+.ativo::before {
+  transform: rotate(40deg);
+}
+
+.ativo::after {
+  transform: rotate(-40deg);
+}
+
+.menuLine.ativo {
+  background-color: #222222;
 }
 
 .menu .nav {
   width: auto;
   height: 100%;
+  padding-top: 20px;
 }
 
 .menu .nav .nav-item {
@@ -123,24 +342,33 @@ html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 80vh;
-  position: sticky;
-  top: 0;
-  padding: 8% 40px;
+  min-height: calc(80vh - 180px);
   z-index: -1;
-  transform: translateY(50px);
+  animation: heroIn 1.3s ease;
+}
+
+@keyframes heroIn {
+  from {
+    min-height: 110vh;
+    opacity: 0;
+  }
+  to {
+    min-height: calc(80vh - 180px);
+    opacity: 1;
+  }
 }
 
 .hero h1 {
   max-width: 1000px;
   text-align: center;
   font-size: 60px;
-  padding-bottom: 30px;
+  padding: 0 20px 40px 20px;
 }
 
 .hero p {
   text-align: center;
   font-size: 20px;
+  padding: 0 20px;
   max-width: 500px;
   line-height: 170%;
 }
@@ -149,8 +377,13 @@ html {
   text-decoration: underline;
 }
 
+.ovf-y-hidden {
+  overflow-y: hidden;
+}
+
 .portfolio {
   height: 100vh;
+  width: 100%;
   overflow: hidden;
   position: sticky;
   top: 0;
@@ -158,22 +391,18 @@ html {
   background-position: 100% 50%;
   background-size: contain;
   background-repeat: no-repeat;
-  transform: scaleX(0.9) scaleY(0.9) translateY(50px);
-  border-radius: 10px;
-  /* transition: ease 1s; */
+  border-radius: 30px;
+  transform: scaleX(0.8) scaleY(0.8) translateY(0px);
+  z-index: -1;
 }
 
-.portfolio .hidden-link {
+.hidden-link {
   position: absolute;
-  width: 50%;
+  width: 60%;
   height: 100%;
   top: 0;
   right: 0;
-  /* background-color: red; */
 }
-/* .portfolio:hover {
-  transform: scaleX(0.85) scaleY(0.85) translateY(50px);
-} */
 
 .portfolio h2,
 h3 {
@@ -182,14 +411,15 @@ h3 {
 }
 
 .footer {
-  min-height: calc(100vh + 15px);
+  min-height: 100vh;
+  width: 100%;
   padding: 80px 15%;
   color: var(--black);
   display: flex;
+  background-color: var(--black);
   flex-direction: column;
   justify-content: center;
 }
-
 .footer nav a {
   font-size: 18px;
   text-decoration: none;
@@ -205,12 +435,18 @@ h3 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--black);
-  z-index: 3;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 999999;
   padding: 8% 120px;
-  animation: openModal 0.5s ease;
+  animation: openModal 2s ease;
   overflow-x: hidden;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px) !;
 }
+.modal-content {
+  max-width: 1200px;
+}
+
 .modal-content h1,
 h2,
 h3,
@@ -229,24 +465,30 @@ p {
   font-weight: 200;
 }
 
-.modal object {
-  width: 100%;
-  height: inherit;
-}
-
 .modal.mostrar {
-  display: block;
+  display: flex;
+  justify-content: center;
 }
 
 @keyframes openModal {
   0% {
     opacity: 0;
     padding-top: 12%;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  20% {
+    opacity: 1;
+    padding-top: 8%;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
   }
 
   100% {
     opacity: 1;
     padding-top: 8%;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
   }
 }
 
@@ -256,7 +498,7 @@ p {
   position: fixed;
   right: 45px;
   top: 30px;
-  background-color: #222222;
+  background-color: #22222280;
   color: var(--white);
   display: flex;
   align-items: center;
@@ -264,6 +506,8 @@ p {
   cursor: pointer;
   border: none;
   border-radius: 50%;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 @media screen and (max-width: 1024px) {
@@ -284,31 +528,9 @@ p {
 }
 
 @media screen and (max-width: 768px) {
-  .nav {
-    display: none;
-  }
-  .hero {
-    transform: translateY(70px);
-    padding: 8% 40px 18% 40px;
-  }
   .hero h1 {
-    font-size: 45px;
+    font-size: 40px;
   }
-  .nav-mobile {
-    display: block;
-    background: url("../imagens/menu.svg");
-    width: 65px;
-    height: 65px;
-    background-color: #00000080;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 50%;
-  }
-
-  .menu {
-    padding: 12px 12px 20px 20px;
-  }
-
   .portfolio {
     padding: 12% 8%;
     background-position: 100% 150%;
@@ -316,11 +538,13 @@ p {
 
   .portfolio h2 {
     font-size: 40px;
+    max-width: 100%;
+    margin: 0;
   }
   .portfolio .hidden-link {
     position: absolute;
     width: 100%;
-    height: 80%;
+    height: 100%;
     top: 0;
   }
 
@@ -336,6 +560,26 @@ p {
   }
   .modal-content h1 {
     font-size: 42px;
+  }
+  .memoji video {
+    border-radius: 50%;
+    width: 80px;
+    position: absolute;
+  }
+
+  .memoji img {
+    animation: rotate 15s linear infinite;
+    width: 120px;
+    height: 120px;
+  }
+  .mailBox {
+    display: none;
+  }
+  .menu {
+    padding: 0 20px;
+  }
+  .memoji {
+    position: relative;
   }
 }
 
