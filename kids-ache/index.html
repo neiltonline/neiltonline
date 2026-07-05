@@ -14,7 +14,7 @@
     <title>Ache! 🎯</title>
     <base href="/kids-ache/">
     <link rel="stylesheet" href="/kids/css/style.css">
-    <link rel="stylesheet" href="/kids-ache/css/overrides.css?v=6">
+    <link rel="stylesheet" href="/kids-ache/css/overrides.css?v=7">
 </head>
 
 <body class="mode-ache">
@@ -25,6 +25,7 @@
             <h1 class="ache__title">Ache!</h1>
             <button type="button" class="ache__repeat" aria-label="Ouvir de novo">🔊</button>
         </header>
+        <p class="ache__prompt" aria-live="polite"></p>
         <div class="ache__timer" aria-hidden="true"></div>
         <div class="ache__choices"></div>
         <div class="ache__burst" aria-hidden="true"></div>
@@ -51,6 +52,14 @@
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-cat-body">
                     <span>Corpo</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-letters">
+                    <span>Letras</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-cat-numbers">
+                    <span>Números (0 a 10)</span>
                 </label>
                 <label class="config__toggle">
                     <input type="checkbox" id="cfg-mix" checked>
@@ -139,10 +148,10 @@
         </div>
     </div>
 
-    <script src="/kids-reels/js/fluent-illus.js?v=24"></script>
-    <script src="/kids-ache/js/catalog.js?v=6"></script>
-    <script src="/kids-ache/js/game.js?v=6"></script>
-    <script src="/kids-ache/js/app.js?v=6"></script>
+    <script src="/kids-reels/js/fluent-illus.js?v=25"></script>
+    <script src="/kids-ache/js/catalog.js?v=7"></script>
+    <script src="/kids-ache/js/game.js?v=7"></script>
+    <script src="/kids-ache/js/app.js?v=7"></script>
 </body>
 
 </html>

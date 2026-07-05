@@ -77,6 +77,8 @@
     abraco: f3("Hugging face", "hugging_face"),
     beijo: f3("Kiss mark", "kiss_mark"),
     dormir: f3("Sleeping face", "sleeping_face"),
+    nuvem: f3("Cloud", "cloud"),
+    sorvete: f3("Soft ice cream", "soft_ice_cream"),
     balao: f3("Balloon", "balloon"),
     bolha: f3("Bubbles", "bubbles"),
     carrossel: f3("Carousel horse", "carousel_horse"),
@@ -99,6 +101,7 @@
     perna: noto("1f9b5"),
     cabelo: noto("1f487"),
     dente: f3("Tooth", "tooth"),
+    dedo: noto("1f446"),
   };
 
   const FALLBACK_NOTO = {
