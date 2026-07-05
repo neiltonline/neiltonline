@@ -65,7 +65,7 @@
           hex: color.hex,
           outline: color.outline,
           article: C().articleFor(color.id),
-          bg: "#ECEFF1",
+          bg: color.hex,
         });
       });
     }
@@ -242,22 +242,22 @@
       btn.style.background = item.bg || "#ECEFF1";
       btn.setAttribute("aria-label", item.label);
 
+      if (item.kind === "color") {
+        btn.classList.add("ache__choice--color");
+        if (item.outline) btn.classList.add("ache__choice--color-light");
+      }
+
       const stage = document.createElement("div");
       stage.className = "ache__choice-stage";
 
-      if (item.kind === "color") {
-        const swatch = document.createElement("div");
-        const outline = item.outline ? " ache__color-swatch--outline" : "";
-        swatch.className = `ache__color-swatch${outline}`;
-        swatch.style.setProperty("--swatch-fill", item.hex || "#888");
-        stage.appendChild(swatch);
-      } else if (item.kind === "letter" || item.kind === "number") {
+      if (item.kind === "letter" || item.kind === "number") {
         const glyph = document.createElement("div");
         glyph.className = "ache__glyph";
         glyph.textContent = item.display || item.char;
         glyph.style.color = item.fg || "#FFFFFF";
         stage.appendChild(glyph);
-      } else {
+        btn.appendChild(stage);
+      } else if (item.kind !== "color") {
         const img = document.createElement("img");
         img.className = "ache__illus";
         img.src = item.illustration;
@@ -268,9 +268,8 @@
           if (fb && img.src !== fb) img.src = fb;
         }, { once: true });
         stage.appendChild(img);
+        btn.appendChild(stage);
       }
-
-      btn.appendChild(stage);
       btn.addEventListener("pointerdown", () => pulseChoice(btn));
       btn.addEventListener("click", () => onChoice(item, btn));
       choicesEl.appendChild(btn);

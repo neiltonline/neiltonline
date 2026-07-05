@@ -194,6 +194,46 @@ body.mode-ache .hold-progress.is-active {
     inset 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
+.ache__choice--color {
+  padding: 0;
+  min-height: 48px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.28);
+}
+
+.ache__choices[data-count="6"] .ache__choice--color,
+.ache__choices[data-count="9"] .ache__choice--color,
+.ache__choices[data-count="12"] .ache__choice--color {
+  padding: 0;
+}
+
+.ache__choice--color-light {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.1),
+    0 0 0 2px rgba(0, 0, 0, 0.14);
+}
+
+.ache__choice--color.is-correct {
+  box-shadow:
+    0 14px 36px rgba(67, 160, 71, 0.45),
+    inset 0 0 0 5px #66bb6a,
+    0 0 0 6px rgba(129, 199, 132, 0.55);
+}
+
+.ache__choice--color.is-wrong {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 5px #e53935;
+}
+
+.ache__choice--color.is-hint {
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 5px #43a047;
+}
+
 .ache__choice:active {
   transform: scale(0.97);
 }
@@ -354,28 +394,24 @@ body.mode-ache .hold-progress.is-active {
 }
 
 .ache__choices[data-count="4"] .ache__illus,
-.ache__choices[data-count="4"] .ache__color-swatch,
 .ache__choices[data-count="4"] .ache__body-ball {
   width: min(28vw, 120px);
   height: min(28vw, 120px);
 }
 
 .ache__choices[data-count="6"] .ache__illus,
-.ache__choices[data-count="6"] .ache__color-swatch,
 .ache__choices[data-count="6"] .ache__body-ball {
   width: min(24vw, 100px);
   height: min(24vw, 100px);
 }
 
 .ache__choices[data-count="9"] .ache__illus,
-.ache__choices[data-count="9"] .ache__color-swatch,
 .ache__choices[data-count="9"] .ache__body-ball {
   width: min(20vw, 80px);
   height: min(20vw, 80px);
 }
 
 .ache__choices[data-count="12"] .ache__illus,
-.ache__choices[data-count="12"] .ache__color-swatch,
 .ache__choices[data-count="12"] .ache__body-ball {
   width: min(16vw, 64px);
   height: min(16vw, 64px);
@@ -389,22 +425,6 @@ body.mode-ache .hold-progress.is-active {
   border-radius: 50%;
   background: #ffeb3b;
   box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.08);
-}
-
-.ache__color-swatch {
-  width: min(42vw, 180px);
-  height: min(42vw, 180px);
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 50%;
-  background: var(--swatch-fill, #888);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
-  pointer-events: none;
-}
-
-.ache__color-swatch--outline {
-  background: #fff !important;
-  border: 8px solid var(--swatch-fill, #888);
 }
 
 .ache__burst {
