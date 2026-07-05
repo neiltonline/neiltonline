@@ -173,15 +173,22 @@
     promptEl.textContent = C().questionPromptText(target);
   }
 
+  function syncChoiceLock() {
+    if (!choicesEl) return;
+    choicesEl.classList.toggle("is-locked", choicesRevealed && !acceptingInput);
+  }
+
   function hideChoices() {
     choicesRevealed = false;
     choicesEl.classList.add("is-hidden");
+    syncChoiceLock();
   }
 
   function showChoices() {
     choicesRevealed = true;
     choicesEl.classList.remove("is-hidden");
     choicesEl.classList.add("is-ready");
+    syncChoiceLock();
   }
 
   function startRound() {
@@ -314,6 +321,7 @@
 
     if (item.uid === round.target.uid) {
       acceptingInput = false;
+      syncChoiceLock();
       stopTimer();
       choiceBtn?.classList.add("is-correct");
       spawnCardBurst(choiceBtn);
@@ -326,6 +334,7 @@
 
     missCount += 1;
     acceptingInput = false;
+    syncChoiceLock();
     stopTimer();
     choiceBtn?.classList.add("is-wrong", "is-reveal");
     setTimeout(() => choiceBtn?.classList.remove("is-wrong", "is-reveal"), 2200);
@@ -335,6 +344,7 @@
         getChoiceButton(round.target.uid)?.classList.add("is-hint");
       }
       acceptingInput = true;
+      syncChoiceLock();
       startTimer();
     }, round.target, item);
   }
@@ -371,6 +381,7 @@
     audioGen += 1;
     const gen = audioGen;
     acceptingInput = false;
+    syncChoiceLock();
     stopTimer();
     setPrompt(round.target);
 
@@ -388,6 +399,7 @@
         getChoiceButton(round.target.uid)?.classList.add("is-hint");
       }
       acceptingInput = true;
+      syncChoiceLock();
       startTimer();
     });
   }
@@ -410,6 +422,7 @@
       stopTimer();
       if (!acceptingInput || !round) return;
       acceptingInput = false;
+      syncChoiceLock();
       playQuestion(true);
     }, 1000);
   }
@@ -426,6 +439,7 @@
     audioGen += 1;
     acceptingInput = false;
     choicesRevealed = false;
+    syncChoiceLock();
     round = null;
     deps.stopAudio?.();
   }

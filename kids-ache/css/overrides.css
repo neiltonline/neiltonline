@@ -136,6 +136,16 @@ body.mode-ache .hold-progress.is-active {
   min-height: 0;
 }
 
+.ache__choices.is-locked .ache__choice {
+  opacity: 0.42;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+
+.ache__choices:not(.is-locked) .ache__choice {
+  transition: opacity 0.28s ease;
+}
+
 .ache__choices--waiting {
   display: flex;
   align-items: center;
