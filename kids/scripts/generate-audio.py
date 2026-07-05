@@ -61,6 +61,52 @@ QUIZ_SHAPES = {
     "pentagono": "pentágono",
 }
 
+FEMININE_IDS = {
+    "vaca", "galinha", "raposa", "abelha", "ovelha", "coruja", "borboleta",
+    "baleia", "cabra", "girafa", "zebra", "tartaruga", "lhama",
+    "mamae", "titia", "vovo", "bola", "lua", "maca", "banana", "melancia",
+    "agua", "flor", "estrela", "musica", "festa", "bolha", "nuvem",
+    "cabeca", "orelha", "boca", "mao", "perna",
+    "rosa", "laranja", "violeta", "turquesa", "lilas", "vinho",
+}
+
+ACHE_QUIZ_ITEMS = [
+    ("gato", "gato"), ("cachorro", "cachorro"), ("vaca", "vaca"), ("porco", "porco"),
+    ("galinha", "galinha"), ("pinto", "pintinho"), ("pato", "pato"), ("galo", "galo"),
+    ("sapo", "sapo"), ("leao", "leão"), ("tigre", "tigre"), ("elefante", "elefante"),
+    ("urso", "urso"), ("raposa", "raposa"), ("abelha", "abelha"), ("papagaio", "papagaio"),
+    ("jacare", "jacaré"), ("cavalo", "cavalo"), ("ovelha", "ovelha"), ("coruja", "coruja"),
+    ("lobo", "lobo"), ("macaco", "macaco"), ("coelho", "coelho"), ("peixe", "peixe"),
+    ("pinguim", "pinguim"), ("tartaruga", "tartaruga"), ("borboleta", "borboleta"),
+    ("coala", "coala"), ("panda", "panda"), ("girafa", "girafa"), ("polvo", "polvo"),
+    ("esquilo", "esquilo"), ("zebra", "zebra"), ("golfinho", "golfinho"), ("baleia", "baleia"),
+    ("cabra", "cabra"), ("lhama", "lhama"), ("cervo", "cervo"), ("rato", "rato"),
+    ("vermelho", "vermelho"), ("azul", "azul"), ("amarelo", "amarelo"), ("verde", "verde"),
+    ("laranja", "laranja"), ("roxo", "roxo"), ("rosa", "rosa"), ("branco", "branco"),
+    ("preto", "preto"), ("marrom", "marrom"), ("cinza", "cinza"), ("anil", "anil"),
+    ("violeta", "violeta"), ("turquesa", "turquesa"), ("lilas", "lilás"), ("dourado", "dourado"),
+    ("bege", "bege"), ("coral", "coral"), ("vinho", "vinho"),
+    ("papai", "papai"), ("mamae", "mamãe"), ("titio", "titio"), ("titia", "titia"),
+    ("vovo", "vovó"), ("avo", "vovô"), ("bola", "bola"), ("brincar", "brincar"),
+    ("lua", "lua"), ("sol", "sol"), ("morango", "morango"), ("banana", "banana"),
+    ("maca", "maçã"), ("melancia", "melancia"), ("agua", "água"), ("leite", "leite"),
+    ("estrela", "estrela"), ("flor", "flor"), ("bebe", "bebê"), ("pao", "pão"),
+    ("abraco", "abraço"), ("dormir", "dormir"), ("balao", "balão"), ("bolha", "bolha"),
+    ("carrossel", "carrossel"), ("coracao", "coração"), ("festa", "festa"), ("musica", "música"),
+    ("pirulito", "pirulito"), ("arcoiris", "arco-íris"), ("nuvem", "nuvem"), ("sorvete", "sorvete"),
+    ("cabeca", "cabeça"), ("pe", "pé"), ("olhos", "olhos"), ("orelha", "orelha"),
+    ("nariz", "nariz"), ("boca", "boca"), ("mao", "mão"), ("braco", "braço"),
+    ("perna", "perna"), ("cabelo", "cabelo"), ("dente", "dente"), ("dedo", "dedo"),
+]
+
+
+def article_for(item_id):
+    if item_id in FEMININE_IDS:
+        return "a"
+    if item_id.endswith("a"):
+        return "a"
+    return "o"
+
 
 async def generate(text, path, force=False):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -110,6 +156,23 @@ async def main():
 
     for slug, text in QUIZ_SHAPES.items():
         path = os.path.join(AUDIO_DIR, "quiz", "shapes", f"{slug}.mp3")
+        tasks.append(generate(text, path, force=True))
+
+    for item_id, spoken in ACHE_QUIZ_ITEMS:
+        art = article_for(item_id)
+        text = f"Onde está {art} {spoken}"
+        path = os.path.join(AUDIO_DIR, "quiz", "ache", f"{item_id}.mp3")
+        tasks.append(generate(text, path, force=True))
+
+    for letter in "abcdefghijklmnopqrstuvwxyz":
+        letter_name = LETTER_OVERRIDES.get(letter, letter)
+        text = f"Onde está a letra {letter_name}"
+        path = os.path.join(AUDIO_DIR, "quiz", "ache", f"letra-{letter}.mp3")
+        tasks.append(generate(text, path, force=True))
+
+    for num, name in NUMBERS.items():
+        text = f"Onde está o {name}"
+        path = os.path.join(AUDIO_DIR, "quiz", "ache", f"num-{num}.mp3")
         tasks.append(generate(text, path, force=True))
 
     for i in range(0, len(tasks), 5):
