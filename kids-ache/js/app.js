@@ -72,6 +72,7 @@
   let speechPrimed = false;
   let currentAudio = null;
   let chainGen = 0;
+  let variants = {};
   const audioPool = new Map();
 
   const pointerPositions = new Map();
@@ -172,6 +173,7 @@
 
   function questionSources(target) {
     const sources = [];
+    const article = C().articleForItem(target);
     if (target.kind === "letter") {
       sources.push(assetUrl("audio/quiz/onde-esta-a.mp3"));
       sources.push(assetUrl("audio/quiz/letra.mp3"));
@@ -179,11 +181,11 @@
       return sources;
     }
     if (target.kind === "number") {
-      sources.push(assetUrl(`audio/quiz/onde-esta-${target.article}.mp3`));
+      sources.push(assetUrl(`audio/quiz/onde-esta-${target.article || "o"}.mp3`));
       sources.push(assetUrl(`audio/numbers/${C().wordToFile(target.name)}.mp3`));
       return sources;
     }
-    sources.push(assetUrl(`audio/quiz/onde-esta-${target.article}.mp3`));
+    sources.push(assetUrl(`audio/quiz/onde-esta-${article}.mp3`));
     if (target.kind === "body") {
       sources.push(assetUrl(wordAudioPath(target.name, "body")));
     } else {
@@ -201,13 +203,42 @@
     return playChain(sources, token);
   }
 
-  function playFeedback(type, onEnd) {
+  function pickAnimalSound(id) {
+    const canonical = `audio/sounds/${id}.mp3`;
+    const manifestSounds = (variants[id]?.sounds || []).filter((path) => {
+      const file = path.split("/").pop() || "";
+      return file === `${id}.mp3` || file.startsWith(`${id}-`);
+    });
+    const pool = manifestSounds.length
+      ? manifestSounds
+      : [canonical, `audio/sounds/${id}-1.mp3`];
+    const preferred = pool.find((path) => path.endsWith(`/${id}.mp3`));
+    return assetUrl(preferred || pool[0]);
+  }
+
+  function playFeedback(type, onEnd, target) {
     stopAudio();
     const token = ++chainGen;
-    const src = type === "win"
-      ? assetUrl("audio/quiz/muito-bem.mp3")
-      : assetUrl("audio/quiz/tenta-de-novo.mp3");
-    playOne(src, token).then(onEnd);
+    const sources = type === "win"
+      ? [assetUrl("audio/quiz/muito-bem.mp3")]
+      : [assetUrl("audio/quiz/tenta-de-novo.mp3")];
+    if (type === "win" && target?.kind === "animal") {
+      sources.push(pickAnimalSound(target.id));
+    }
+    sources.forEach((s) => warmAudio(s));
+    playChain(sources, token).then(onEnd);
+  }
+
+  async function loadManifest() {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 4000);
+      const res = await fetch(assetUrl("data/manifest.json"), { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (res.ok) variants = await res.json();
+    } catch {
+      /* optional */
+    }
   }
 
   function playTick(remaining) {
@@ -523,13 +554,14 @@
     });
   }
 
-  function boot() {
+  async function boot() {
     buildAnimalConfigList();
     buildColorConfigList();
     buildWordConfigList();
     buildBodyConfigList();
     wireConfig();
     wireParentGate();
+    await loadManifest();
 
     window.AcheGame.init({
       root: document.getElementById("ache"),
