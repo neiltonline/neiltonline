@@ -13,6 +13,7 @@
   let timerTicks = 0;
   let missCount = 0;
   let acceptingInput = false;
+  let questionSpeaking = false;
   let audioGen = 0;
   let choicesRevealed = false;
 
@@ -175,7 +176,13 @@
 
   function syncChoiceLock() {
     if (!choicesEl) return;
-    choicesEl.classList.toggle("is-locked", choicesRevealed && !acceptingInput);
+    const locked = choicesRevealed && !acceptingInput;
+    choicesEl.classList.toggle("is-locked", locked);
+    choicesEl.querySelectorAll(".ache__choice").forEach((btn) => {
+      btn.disabled = locked;
+      btn.setAttribute("aria-disabled", locked ? "true" : "false");
+    });
+    if (promptEl) promptEl.classList.toggle("is-speaking", questionSpeaking);
   }
 
   function hideChoices() {
@@ -382,6 +389,7 @@
     audioGen += 1;
     const gen = audioGen;
     acceptingInput = false;
+    questionSpeaking = true;
     syncChoiceLock();
     stopTimer();
     setPrompt(round.target);
@@ -395,6 +403,7 @@
       if (missCount >= (deps.getConfig().hintAfterMisses || 2)) {
         getChoiceButton(round.target.uid)?.classList.add("is-hint");
       }
+      questionSpeaking = false;
       acceptingInput = true;
       syncChoiceLock();
       startTimer();
@@ -435,6 +444,7 @@
     stopTimer();
     audioGen += 1;
     acceptingInput = false;
+    questionSpeaking = false;
     choicesRevealed = false;
     syncChoiceLock();
     round = null;
