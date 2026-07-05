@@ -327,19 +327,16 @@
     missCount += 1;
     acceptingInput = false;
     stopTimer();
-    choiceBtn?.classList.add("is-wrong");
-    setTimeout(() => choiceBtn?.classList.remove("is-wrong"), 500);
-    const correctBtn = getChoiceButton(round.target.uid);
-    correctBtn?.classList.add("is-reveal");
-    setTimeout(() => correctBtn?.classList.remove("is-reveal"), 2200);
+    choiceBtn?.classList.add("is-wrong", "is-reveal");
+    setTimeout(() => choiceBtn?.classList.remove("is-wrong", "is-reveal"), 2200);
 
     deps.playFeedback?.("retry", () => {
       if (missCount >= (deps.getConfig().hintAfterMisses || 2)) {
-        correctBtn?.classList.add("is-hint");
+        getChoiceButton(round.target.uid)?.classList.add("is-hint");
       }
       acceptingInput = true;
       startTimer();
-    }, round.target);
+    }, round.target, item);
   }
 
   function celebrate(btn) {

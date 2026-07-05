@@ -231,7 +231,7 @@
     });
   }
 
-  function playFeedback(type, onEnd, target) {
+  function playFeedback(type, onEnd, target, wrongChoice) {
     stopAudio();
     const token = ++chainGen;
     if (type === "win") {
@@ -244,10 +244,10 @@
         .then(onEnd);
       return;
     }
-    if (target) {
-      const src = assetUrl(C().wrongFeedbackAudioPath(target));
-      warmAudio(src);
-      playOne(src, token).then(onEnd);
+    if (target && wrongChoice) {
+      const sources = C().wrongFeedbackSources(wrongChoice, target).map((p) => assetUrl(p));
+      sources.forEach((s) => warmAudio(s));
+      playChain(sources, token).then(onEnd);
       return;
     }
     warmAudio(assetUrl("audio/quiz/tenta-de-novo.mp3"));
