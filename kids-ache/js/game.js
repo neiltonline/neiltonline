@@ -226,8 +226,9 @@
     }
 
     round = { target, choices, pool };
-    choicesEl.innerHTML = "";
-    hideChoices();
+    renderChoices(round.choices);
+    acceptingInput = false;
+    showChoices();
     setPrompt(target);
     playQuestion(false);
   }
@@ -384,10 +385,6 @@
     syncChoiceLock();
     stopTimer();
     setPrompt(round.target);
-
-    if (!isRetry) {
-      hideChoices();
-    }
 
     deps.speakQuestion?.(round.target, { gen, isRetry }).then(() => {
       if (gen !== audioGen) return;
