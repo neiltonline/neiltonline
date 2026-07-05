@@ -1,0 +1,397 @@
+/* Reels mobile-first overrides (shared base in ../kids/css/style.css) */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body.mode-reels {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+}
+
+body.mode-reels {
+  background: #000 !important;
+  touch-action: manipulation;
+}
+
+/* Parent hold indicator — only during adult corner gesture */
+body.mode-reels .hold-progress {
+  visibility: visible;
+  pointer-events: none;
+  z-index: 60;
+  top: max(16px, env(safe-area-inset-top));
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-left: -28px;
+  opacity: 0;
+}
+
+body.mode-reels .hold-progress.is-active {
+  opacity: 1;
+}
+
+.reels {
+  height: var(--reels-h, 100dvh);
+  height: var(--reels-h, 100svh);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reels__track {
+  display: flex;
+  flex-direction: row;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: none !important;
+}
+
+.reels__track.is-animating {
+  transition: transform 0.22s cubic-bezier(0.25, 0.9, 0.35, 1) !important;
+}
+
+.reels__slide {
+  width: var(--reels-w, 100vw) !important;
+  min-width: var(--reels-w, 100vw) !important;
+  height: var(--reels-h, 100dvh) !important;
+  min-height: var(--reels-h, 100dvh) !important;
+}
+
+/* Illustration + áudio sincronizados */
+.reels__slide.is-active .reels__illus-stage,
+.reels__slide.is-active .reels__letter {
+  animation: illusReveal 0.42s cubic-bezier(0.25, 0.9, 0.35, 1);
+}
+
+@keyframes illusReveal {
+  from {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reels__illus-object-name {
+  flex-shrink: 0;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: clamp(17px, 4.8vw, 22px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.reels__illus-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(56px, 12vh) 5% max(88px, calc(env(safe-area-inset-bottom) + 72px));
+  box-sizing: border-box;
+}
+
+.reels__illus {
+  width: min(78vw, 340px);
+  max-height: 56vh;
+  object-fit: contain;
+  border-radius: 24px;
+  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.22));
+  pointer-events: none;
+  image-rendering: auto;
+}
+
+.reels__label {
+  z-index: 2;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(20px, calc(env(safe-area-inset-bottom) + 8px));
+  max-width: calc(100% - 32px);
+  font-size: clamp(20px, 6vw, 30px);
+  padding: 12px 20px;
+}
+
+.reels__swipe-hint {
+  top: max(16px, env(safe-area-inset-top));
+  padding: 10px 18px;
+  font-size: clamp(13px, 3.8vw, 15px);
+  font-weight: 600;
+  z-index: 5;
+  white-space: nowrap;
+}
+
+.reels:not(.has-swiped) .reels__swipe-hint {
+  animation: reelsHintPulse 2.4s ease-in-out infinite;
+  opacity: 1;
+}
+
+.reels__swipe-hint.is-dismissed {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+@keyframes reelsHintPulse {
+  0%, 100% { opacity: 0.88; transform: translateX(-50%) translateX(0); }
+  50% { opacity: 1; transform: translateX(-50%) translateX(6px); }
+}
+
+.reels__slide--color {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.reels__shape-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(56px, 12vh) 5% max(88px, calc(env(safe-area-inset-bottom) + 72px));
+  box-sizing: border-box;
+}
+
+.reels__shape {
+  width: min(52vw, 220px);
+  height: min(52vw, 220px);
+  background: var(--shape-fill, #888);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.reels__slide.is-active .reels__shape {
+  animation: reels-shape-pop 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.reels__shape--circle {
+  border-radius: 50%;
+}
+
+.reels__shape--square {
+  border-radius: 16px;
+}
+
+.reels__shape--triangle {
+  width: 0;
+  height: 0;
+  background: transparent;
+  border-left: min(26vw, 110px) solid transparent;
+  border-right: min(26vw, 110px) solid transparent;
+  border-bottom: min(45vw, 190px) solid var(--shape-fill, #888);
+  box-shadow: none;
+}
+
+.reels__shape--hexagon {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+.reels__shape--diamond {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.reels__shape--star {
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+.reels__body-ball {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+  .reels__slide.is-active .reels__body-ball {
+    animation: reels-shape-pop 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  }
+
+.reels__shape--pentagon {
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+.reels__shape--outline {
+  background: #fff !important;
+  border: 6px solid var(--shape-fill, #888);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
+
+.reels__shape--outline.reels__shape--triangle {
+  background: transparent !important;
+  border: none;
+  border-bottom-color: var(--shape-fill, #888);
+}
+
+@keyframes reels-shape-pop {
+  from {
+    transform: scale(0.75);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.config__shape-preview {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: var(--shape-fill, #888);
+}
+
+.config__shape-preview--circle {
+  border-radius: 50%;
+}
+
+.config__shape-preview--square {
+  border-radius: 6px;
+}
+
+.config__shape-preview--triangle {
+  width: 0;
+  height: 0;
+  background: transparent;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-bottom: 32px solid var(--shape-fill, #888);
+}
+
+.config__shape-preview--hexagon {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+.config__shape-preview--diamond {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.config__shape-preview--star {
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+.config__shape-preview--pentagon {
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+.config__shape-preview--outline {
+  background: #fff !important;
+  border: 2px solid var(--shape-fill, #888);
+}
+
+.config__shape-preview--outline.config__shape-preview--triangle {
+  background: transparent !important;
+  border: none;
+}
+
+.reels__letter {
+  font-size: clamp(96px, 36vw, 280px);
+  padding: 0 4vw;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.config__color-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.reels__empty {
+  color: #fff;
+  font-size: clamp(17px, 4.8vw, 20px);
+  line-height: 1.5;
+  text-align: center;
+  padding: max(40px, 10vh) 24px;
+}
+
+/* Tap zones hint (subtle) until first swipe — left/right edges */
+.reels:not(.has-swiped)::before,
+.reels:not(.has-swiped)::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 18%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.reels:not(.has-swiped)::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.06), transparent);
+}
+
+.reels:not(.has-swiped)::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.06), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reels:not(.has-swiped) .reels__swipe-hint {
+    animation: none;
+  }
+
+  .reels__slide.is-active .reels__illus-stage,
+  .reels__slide.is-active .reels__letter,
+  .reels__slide.is-active .reels__shape {
+    animation: none;
+  }
+}
+
+/* Config panel: easier to use on phones */
+@media (pointer: coarse) {
+  .config__card {
+    max-height: min(88dvh, calc(var(--reels-h, 100dvh) - 24px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+
+  .config__close {
+    min-height: 48px;
+    font-size: 17px;
+  }
+
+  .config__toggle,
+  .config__animal {
+    min-height: 48px;
+  }
+
+  .config__link-btn {
+    min-height: 40px;
+    padding: 8px 12px;
+  }
+}
