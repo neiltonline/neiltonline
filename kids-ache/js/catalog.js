@@ -186,6 +186,10 @@
     return `audio/quiz/ache/${questionAudioSlug(item)}.mp3`;
   }
 
+  function wrongFeedbackAudioPath(item) {
+    return `audio/quiz/ache/erro-${questionAudioSlug(item)}.mp3`;
+  }
+
   function wordToFile(word) {
     return word.replace(/\s+/g, "-");
   }
@@ -221,6 +225,7 @@
     articleFor,
     articleForItem,
     questionAudioPath,
+    wrongFeedbackAudioPath,
     wordToFile,
     questionPromptText,
     gridFor,

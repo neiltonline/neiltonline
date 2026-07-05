@@ -329,39 +329,44 @@
     stopTimer();
     choiceBtn?.classList.add("is-wrong");
     setTimeout(() => choiceBtn?.classList.remove("is-wrong"), 500);
+    const correctBtn = getChoiceButton(round.target.uid);
+    correctBtn?.classList.add("is-reveal");
+    setTimeout(() => correctBtn?.classList.remove("is-reveal"), 2200);
 
     deps.playFeedback?.("retry", () => {
       if (missCount >= (deps.getConfig().hintAfterMisses || 2)) {
-        getChoiceButton(round.target.uid)?.classList.add("is-hint");
+        correctBtn?.classList.add("is-hint");
       }
-      playQuestion(true);
-    });
+      acceptingInput = true;
+      startTimer();
+    }, round.target);
   }
 
   function celebrate(btn) {
     burstEl.innerHTML = "";
-    for (let i = 0; i < 12; i++) {
+    const icons = ["⭐", "✨", "🌟", "💫", "👏", "🎉"];
+    for (let i = 0; i < 18; i++) {
       const star = document.createElement("span");
       star.className = "ache__star";
-      star.textContent = "⭐";
-      star.style.left = `${10 + Math.random() * 80}%`;
-      star.style.top = `${10 + Math.random() * 50}%`;
-      star.style.animationDelay = `${Math.random() * 0.25}s`;
+      star.textContent = icons[i % icons.length];
+      star.style.left = `${8 + Math.random() * 84}%`;
+      star.style.top = `${8 + Math.random() * 55}%`;
+      star.style.animationDelay = `${Math.random() * 0.35}s`;
       burstEl.appendChild(star);
     }
     if (btn) {
       const rect = btn.getBoundingClientRect();
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 8; i++) {
         const star = document.createElement("span");
         star.className = "ache__star ache__star--card";
-        star.textContent = "✨";
+        star.textContent = i % 2 === 0 ? "👏" : "✨";
         star.style.left = `${rect.left + rect.width * (0.2 + Math.random() * 0.6)}px`;
         star.style.top = `${rect.top + rect.height * (0.2 + Math.random() * 0.6)}px`;
         star.style.animationDelay = `${Math.random() * 0.15}s`;
         burstEl.appendChild(star);
       }
     }
-    setTimeout(() => { burstEl.innerHTML = ""; }, 1200);
+    setTimeout(() => { burstEl.innerHTML = ""; }, 1600);
   }
 
   function playQuestion(isRetry) {

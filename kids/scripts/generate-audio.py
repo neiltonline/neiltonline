@@ -108,6 +108,15 @@ def article_for(item_id):
     return "o"
 
 
+def wrong_feedback_text(item_id, spoken):
+    art = article_for(item_id)
+    demo = "essa" if art == "a" else "esse"
+    return (
+        f"Você errou, {demo} é {art} {spoken}. "
+        f"Vamos tentar de novo, onde está {art} {spoken}?"
+    )
+
+
 async def generate(text, path, force=False):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     if os.path.exists(path) and not force:
@@ -163,17 +172,32 @@ async def main():
         text = f"Onde está {art} {spoken}"
         path = os.path.join(AUDIO_DIR, "quiz", "ache", f"{item_id}.mp3")
         tasks.append(generate(text, path, force=True))
+        err_text = wrong_feedback_text(item_id, spoken)
+        err_path = os.path.join(AUDIO_DIR, "quiz", "ache", f"erro-{item_id}.mp3")
+        tasks.append(generate(err_text, err_path, force=True))
 
     for letter in "abcdefghijklmnopqrstuvwxyz":
         letter_name = LETTER_OVERRIDES.get(letter, letter)
         text = f"Onde está a letra {letter_name}"
         path = os.path.join(AUDIO_DIR, "quiz", "ache", f"letra-{letter}.mp3")
         tasks.append(generate(text, path, force=True))
+        err_text = (
+            f"Você errou, essa é a letra {letter_name}. "
+            f"Vamos tentar de novo, onde está a letra {letter_name}?"
+        )
+        err_path = os.path.join(AUDIO_DIR, "quiz", "ache", f"erro-letra-{letter}.mp3")
+        tasks.append(generate(err_text, err_path, force=True))
 
     for num, name in NUMBERS.items():
         text = f"Onde está o {name}"
         path = os.path.join(AUDIO_DIR, "quiz", "ache", f"num-{num}.mp3")
         tasks.append(generate(text, path, force=True))
+        err_text = (
+            f"Você errou, esse é o {name}. "
+            f"Vamos tentar de novo, onde está o {name}?"
+        )
+        err_path = os.path.join(AUDIO_DIR, "quiz", "ache", f"erro-num-{num}.mp3")
+        tasks.append(generate(err_text, err_path, force=True))
 
     for i in range(0, len(tasks), 5):
         await asyncio.gather(*tasks[i : i + 5])
