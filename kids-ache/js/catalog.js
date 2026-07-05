@@ -169,9 +169,21 @@
   }
 
   function articleForItem(item) {
-    if (item?.article) return item.article;
-    if (item?.id) return articleFor(item.id);
+    if (!item) return "o";
+    if (item.kind === "letter") return "a";
+    if (item.kind === "number") return "o";
+    if (item.id) return articleFor(item.id);
     return "o";
+  }
+
+  function questionAudioSlug(item) {
+    if (item.kind === "letter") return `letra-${item.char.toLowerCase()}`;
+    if (item.kind === "number") return `num-${item.char}`;
+    return item.id;
+  }
+
+  function questionAudioPath(item) {
+    return `audio/quiz/ache/${questionAudioSlug(item)}.mp3`;
   }
 
   function wordToFile(word) {
@@ -208,6 +220,7 @@
     CHOICE_BACKGROUNDS,
     articleFor,
     articleForItem,
+    questionAudioPath,
     wordToFile,
     questionPromptText,
     gridFor,
