@@ -197,17 +197,61 @@
     return assetUrl(preferred || pool[0]);
   }
 
+  function playApplause() {
+    if (!audioCtx) ensureAudioUnlocked();
+    if (!audioCtx) return;
+    const times = [0, 0.14, 0.28, 0.44, 0.6, 0.76, 0.92, 1.08, 1.24, 1.4];
+    times.forEach((delay) => {
+      try {
+        const len = Math.floor(audioCtx.sampleRate * 0.045);
+        const buffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < len; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.12));
+        }
+        const source = audioCtx.createBufferSource();
+        const gain = audioCtx.createGain();
+        source.buffer = buffer;
+        gain.gain.value = 0.28 + Math.random() * 0.12;
+        source.connect(gain);
+        gain.connect(audioCtx.destination);
+        source.start(audioCtx.currentTime + delay);
+      } catch { /* ignore */ }
+    });
+  }
+
+  function playApplauseAsync(token) {
+    return new Promise((resolve) => {
+      if (token !== chainGen) {
+        resolve();
+        return;
+      }
+      playApplause();
+      setTimeout(resolve, 1650);
+    });
+  }
+
   function playFeedback(type, onEnd, target) {
     stopAudio();
     const token = ++chainGen;
-    const sources = type === "win"
-      ? [assetUrl("audio/quiz/muito-bem.mp3")]
-      : [assetUrl("audio/quiz/tenta-de-novo.mp3")];
-    if (type === "win" && target?.kind === "animal") {
-      sources.push(pickAnimalSound(target.id));
+    if (type === "win") {
+      const sources = [assetUrl("audio/quiz/muito-bem.mp3")];
+      if (target?.kind === "animal") sources.push(pickAnimalSound(target.id));
+      sources.forEach((s) => warmAudio(s));
+      playOne(sources[0], token)
+        .then(() => playApplauseAsync(token))
+        .then(() => (sources[1] ? playOne(sources[1], token) : Promise.resolve()))
+        .then(onEnd);
+      return;
     }
-    sources.forEach((s) => warmAudio(s));
-    playChain(sources, token).then(onEnd);
+    if (target) {
+      const src = assetUrl(C().wrongFeedbackAudioPath(target));
+      warmAudio(src);
+      playOne(src, token).then(onEnd);
+      return;
+    }
+    warmAudio(assetUrl("audio/quiz/tenta-de-novo.mp3"));
+    playOne(assetUrl("audio/quiz/tenta-de-novo.mp3"), token).then(onEnd);
   }
 
   async function loadManifest() {
