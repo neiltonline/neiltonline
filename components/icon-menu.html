@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *,
+        html {
+            margin: 0;
+            padding: 0;
+            background: rgb(107, 107, 107)
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .menuViewBox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: black;
+            cursor: pointer;
+        }
+
+        .menuLine {
+            position: relative;
+            width: 30px;
+            background-color: white;
+            height: 2px;
+            transition: .4s ease;
+            box-sizing: border-box;
+        }
+
+
+        .menuLine::before,
+        .menuLine::after {
+            position: absolute;
+            content: "";
+            width: 30px;
+            background-color: white;
+            height: 2px;
+            transition: .4s ease;
+
+        }
+
+        .menuLine::before {
+            transform: translate(0, -8px);
+            /* transform: rotate(45deg); */
+        }
+
+        .menuLine::after {
+            transform: translateY(8px)
+        }
+
+        .ativo::before {
+            transform: rotate(40deg);
+
+        }
+
+        .ativo::after {
+            transform: rotate(-40deg)
+        }
+
+        .menuLine.ativo {
+            box-shadow: inset 0 2px 0 black;
+        }
+    </style>
+</head>
+
+<body>
+    <a class="menuViewBox">
+        <div class="menuLine"></div>
+    </a>
+    <script>
+        const menu = document.querySelector(".menuLine");
+        const menuViewBox = document.querySelector('.menuViewBox')
+
+        menuViewBox.addEventListener('click', () => {
+            menu.classList.toggle('ativo')
+        })
+
+
+    </script>
+</body>
+
+</html>

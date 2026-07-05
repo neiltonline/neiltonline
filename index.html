@@ -3,164 +3,98 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Metadata -->
+    <meta name="author" content="Neilton Silva" />
+    <meta name="description" content="I'm a product designer passionate about the crypto world." />
+    <meta name="keywords" content="neilton,silva,neiltonline,portfolio,website,ux,ui,design,branding,experience,ios,product,freelance,interface,software,hire,work,contact" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Neilton Silva">
+    <meta property="og:description" content="I'm a product designer passionate about the crypto world.">
+    <meta property="og:image" content="https://secure.gravatar.com/avatar/2b028da3c5c7178347d6caa12934b0fc?s=500">
+    <meta property="og:url" content="https://neiltonline.com/">
+    <meta property="og:site_name" content="Neilton Silva">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@neiltonline">
+    <meta name="twitter:image" content="https://secure.gravatar.com/avatar/2b028da3c5c7178347d6caa12934b0fc?s=500">
+    <meta name="twitter:image:alt" content="me.">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
     <title>Neilton Silva - Portfolio</title>
     <link rel="stylesheet" href="./css/style.css" />
     <link rel="stylesheet" href="./css/cursor.css">
-    <script src="./js/w3data.js"></script>
+
 </head>
 
 <body>
-    <div class="content">
+    <!-- INCLUDE MENU -->
+    <div w3-include-html="./components/menu.html"></div>
+    <!-- <div class="logoMemojiContainer">
+        <a href="#" class="logoMemoji">
+            <img src="./imagens/contact-circle.svg" alt="">
+            <video autoplay muted loop>
+                <source src="./imagens/neiltin.mp4" type="video/mp4">
+            </video></a>
+    </div> -->
+    <!-- <div class="sticky-content"> -->
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1 class="bold">A product designer passionate about the crypto world. Regards, <a href="https://opensea.io/assets/ethereum/0x495f947276749ce646f68ac8c248420045cb7b5e/76240202854133961045453021952069270101024004287111085195829742410512855990273" data-cursor-img="./imagens/me.jpg" target="_blank">Neilton</a> :)</h1>
+        <!-- <h1 class="bold">Hey! I'm <a href="/about" data-cursor-img="./imagens/me.png" target="_blank">Neilton</a>, a product designer passionate about the crypto world.</h1> -->
+        <p>I'm currently working at <a href="https://capitual.com" target="_blank" class="exclusion">Capitual</a> as creative director and manager of the UI/UX team.</p>
+    </section>
 
-        <!-- INCLUDE MENU -->
-        <div w3-include-html="./components/menu.html"></div>
+    <!-- PORTFOLIO 01 - CAPITUAL -->
+    <!-- <section class="portfolio portScroll01" id="work" style="background-image: url(./imagens/portfolio/capitual.png); background-color:#ffffff;">
+        <div data-cursor-text="View case" class="hidden-link" id="link-p01" onclick="iniciaModal('.modal','link-p01')"></div>
+        <h3 style="color: #1c1c1c">— Capitual</h3>
+        <h2 class="bold">Redesigning new app for multicurrency bank.</h2>
+    </section>  -->
 
-        <!-- HERO SECTION -->
+    <!-- PORTFOLIO 02 - CAPBUSINESS -->
+    <!-- <section class="portfolio portScroll02" style="background-image: url(./imagens/portfolio/02.jpeg); background-color: #5C8CF0;">
+        <a data-cursor-text="View case" class="hidden-link" id="link-p02" onclick="iniciaModal('.modal','link-p02')"></a>
+        <h3>— CapBusiness</h3>
+        <h2 class="bold" style="color: white">Building digital products, brands and dreams.
+    </section> -->
 
-        <div class="hero">
-            <h1 class="bold">Hey! I'm <a href="#" data-cursor-img="./imagens/me.png" target="_blank">Neilton</a>, a product designer passionate about the crypto world.</h1>
-            <p>I'm currently working at <a href="https://capitual.com" target="_blank" class="exclusion">Capitual</a> as creative director and manager of the UI/UX team.</p>
-        </div>
-
-        <!-- PORTFOLIO -->
-
-        <div class="portfolio" style="background-image: url(./imagens/portfolio/capitual.png); background-color:#026FF4;">
-
-            <div data-cursor-text="View case" class="hidden-link" id="project-capitual"></div>
-
-            <h3>— Capitual</h3>
-            <h2 class="bold" style="color: white">Redesigning new app for multicurrency bank.</h2>
-        </div>
-
-
-        <div class="portfolio" id="work" style="background-image: url(./imagens/portfolio/02.jpeg); background-color: #CBCFE3;">
-
-            <a href="#" data-cursor-text="View case" class="hidden-link" id="project-capbusiness"></a>
-
-            <h3 style="color: black">— CapBusiness</h3>
-            <h2 class="bold">Building digital products, brands and dreams.
-        </div>
-
-
-        <div class="portfolio" style="background-image: url(./imagens/portfolio/ekvilibro.png); background-color:#96a3ac;">
-
-            <a href="#" data-cursor-text="View case" class="hidden-link" id="project-ekvilibro"></a>
-
-            <h3>— Ekvilibro</h3>
-            <h2 class="bold" style="color: white">ICO/IEO website for sustainable token project.</h2>
-        </div>
+    <!-- PORTFOLIO 03 - EKVILIBRO -->
+    <!-- <section class="portfolio portScroll03" style="background-image: url(./imagens/portfolio/ekvilibro.png); background-color:#76E59F;">
+        <a data-cursor-text="View case" class="hidden-link" id="link-p03" onclick="iniciaModal('.modal','link-p03')"></a>
+        <h3>— Ekvilibro</h3>
+        <h2 class="bold" style="color: white">ICO/IEO website for sustainable token project.</h2>
+    </section> -->
 
 
-        <div class="portfolio" style="background-image: url(./imagens/portfolio/04.jpeg); background-color:#F6E9EC;">
+    <!-- PORTFOLIO 05 - BRUNO DINIZ -->
+    <!-- <section class="portfolio portScroll05" style="background-image: url(./imagens/portfolio/01.jpeg); background-color:#46474D;">
+        <a data-cursor-text="View case" class="hidden-link" id="link-p05" onclick="iniciaModal('.modal','link-p05')"></a>
+        <h3>— Bruno Diniz</h3>
+        <h2 class="bold" style="color: white">Personal Page for especialist in financial market innovation.</h2>
+    </section> -->
 
-            <a href="#" data-cursor-text="View case" class="hidden-link" id="project-settle-kyc"></a>
+    <!-- FOOTER -->
 
-            <h3 style="color: black">— Settle KYC</h3>
-            <h2 class="bold">KYC flow to international crypto-exchanges.</h2>
-        </div>
+    <!-- <div class="footer">
+        <h2 class="title bold">Let's making something together, <a href="" class="exclusion">say hi</a>!</h2>
+        <nav>
+            <a href="https://www.behance.net/neiltonsilva" target="_blank" class="exclusion">Behance</a>
+            <a href="https://www.linkedin.com/in/neiltonline/" target="_blank" class="exclusion">Linkedin</a>
+        </nav>
+    </div> -->
 
-
-        <div class="portfolio" style="background-image: url(./imagens/portfolio/01.jpeg); background-color:#E9DEE4;">
-
-            <a href="#" data-cursor-text="View case" class="hidden-link" id="project-bruno-diniz"></a>
-
-            <h3 style="color: black">— Bruno Diniz</h3>
-            <h2 class="bold">Personal Page for especialist in financial market innovation.</h2>
-        </div>
-    </div>
-    </div>
-    </div>
-
-    <!-- INCLUDE FOOTER -->
-
-    <div w3-include-html="./components/footer.html"></div>
+    <!-- </div> -->
 
     <!-- MODAL -->
+    <!-- <div w3-include-html="./components/modal.html"></div> -->
 
-    <div class=" modal" id="modal">
-        <button class="close closex" data-cursor-stick>
-            <img class="closex" src="./imagens/close.svg" alt="Close" width="30" height="30" id="close">
-        </button>
-        <div id="project-01" w3-include-html="./portfolio/project-capitual.html"></div>
-        <div id="project-02" w3-include-html="./portfolio/project-capbusiness.html"></div>
-        <!-- <div id="project-03" w3-include-html="./portfolio/project-capitual.html"></div>
-        <div id="project-04" w3-include-html="./portfolio/project-capitual.html"></div>
-        <div id="project-05" w3-include-html="./portfolio/project-capitual.html"></div> -->
-    </div>
+    <!-- SCRIPTS -->
+    <script src="./js/w3data.js"></script>
+    <script> w3IncludeHTML(); </script>
+    <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/ScrollTrigger.min.js"></script>
+    <script src="./js/index.js"></script>
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
-<script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
-<script>
-    w3IncludeHTML();
-</script>
-<script>
-
-    function iniciaModal(modalClass) {
-        const modal = document.querySelector(modalClass);
-
-        modal.classList.add('mostrar');
-        modal.addEventListener('click', (e) => {
-            if (e.target.className == 'closex') {
-                modal.classList.remove('mostrar');
-                document.body.style.overflow = "auto";
-            }
-        })
-    }
-
-    const capitual = document.getElementById('project-capitual');
-    capitual.addEventListener('click', () => {
-        document.body.style.overflow = "hidden";
-        iniciaModal('.modal')
-    }
-    )
-
-</script>
-
-<script>
-    const cursor = new MouseFollower({
-        el: null,
-        container: document.body,
-        className: 'cursor',
-        innerClassName: 'cursor-inner',
-        textClassName: 'cursor-text',
-        mediaClassName: 'cursor-media',
-        mediaBoxClassName: 'cursor-media-box',
-        iconSvgClassName: 'mf-svgsprite',
-        iconSvgNamePrefix: '-',
-        iconSvgSrc: '',
-        dataAttr: 'cursor',
-        hiddenState: '-hidden',
-        textState: '-text',
-        iconState: '-icon',
-        activeState: '-active',
-        mediaState: '-media',
-        stateDetection: {
-            '-pointer': 'a,button',
-            '-hidden': 'iframe'
-        },
-        visible: true,
-        visibleOnState: false,
-        speed: 0.55,
-        ease: 'expo.out',
-        overwrite: true,
-        skewing: 2,
-        skewingText: 1,
-        skewingIcon: 2,
-        skewingMedia: 2,
-        skewingDelta: 0.001,
-        skewingDeltaMax: 0.15,
-        stickDelta: 0.15,
-        showTimeout: 20,
-        hideOnLeave: true,
-        hideTimeout: 300,
-        hideMediaTimeout: 300,
-        stateDetection: {
-            '-pointer': 'a, button',
-            '-exclusion': '.exclusion, .nav-mobile, button',
-            '-logo': '.logo',
-        }
-    });
-</script>
 
 </html>
