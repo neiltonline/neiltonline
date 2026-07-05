@@ -71,6 +71,7 @@
   let audioCtx = null;
   let speechPrimed = false;
   let currentAudio = null;
+  let overlayAudio = null;
   let chainGen = 0;
   let variants = {};
   const audioPool = new Map();
@@ -109,12 +110,41 @@
 
   function stopAudio() {
     chainGen += 1;
+    if (overlayAudio) {
+      overlayAudio.onended = null;
+      overlayAudio.onerror = null;
+      overlayAudio.pause();
+      overlayAudio = null;
+    }
     if (currentAudio) {
       currentAudio.onended = null;
       currentAudio.onerror = null;
       currentAudio.pause();
       currentAudio = null;
     }
+  }
+
+  function playOverlay(src) {
+    if (!src) return;
+    ensureAudioUnlocked();
+    const audio = warmAudio(src);
+    if (overlayAudio && overlayAudio !== audio) {
+      overlayAudio.onended = null;
+      overlayAudio.onerror = null;
+      overlayAudio.pause();
+    }
+    overlayAudio = audio;
+    audio.currentTime = 0;
+    audio.onended = () => {
+      if (overlayAudio === audio) overlayAudio = null;
+    };
+    audio.onerror = () => {
+      if (overlayAudio === audio) overlayAudio = null;
+    };
+    const p = audio.play();
+    if (p) p.catch(() => {
+      if (overlayAudio === audio) overlayAudio = null;
+    });
   }
 
   function ensureAudioUnlocked() {
@@ -197,51 +227,17 @@
     return assetUrl(preferred || pool[0]);
   }
 
-  function playApplause() {
-    if (!audioCtx) ensureAudioUnlocked();
-    if (!audioCtx) return;
-    const times = [0, 0.14, 0.28, 0.44, 0.6, 0.76, 0.92, 1.08, 1.24, 1.4];
-    times.forEach((delay) => {
-      try {
-        const len = Math.floor(audioCtx.sampleRate * 0.045);
-        const buffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < len; i++) {
-          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.12));
-        }
-        const source = audioCtx.createBufferSource();
-        const gain = audioCtx.createGain();
-        source.buffer = buffer;
-        gain.gain.value = 0.28 + Math.random() * 0.12;
-        source.connect(gain);
-        gain.connect(audioCtx.destination);
-        source.start(audioCtx.currentTime + delay);
-      } catch { /* ignore */ }
-    });
-  }
-
-  function playApplauseAsync(token) {
-    return new Promise((resolve) => {
-      if (token !== chainGen) {
-        resolve();
-        return;
-      }
-      playApplause();
-      setTimeout(resolve, 1650);
-    });
-  }
-
   function playFeedback(type, onEnd, target, wrongChoice) {
     stopAudio();
     const token = ++chainGen;
     if (type === "win") {
+      const applauseSrc = assetUrl("audio/quiz/palmas.mp3");
       const sources = [assetUrl("audio/quiz/muito-bem.mp3")];
       if (target?.kind === "animal") sources.push(pickAnimalSound(target.id));
+      warmAudio(applauseSrc);
       sources.forEach((s) => warmAudio(s));
-      playOne(sources[0], token)
-        .then(() => playApplauseAsync(token))
-        .then(() => (sources[1] ? playOne(sources[1], token) : Promise.resolve()))
-        .then(onEnd);
+      playOverlay(applauseSrc);
+      playChain(sources, token).then(onEnd);
       return;
     }
     if (target && wrongChoice) {
@@ -587,6 +583,7 @@
     wireConfig();
     wireParentGate();
     await loadManifest();
+    warmAudio(assetUrl("audio/quiz/palmas.mp3"));
 
     window.AcheGame.init({
       root: document.getElementById("ache"),
