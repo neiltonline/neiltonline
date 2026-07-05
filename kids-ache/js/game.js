@@ -271,7 +271,8 @@
       }
 
       btn.appendChild(stage);
-      btn.addEventListener("click", () => onChoice(item));
+      btn.addEventListener("pointerdown", () => pulseChoice(btn));
+      btn.addEventListener("click", () => onChoice(item, btn));
       choicesEl.appendChild(btn);
     });
   }
@@ -280,26 +281,55 @@
     return choicesEl.querySelector(`[data-uid="${uid}"]`);
   }
 
-  function onChoice(item) {
+  function pulseChoice(btn) {
+    if (!btn || !acceptingInput) return;
+    btn.classList.remove("is-pressed");
+    void btn.offsetWidth;
+    btn.classList.add("is-pressed");
+    setTimeout(() => btn.classList.remove("is-pressed"), 320);
+  }
+
+  function spawnCardBurst(btn) {
+    if (!btn) return;
+    const layer = document.createElement("div");
+    layer.className = "ache__choice-fx";
+    const particles = ["✨", "⭐", "💫", "🌟"];
+    for (let i = 0; i < 8; i++) {
+      const spark = document.createElement("span");
+      spark.className = "ache__choice-spark";
+      spark.textContent = particles[i % particles.length];
+      const angle = (i / 8) * Math.PI * 2;
+      spark.style.setProperty("--spark-x", `${Math.cos(angle) * 52}px`);
+      spark.style.setProperty("--spark-y", `${Math.sin(angle) * 52}px`);
+      spark.style.animationDelay = `${i * 0.03}s`;
+      layer.appendChild(spark);
+    }
+    btn.appendChild(layer);
+    setTimeout(() => layer.remove(), 900);
+  }
+
+  function onChoice(item, btn) {
     if (!acceptingInput || !round) return;
     deps.unlockAudio?.();
+    const choiceBtn = btn || getChoiceButton(item.uid);
 
     if (item.uid === round.target.uid) {
       acceptingInput = false;
       stopTimer();
-      celebrate();
+      choiceBtn?.classList.add("is-correct");
+      spawnCardBurst(choiceBtn);
+      celebrate(choiceBtn);
       deps.playFeedback?.("win", () => {
-        setTimeout(startRound, 700);
-      });
+        setTimeout(startRound, 500);
+      }, round.target);
       return;
     }
 
     missCount += 1;
     acceptingInput = false;
     stopTimer();
-    const btn = getChoiceButton(item.uid);
-    btn?.classList.add("is-wrong");
-    setTimeout(() => btn?.classList.remove("is-wrong"), 500);
+    choiceBtn?.classList.add("is-wrong");
+    setTimeout(() => choiceBtn?.classList.remove("is-wrong"), 500);
 
     deps.playFeedback?.("retry", () => {
       if (missCount >= (deps.getConfig().hintAfterMisses || 2)) {
@@ -309,7 +339,7 @@
     });
   }
 
-  function celebrate() {
+  function celebrate(btn) {
     burstEl.innerHTML = "";
     for (let i = 0; i < 12; i++) {
       const star = document.createElement("span");
@@ -319,6 +349,18 @@
       star.style.top = `${10 + Math.random() * 50}%`;
       star.style.animationDelay = `${Math.random() * 0.25}s`;
       burstEl.appendChild(star);
+    }
+    if (btn) {
+      const rect = btn.getBoundingClientRect();
+      for (let i = 0; i < 6; i++) {
+        const star = document.createElement("span");
+        star.className = "ache__star ache__star--card";
+        star.textContent = "✨";
+        star.style.left = `${rect.left + rect.width * (0.2 + Math.random() * 0.6)}px`;
+        star.style.top = `${rect.top + rect.height * (0.2 + Math.random() * 0.6)}px`;
+        star.style.animationDelay = `${Math.random() * 0.15}s`;
+        burstEl.appendChild(star);
+      }
     }
     setTimeout(() => { burstEl.innerHTML = ""; }, 1200);
   }
