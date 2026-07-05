@@ -186,8 +186,16 @@
     return `audio/quiz/ache/${questionAudioSlug(item)}.mp3`;
   }
 
-  function wrongFeedbackAudioPath(item) {
-    return `audio/quiz/ache/erro-${questionAudioSlug(item)}.mp3`;
+  function wrongChoiceAudioPath(item) {
+    return `audio/quiz/ache/errou-${questionAudioSlug(item)}.mp3`;
+  }
+
+  function wrongFeedbackSources(wrongChoice, target) {
+    return [
+      wrongChoiceAudioPath(wrongChoice),
+      "audio/quiz/vamos-tentar-de-novo.mp3",
+      questionAudioPath(target),
+    ];
   }
 
   function wordToFile(word) {
@@ -225,7 +233,8 @@
     articleFor,
     articleForItem,
     questionAudioPath,
-    wrongFeedbackAudioPath,
+    wrongChoiceAudioPath,
+    wrongFeedbackSources,
     wordToFile,
     questionPromptText,
     gridFor,
