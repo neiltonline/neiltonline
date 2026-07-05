@@ -83,8 +83,9 @@
     { id: "bebe", name: "bebê", label: "Bebê" },
     { id: "pao", name: "pão", label: "Pão" },
     { id: "abraco", name: "abraço", label: "Abraço" },
-    { id: "beijo", name: "beijo", label: "Beijo" },
     { id: "dormir", name: "dormir", label: "Dormir" },
+    { id: "nuvem", name: "nuvem", label: "Nuvem" },
+    { id: "sorvete", name: "sorvete", label: "Sorvete" },
     { id: "balao", name: "balão", label: "Balão" },
     { id: "bolha", name: "bolha", label: "Bolha" },
     { id: "carrossel", name: "carrossel", label: "Carrossel" },
@@ -105,9 +106,9 @@
     { id: "mao", name: "mão", label: "Mão", bg: "#FFCCBC" },
     { id: "braco", name: "braço", label: "Braço", bg: "#FFAB91" },
     { id: "perna", name: "perna", label: "Perna", bg: "#C5CAE9" },
-    { id: "barriga", name: "barriga", label: "Barriga", bg: "#DCEDC8" },
     { id: "cabelo", name: "cabelo", label: "Cabelo", bg: "#D7CCC8" },
     { id: "dente", name: "dente", label: "Dente", bg: "#E0F7FA" },
+    { id: "dedo", name: "dedo", label: "Dedo", bg: "#FFF9C4" },
   ];
 
   const COLORS = [
@@ -349,18 +350,6 @@
     if (config.reelsCategories.body) {
       const bodyItems = [];
       for (const part of getEnabledBodyParts()) {
-        if (part.id === "barriga") {
-          bodyItems.push({
-            type: "body",
-            id: part.id,
-            label: part.label,
-            name: part.name,
-            bg: part.bg,
-            illustration: null,
-            bodyBall: true,
-          });
-          continue;
-        }
         const illustration = illus("body", part.id);
         if (!illustration) continue;
         bodyItems.push({
@@ -711,9 +700,6 @@
   }
 
   function bodyThumbHtml(part) {
-    if (part.id === "barriga") {
-      return `<span class="config__shape-preview config__shape-preview--circle" style="--shape-fill:#FDD835"></span>`;
-    }
     return thumbHtml("body", part.id, part.label.charAt(0));
   }
 

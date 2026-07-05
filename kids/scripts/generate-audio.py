@@ -13,7 +13,7 @@ LETTER_OVERRIDES = {
 
 NUMBERS = {
     "0": "zero", "1": "um", "2": "dois", "3": "três", "4": "quatro",
-    "5": "cinco", "6": "seis", "7": "sete", "8": "oito", "9": "nove",
+    "5": "cinco", "6": "seis", "7": "sete", "8": "oito", "9": "nove", "10": "dez",
 }
 
 COLOR_WORDS = [
@@ -35,12 +35,13 @@ TODDLER_WORDS = [
     "papai", "mamãe", "titio", "titia", "vovó", "vovô",
     "bola", "brincar", "lua", "sol", "morango", "banana", "maçã",
     "água", "leite", "estrela", "flor", "bebê", "pão",
-    "abraço", "beijo", "dormir",
+    "abraço", "beijo", "dormir", "balão", "bolha", "carrossel", "coração", "festa",
+    "música", "pirulito", "arco-íris", "nuvem", "sorvete",
 ]
 
 BODY_WORDS = [
     "cabeça", "pé", "olhos", "orelha", "nariz", "boca",
-    "mão", "braço", "perna", "barriga", "cabelo", "dente",
+    "mão", "braço", "perna", "cabelo", "dente", "dedo",
 ]
 
 QUIZ_PROMPTS = {
@@ -48,8 +49,7 @@ QUIZ_PROMPTS = {
     "tenta-de-novo": "Tenta de novo!",
     "onde-esta-o": "Onde está o",
     "onde-esta-a": "Onde está a",
-    "qual-e-o": "Qual é o",
-    "qual-e-a": "Qual é a",
+    "letra": "letra",
 }
 
 QUIZ_SHAPES = {

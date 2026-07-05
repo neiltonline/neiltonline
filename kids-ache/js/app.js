@@ -16,7 +16,10 @@
   }
 
   const DEFAULT_CONFIG = {
-    categories: { animals: true, colors: true, words: false, body: false },
+    categories: {
+      animals: true, colors: true, words: false, body: false,
+      letters: false, numbers: false,
+    },
     mixCategories: true,
     choiceCount: 2,
     timerSec: 10,
@@ -25,6 +28,8 @@
     colors: defaultToggles(C().COLORS),
     words: defaultToggles(C().WORDS),
     body: defaultToggles(C().BODY_PARTS),
+    letters: defaultToggles(C().LETTERS),
+    numbers: defaultToggles(C().NUMBERS),
   };
 
   function loadConfig() {
@@ -38,6 +43,8 @@
         colors: savedCats.colors ?? savedCats.shapes ?? DEFAULT_CONFIG.categories.colors,
         words: savedCats.words ?? DEFAULT_CONFIG.categories.words,
         body: savedCats.body ?? DEFAULT_CONFIG.categories.body,
+        letters: savedCats.letters ?? DEFAULT_CONFIG.categories.letters,
+        numbers: savedCats.numbers ?? DEFAULT_CONFIG.categories.numbers,
       };
       return {
         ...DEFAULT_CONFIG,
@@ -47,6 +54,8 @@
         colors: { ...defaultToggles(C().COLORS), ...parsed.colors },
         words: { ...defaultToggles(C().WORDS), ...parsed.words },
         body: { ...defaultToggles(C().BODY_PARTS), ...parsed.body },
+        letters: { ...defaultToggles(C().LETTERS), ...parsed.letters },
+        numbers: { ...defaultToggles(C().NUMBERS), ...parsed.numbers },
         choiceCount: C().normalizeChoiceCount(parsed.choiceCount),
         timerSec: [8, 10, 12, 15].includes(parsed.timerSec) ? parsed.timerSec : 10,
         hintAfterMisses: parsed.hintAfterMisses === 1 ? 1 : 2,
@@ -163,6 +172,17 @@
 
   function questionSources(target) {
     const sources = [];
+    if (target.kind === "letter") {
+      sources.push(assetUrl("audio/quiz/onde-esta-a.mp3"));
+      sources.push(assetUrl("audio/quiz/letra.mp3"));
+      sources.push(assetUrl(`audio/letters/${target.char.toLowerCase()}.mp3`));
+      return sources;
+    }
+    if (target.kind === "number") {
+      sources.push(assetUrl(`audio/quiz/onde-esta-${target.article}.mp3`));
+      sources.push(assetUrl(`audio/numbers/${C().wordToFile(target.name)}.mp3`));
+      return sources;
+    }
     sources.push(assetUrl(`audio/quiz/onde-esta-${target.article}.mp3`));
     if (target.kind === "body") {
       sources.push(assetUrl(wordAudioPath(target.name, "body")));
@@ -279,9 +299,7 @@
     C().BODY_PARTS.forEach((part) => {
       const label = document.createElement("label");
       label.className = "config__animal";
-      const thumb = part.bodyBall
-        ? `<span class="config__thumb config__thumb--ball"></span>`
-        : thumbHtml("body", part.id, part.label.charAt(0));
+      const thumb = thumbHtml("body", part.id, part.label.charAt(0));
       label.innerHTML = `
         <input type="checkbox" data-body="${part.id}" ${config.body[part.id] ? "checked" : ""}>
         ${thumb}
@@ -301,6 +319,8 @@
     document.getElementById("cfg-cat-colors").checked = config.categories.colors;
     document.getElementById("cfg-cat-words").checked = config.categories.words;
     document.getElementById("cfg-cat-body").checked = config.categories.body;
+    document.getElementById("cfg-cat-letters").checked = config.categories.letters;
+    document.getElementById("cfg-cat-numbers").checked = config.categories.numbers;
     document.getElementById("cfg-mix").checked = config.mixCategories;
     document.getElementById("cfg-choice-count").value = String(config.choiceCount);
     document.getElementById("cfg-timer").value = String(config.timerSec);
@@ -423,7 +443,7 @@
       if (e.target === configPanel) closeConfig();
     });
 
-    ["animals", "colors", "words", "body"].forEach((cat) => {
+    ["animals", "colors", "words", "body", "letters", "numbers"].forEach((cat) => {
       document.getElementById(`cfg-cat-${cat}`).addEventListener("change", (e) => {
         config.categories[cat] = e.target.checked;
         saveConfig();

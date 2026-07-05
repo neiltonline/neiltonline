@@ -3,8 +3,8 @@
     "vaca", "galinha", "raposa", "abelha", "ovelha", "coruja", "borboleta",
     "baleia", "cabra", "girafa", "zebra",
     "mamae", "titia", "vovo", "bola", "lua", "maca", "banana", "melancia",
-    "agua", "flor", "estrela", "musica", "festa", "bolha",
-    "cabeca", "orelha", "boca", "mao", "perna", "barriga",
+    "agua", "flor", "estrela", "musica", "festa", "bolha", "nuvem",
+    "cabeca", "orelha", "boca", "mao", "perna",
     "rosa", "laranja", "violeta", "turquesa", "vinho",
   ]);
 
@@ -73,7 +73,6 @@
     { id: "bebe", name: "bebê", label: "Bebê" },
     { id: "pao", name: "pão", label: "Pão" },
     { id: "abraco", name: "abraço", label: "Abraço" },
-    { id: "beijo", name: "beijo", label: "Beijo" },
     { id: "dormir", name: "dormir", label: "Dormir" },
     { id: "balao", name: "balão", label: "Balão" },
     { id: "bolha", name: "bolha", label: "Bolha" },
@@ -83,6 +82,8 @@
     { id: "musica", name: "música", label: "Música" },
     { id: "pirulito", name: "pirulito", label: "Pirulito" },
     { id: "arcoiris", name: "arco-íris", label: "Arco-íris" },
+    { id: "nuvem", name: "nuvem", label: "Nuvem" },
+    { id: "sorvete", name: "sorvete", label: "Sorvete" },
   ];
 
   const BODY_PARTS = [
@@ -95,9 +96,9 @@
     { id: "mao", name: "mão", label: "Mão", bg: "#FFCCBC" },
     { id: "braco", name: "braço", label: "Braço", bg: "#FFAB91" },
     { id: "perna", name: "perna", label: "Perna", bg: "#C5CAE9" },
-    { id: "barriga", name: "barriga", label: "Barriga", bg: "#DCEDC8", bodyBall: true },
     { id: "cabelo", name: "cabelo", label: "Cabelo", bg: "#D7CCC8" },
     { id: "dente", name: "dente", label: "Dente", bg: "#E0F7FA" },
+    { id: "dedo", name: "dedo", label: "Dedo", bg: "#FFF9C4" },
   ];
 
   const COLORS = [
@@ -122,9 +123,44 @@
     { id: "vinho", name: "vinho", label: "Vinho", hex: "#AD1457", shape: "circle" },
   ];
 
+  const LETTER_BACKGROUNDS = [
+    { bg: "#5C6BC0", fg: "#FFFFFF" },
+    { bg: "#26A69A", fg: "#FFFFFF" },
+    { bg: "#EF5350", fg: "#FFFFFF" },
+    { bg: "#FFA726", fg: "#333333" },
+    { bg: "#AB47BC", fg: "#FFFFFF" },
+    { bg: "#42A5F5", fg: "#FFFFFF" },
+  ];
+
+  const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((char, i) => ({
+    id: `letter-${char.toLowerCase()}`,
+    char,
+    name: char,
+    label: char,
+    article: "a",
+    ...LETTER_BACKGROUNDS[i % LETTER_BACKGROUNDS.length],
+  }));
+
+  const NUMBER_NAMES = {
+    0: "zero", 1: "um", 2: "dois", 3: "três", 4: "quatro",
+    5: "cinco", 6: "seis", 7: "sete", 8: "oito", 9: "nove", 10: "dez",
+  };
+
+  const NUMBERS = Object.entries(NUMBER_NAMES).map(([char, name], i) => ({
+    id: char === "10" ? "n10" : `n${char}`,
+    char,
+    name,
+    label: char,
+    display: char,
+    article: "o",
+    ...LETTER_BACKGROUNDS[i % LETTER_BACKGROUNDS.length],
+  }));
+
   const CHOICE_BACKGROUNDS = [
     "#FFD54F", "#81D4FA", "#A5D6A7", "#F48FB1", "#CE93D8", "#FFCC80",
   ];
+
+  const CHOICE_COUNTS = [2, 3, 4, 6, 9, 12];
 
   function articleFor(id) {
     return FEMININE.has(id) ? "a" : "o";
@@ -134,7 +170,11 @@
     return word.replace(/\s+/g, "-");
   }
 
-  const CHOICE_COUNTS = [2, 3, 4, 6, 9, 12];
+  function questionPromptText(item) {
+    if (item.kind === "letter") return `Onde está a letra ${item.char}?`;
+    if (item.kind === "number") return `Onde está o ${item.name}?`;
+    return `Onde está ${item.article} ${item.name}?`;
+  }
 
   function gridFor(count) {
     if (count <= 3) return { cols: 1, rows: count };
@@ -154,10 +194,13 @@
     WORDS,
     BODY_PARTS,
     COLORS,
+    LETTERS,
+    NUMBERS,
     CHOICE_COUNTS,
     CHOICE_BACKGROUNDS,
     articleFor,
     wordToFile,
+    questionPromptText,
     gridFor,
     normalizeChoiceCount,
   };

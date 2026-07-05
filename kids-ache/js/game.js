@@ -4,6 +4,7 @@
 
   let root = null;
   let choicesEl = null;
+  let promptEl = null;
   let timerEl = null;
   let burstEl = null;
   let deps = {};
@@ -13,6 +14,7 @@
   let missCount = 0;
   let acceptingInput = false;
   let audioGen = 0;
+  let choicesRevealed = false;
 
   function shuffle(arr) {
     const a = [...arr];
@@ -47,7 +49,6 @@
           article: C().articleFor(animal.id),
           illustration,
           bg: C().CHOICE_BACKGROUNDS[i % C().CHOICE_BACKGROUNDS.length],
-          question: "onde",
         });
       });
     }
@@ -65,7 +66,6 @@
           outline: color.outline,
           article: C().articleFor(color.id),
           bg: "#ECEFF1",
-          question: "onde",
         });
       });
     }
@@ -84,28 +84,13 @@
           article: C().articleFor(word.id),
           illustration,
           bg: C().CHOICE_BACKGROUNDS[i % C().CHOICE_BACKGROUNDS.length],
-          question: "onde",
         });
       });
     }
 
     if (config.categories.body) {
-      C().BODY_PARTS.forEach((part, i) => {
+      C().BODY_PARTS.forEach((part) => {
         if (!config.body[part.id]) return;
-        if (part.bodyBall) {
-          pool.push({
-            uid: `body:${part.id}`,
-            kind: "body",
-            id: part.id,
-            label: part.label,
-            name: part.name,
-            article: C().articleFor(part.id),
-            bodyBall: true,
-            bg: part.bg,
-            question: "onde",
-          });
-          return;
-        }
         const illustration = illus.body(part.id);
         if (!illustration) return;
         pool.push({
@@ -117,7 +102,42 @@
           article: C().articleFor(part.id),
           illustration,
           bg: part.bg,
-          question: "onde",
+        });
+      });
+    }
+
+    if (config.categories.letters) {
+      C().LETTERS.forEach((letter) => {
+        if (config.letters && config.letters[letter.id] === false) return;
+        pool.push({
+          uid: `letter:${letter.char}`,
+          kind: "letter",
+          id: letter.id,
+          char: letter.char,
+          label: letter.label,
+          name: letter.name,
+          display: letter.char,
+          article: "a",
+          bg: letter.bg,
+          fg: letter.fg,
+        });
+      });
+    }
+
+    if (config.categories.numbers) {
+      C().NUMBERS.forEach((num) => {
+        if (config.numbers && config.numbers[num.id] === false) return;
+        pool.push({
+          uid: `number:${num.id}`,
+          kind: "number",
+          id: num.id,
+          char: num.char,
+          label: num.label,
+          name: num.name,
+          display: num.display,
+          article: "o",
+          bg: num.bg,
+          fg: num.fg,
         });
       });
     }
@@ -148,14 +168,33 @@
     return map;
   }
 
+  function setPrompt(target) {
+    if (!promptEl || !target) return;
+    promptEl.textContent = C().questionPromptText(target);
+  }
+
+  function hideChoices() {
+    choicesRevealed = false;
+    choicesEl.classList.add("is-hidden");
+  }
+
+  function showChoices() {
+    choicesRevealed = true;
+    choicesEl.classList.remove("is-hidden");
+    choicesEl.classList.add("is-ready");
+  }
+
   function startRound() {
     stopTimer();
     missCount = 0;
+    choicesRevealed = false;
     const config = deps.getConfig();
     const pool = buildPool(config);
     const count = C().normalizeChoiceCount(config.choiceCount);
 
     if (pool.length < count) {
+      promptEl.textContent = "";
+      choicesEl.classList.remove("is-hidden");
       choicesEl.innerHTML = `<p class="ache__empty">Escolha mais itens nas configurações (mínimo ${count}).</p>`;
       return;
     }
@@ -163,6 +202,8 @@
     const byKind = poolsByKind(pool);
     const eligible = [...byKind.values()].filter((items) => items.length >= count);
     if (!eligible.length) {
+      promptEl.textContent = "";
+      choicesEl.classList.remove("is-hidden");
       choicesEl.innerHTML = `<p class="ache__empty">Ative pelo menos ${count} itens na mesma categoria.</p>`;
       return;
     }
@@ -171,23 +212,17 @@
     const target = kindPool[Math.floor(Math.random() * kindPool.length)];
     const choices = homogeneousChoices(target, pool, count);
     if (choices.length < count) {
+      promptEl.textContent = "";
+      choicesEl.classList.remove("is-hidden");
       choicesEl.innerHTML = `<p class="ache__empty">Ative mais itens desta categoria.</p>`;
       return;
     }
 
     round = { target, choices, pool };
-    acceptingInput = false;
-    showWaiting();
+    choicesEl.innerHTML = "";
+    hideChoices();
+    setPrompt(target);
     playQuestion(false);
-  }
-
-  function showWaiting() {
-    choicesEl.className = "ache__choices ache__choices--waiting";
-    choicesEl.removeAttribute("data-count");
-    choicesEl.innerHTML = `
-      <div class="ache__waiting" aria-live="polite">
-        <span class="ache__waiting-ear" aria-hidden="true">👂</span>
-      </div>`;
   }
 
   function renderChoices(choices) {
@@ -198,7 +233,8 @@
     choicesEl.dataset.cols = String(cols);
     choicesEl.style.setProperty("--grid-cols", String(cols));
     choicesEl.style.setProperty("--grid-rows", String(rows));
-    choices.forEach((item, i) => {
+
+    choices.forEach((item) => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "ache__choice";
@@ -215,10 +251,12 @@
         swatch.className = `ache__color-swatch${outline}`;
         swatch.style.setProperty("--swatch-fill", item.hex || "#888");
         stage.appendChild(swatch);
-      } else if (item.bodyBall) {
-        const ball = document.createElement("div");
-        ball.className = "ache__body-ball";
-        stage.appendChild(ball);
+      } else if (item.kind === "letter" || item.kind === "number") {
+        const glyph = document.createElement("div");
+        glyph.className = "ache__glyph";
+        glyph.textContent = item.display || item.char;
+        glyph.style.color = item.fg || "#FFFFFF";
+        stage.appendChild(glyph);
       } else {
         const img = document.createElement("img");
         img.className = "ache__illus";
@@ -236,8 +274,6 @@
       btn.addEventListener("click", () => onChoice(item));
       choicesEl.appendChild(btn);
     });
-    choicesEl.classList.remove("ache__choices--waiting");
-    choicesEl.classList.add("is-ready");
   }
 
   function getChoiceButton(uid) {
@@ -293,11 +329,18 @@
     const gen = audioGen;
     acceptingInput = false;
     stopTimer();
-    showWaiting();
+    setPrompt(round.target);
+
+    if (!isRetry) {
+      hideChoices();
+    }
 
     deps.speakQuestion?.(round.target, { gen, isRetry }).then(() => {
       if (gen !== audioGen) return;
-      renderChoices(round.choices);
+      if (!choicesRevealed) {
+        renderChoices(round.choices);
+        showChoices();
+      }
       if (missCount >= (deps.getConfig().hintAfterMisses || 2)) {
         getChoiceButton(round.target.uid)?.classList.add("is-hint");
       }
@@ -339,6 +382,7 @@
     stopTimer();
     audioGen += 1;
     acceptingInput = false;
+    choicesRevealed = false;
     round = null;
     deps.stopAudio?.();
   }
@@ -352,6 +396,7 @@
     deps = options;
     root = options.root;
     choicesEl = root.querySelector(".ache__choices");
+    promptEl = root.querySelector(".ache__prompt");
     timerEl = root.querySelector(".ache__timer");
     burstEl = root.querySelector(".ache__burst");
 
