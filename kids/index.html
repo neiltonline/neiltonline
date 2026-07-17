@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ff6b9d">
+    <title>Tecladinho 🎈</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <link rel="stylesheet" href="./css/style.css?v=19">
+</head>
+
+<body>
+    <button type="button" id="config-open" class="config-open-btn" aria-label="Abrir configurações" title="Configurações">⚙️</button>
+    <div id="stage" aria-live="polite" aria-label="Área de brincadeira"></div>
+    <div id="burst-layer" aria-hidden="true"></div>
+    <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
+    <p class="hint" id="hint">Toque na tela ou aperte uma tecla para brincar! ✨</p>
+
+    <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
+        <div class="config__card">
+            <h2 class="config__title">Configurações</h2>
+
+            <section class="config__section">
+                <h3 class="config__label">Modo de jogo</h3>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-letters-only">
+                    <span>Apenas letras e números</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-animals-only">
+                    <span>Apenas animais</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-single-centered">
+                    <span>Um item gigante no centro</span>
+                </label>
+            </section>
+
+            <section class="config__section" id="cfg-letter-order-section">
+                <h3 class="config__label">Ordem das letras</h3>
+                <p class="config__section-note">Para treinar palavras no computador: ative “Apenas letras e números” e digite no teclado — a letra apertada sempre aparece. A ordem abaixo muda o que sai no toque da tela.</p>
+                <label class="config__toggle">
+                    <input type="radio" name="cfg-letter-order" id="cfg-letter-random" value="random" checked>
+                    <span>Aleatórias</span>
+                </label>
+                <label class="config__toggle">
+                    <input type="radio" name="cfg-letter-order" id="cfg-letter-sequence" value="sequence">
+                    <span>Em sequência (A → Z → 0 → 9)</span>
+                </label>
+                <button type="button" class="config__link-btn" id="cfg-letter-restart">Recomeçar do A</button>
+            </section>
+
+            <section class="config__section">
+                <div class="config__section-head">
+                    <h3 class="config__label">Animais</h3>
+                    <div class="config__bulk-actions">
+                        <button type="button" class="config__link-btn" id="cfg-select-all-animals">Todos</button>
+                        <button type="button" class="config__link-btn" id="cfg-deselect-all-animals">Nenhum</button>
+                    </div>
+                </div>
+                <label class="config__toggle">
+                    <input type="checkbox" id="cfg-animal-sounds" checked>
+                    <span>Sons reais dos animais</span>
+                </label>
+                <div id="cfg-animal-list" class="config__animal-grid"></div>
+            </section>
+
+            <p class="config__hint">
+                Desktop: clique no ⚙️ no canto superior direito (ou segure qualquer tecla por 2 segundos).<br>
+                Celular: segure dois dedos na tela por 2 segundos.
+            </p>
+            <p class="config__section-note">Modo Reels (vídeos): <a href="../kids-reels/">kids-reels</a> · Ache!: <a href="../kids-ache/">kids-ache</a></p>
+            <button type="button" class="config__close" id="config-close">Fechar</button>
+        </div>
+    </div>
+
+    <script src="/kids-reels/js/fluent-illus.js?v=26"></script>
+    <script src="./js/play.js?v=19"></script>
+</body>
+
+</html>
