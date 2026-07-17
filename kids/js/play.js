@@ -503,6 +503,11 @@
       showAnimal(pickAnimal());
       return;
     }
+    // Sequência: qualquer tecla avança A→B→C… (ignora qual tecla foi apertada)
+    if (config.letterOrder === "sequence") {
+      showLetter(pickLetter());
+      return;
+    }
     if (config.lettersOnly) {
       if (isLetterOrNumber(key)) showLetter(key.toUpperCase());
       else showLetter(pickLetter());
@@ -520,7 +525,8 @@
       showAnimal(pickAnimal());
       return;
     }
-    if (config.lettersOnly) {
+    // Sequência ou só letras: toque sempre pega a próxima letra
+    if (config.letterOrder === "sequence" || config.lettersOnly) {
       showLetter(pickLetter());
       return;
     }
@@ -568,14 +574,22 @@
     input.addEventListener("change", (e) => {
       if (!e.target.checked) return;
       config.letterOrder = e.target.value === "sequence" ? "sequence" : "random";
-      if (config.letterOrder === "sequence") restartLetterSequence();
+      if (config.letterOrder === "sequence") {
+        restartLetterSequence();
+        // Sequência é treino de letras: evita misturar com animais
+        config.lettersOnly = true;
+        config.animalsOnly = false;
+      }
       saveConfig();
+      syncConfigUI();
     });
   });
 
   document.getElementById("cfg-letter-restart").addEventListener("click", () => {
     restartLetterSequence();
     config.letterOrder = "sequence";
+    config.lettersOnly = true;
+    config.animalsOnly = false;
     saveConfig();
     syncConfigUI();
   });
