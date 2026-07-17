@@ -82,6 +82,7 @@
     animalsOnly: false,
     singleCentered: false,
     animalSounds: true,
+    letterOrder: "random",
     animals: defaultAnimalToggles(),
   };
 
@@ -89,6 +90,7 @@
   let activeChars = [];
   let hideHintTimer = null;
   let lastAnimalId = null;
+  let letterSeqIndex = 0;
   let currentAudio = null;
   let configOpen = false;
 
@@ -107,9 +109,11 @@
       const saved = localStorage.getItem("tecladinho-config");
       if (!saved) return structuredClone(DEFAULT_CONFIG);
       const parsed = JSON.parse(saved);
+      const letterOrder = parsed.letterOrder === "sequence" ? "sequence" : "random";
       const merged = {
         ...DEFAULT_CONFIG,
         ...parsed,
+        letterOrder,
         animals: { ...defaultAnimalToggles(), ...parsed.animals },
       };
       delete merged.emojisOnly;
@@ -177,7 +181,16 @@
   }
 
   function pickLetter() {
-    return pick(LETTERS.split(""));
+    if (config.letterOrder !== "sequence") {
+      return pick(LETTERS.split(""));
+    }
+    const next = LETTERS[letterSeqIndex % LETTERS.length];
+    letterSeqIndex = (letterSeqIndex + 1) % LETTERS.length;
+    return next;
+  }
+
+  function restartLetterSequence() {
+    letterSeqIndex = 0;
   }
 
   function isLetterOrNumber(key) {
@@ -220,6 +233,8 @@
     document.getElementById("cfg-animals-only").checked = config.animalsOnly;
     document.getElementById("cfg-single-centered").checked = config.singleCentered;
     document.getElementById("cfg-animal-sounds").checked = config.animalSounds;
+    document.getElementById("cfg-letter-random").checked = config.letterOrder !== "sequence";
+    document.getElementById("cfg-letter-sequence").checked = config.letterOrder === "sequence";
     animalListEl.querySelectorAll("[data-animal]").forEach((input) => {
       input.checked = config.animals[input.dataset.animal];
     });
@@ -547,6 +562,22 @@
   document.getElementById("cfg-animal-sounds").addEventListener("change", (e) => {
     config.animalSounds = e.target.checked;
     saveConfig();
+  });
+
+  document.querySelectorAll('input[name="cfg-letter-order"]').forEach((input) => {
+    input.addEventListener("change", (e) => {
+      if (!e.target.checked) return;
+      config.letterOrder = e.target.value === "sequence" ? "sequence" : "random";
+      if (config.letterOrder === "sequence") restartLetterSequence();
+      saveConfig();
+    });
+  });
+
+  document.getElementById("cfg-letter-restart").addEventListener("click", () => {
+    restartLetterSequence();
+    config.letterOrder = "sequence";
+    saveConfig();
+    syncConfigUI();
   });
 
   document.getElementById("cfg-select-all-animals").addEventListener("click", () => {
