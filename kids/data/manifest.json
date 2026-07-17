@@ -35,6 +35,18 @@
       "videos/words/avo-1.mp4"
     ]
   },
+  "baleia": {
+    "images": [
+      "images/animals/baleia-1.jpg",
+      "images/animals/baleia-2.jpg",
+      "images/animals/baleia-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/baleia-1.mp3",
+      "audio/sounds/baleia-2.mp3"
+    ],
+    "videos": []
+  },
   "banana": {
     "images": [],
     "sounds": [],
@@ -64,6 +76,17 @@
       "videos/words/bola-2.mp4"
     ]
   },
+  "borboleta": {
+    "images": [
+      "images/animals/borboleta-1.jpg",
+      "images/animals/borboleta-2.jpg",
+      "images/animals/borboleta-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/borboleta-1.mp3"
+    ],
+    "videos": []
+  },
   "brincar": {
     "images": [],
     "sounds": [],
@@ -72,10 +95,14 @@
       "videos/words/brincar-2.mp4"
     ]
   },
-  "borboleta": {
-    "images": [],
+  "cabra": {
+    "images": [
+      "images/animals/cabra-1.jpg",
+      "images/animals/cabra-2.jpg",
+      "images/animals/cabra-3.jpg"
+    ],
     "sounds": [
-      "audio/sounds/borboleta.mp3"
+      "audio/sounds/cabra-1.mp3"
     ],
     "videos": []
   },
@@ -109,10 +136,36 @@
       "videos/animals/cavalo-2.mp4"
     ]
   },
-  "coelho": {
-    "images": [],
+  "cervo": {
+    "images": [
+      "images/animals/cervo-1.jpg",
+      "images/animals/cervo-2.jpg",
+      "images/animals/cervo-3.jpg"
+    ],
     "sounds": [
-      "audio/sounds/coelho.mp3"
+      "audio/sounds/cervo-1.mp3"
+    ],
+    "videos": []
+  },
+  "coala": {
+    "images": [
+      "images/animals/coala-1.jpg",
+      "images/animals/coala-2.jpg",
+      "images/animals/coala-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/coala-1.mp3"
+    ],
+    "videos": []
+  },
+  "coelho": {
+    "images": [
+      "images/animals/coelho-1.jpg",
+      "images/animals/coelho-2.jpg",
+      "images/animals/coelho-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/coelho-1.mp3"
     ],
     "videos": []
   },
@@ -152,6 +205,18 @@
       "videos/animals/elefante-2.mp4",
       "videos/animals/elefante-3.mp4"
     ]
+  },
+  "esquilo": {
+    "images": [
+      "images/animals/esquilo-1.jpg",
+      "images/animals/esquilo-2.jpg",
+      "images/animals/esquilo-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/esquilo-1.mp3",
+      "audio/sounds/esquilo-2.mp3"
+    ],
+    "videos": []
   },
   "estrela": {
     "images": [],
@@ -211,6 +276,29 @@
       "videos/animals/gato-3.mp4"
     ]
   },
+  "girafa": {
+    "images": [
+      "images/animals/girafa-1.jpg",
+      "images/animals/girafa-2.jpg",
+      "images/animals/girafa-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/girafa-1.mp3",
+      "audio/sounds/girafa-2.mp3"
+    ],
+    "videos": []
+  },
+  "golfinho": {
+    "images": [
+      "images/animals/golfinho-1.jpg",
+      "images/animals/golfinho-2.jpg",
+      "images/animals/golfinho-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/golfinho-1.mp3"
+    ],
+    "videos": []
+  },
   "jacare": {
     "images": [
       "images/animals/jacare-1.jpg",
@@ -246,6 +334,17 @@
     "videos": [
       "videos/words/leite-1.mp4"
     ]
+  },
+  "lhama": {
+    "images": [
+      "images/animals/lhama-1.jpg",
+      "images/animals/lhama-2.jpg",
+      "images/animals/lhama-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/lhama-1.mp3"
+    ],
+    "videos": []
   },
   "lobo": {
     "images": [
@@ -315,10 +414,14 @@
       "videos/animals/ovelha-2.mp4"
     ]
   },
-  "pinguim": {
-    "images": [],
+  "panda": {
+    "images": [
+      "images/animals/panda-1.jpg",
+      "images/animals/panda-2.jpg",
+      "images/animals/panda-3.jpg"
+    ],
     "sounds": [
-      "audio/sounds/pinguim.mp3"
+      "audio/sounds/panda-1.mp3"
     ],
     "videos": []
   },
@@ -365,9 +468,25 @@
     ]
   },
   "peixe": {
-    "images": [],
+    "images": [
+      "images/animals/peixe-1.jpg",
+      "images/animals/peixe-2.jpg",
+      "images/animals/peixe-3.jpg"
+    ],
     "sounds": [
-      "audio/sounds/peixe.mp3"
+      "audio/sounds/peixe-1.mp3"
+    ],
+    "videos": []
+  },
+  "pinguim": {
+    "images": [
+      "images/animals/pinguim-1.jpg",
+      "images/animals/pinguim-2.jpg",
+      "images/animals/pinguim-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/pinguim-1.mp3",
+      "audio/sounds/pinguim-2.mp3"
     ],
     "videos": []
   },
@@ -385,6 +504,17 @@
       "videos/animals/pinto-1.mp4",
       "videos/animals/pinto-2.mp4"
     ]
+  },
+  "polvo": {
+    "images": [
+      "images/animals/polvo-1.jpg",
+      "images/animals/polvo-2.jpg",
+      "images/animals/polvo-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/polvo-1.mp3"
+    ],
+    "videos": []
   },
   "porco": {
     "images": [
@@ -415,6 +545,17 @@
       "videos/animals/raposa-2.mp4"
     ]
   },
+  "rato": {
+    "images": [
+      "images/animals/rato-1.jpg",
+      "images/animals/rato-2.jpg",
+      "images/animals/rato-3.jpg"
+    ],
+    "sounds": [
+      "audio/sounds/rato-1.mp3"
+    ],
+    "videos": []
+  },
   "sapo": {
     "images": [
       "images/animals/sapo-1.jpg",
@@ -437,9 +578,13 @@
     ]
   },
   "tartaruga": {
-    "images": [],
+    "images": [
+      "images/animals/tartaruga-1.jpg",
+      "images/animals/tartaruga-2.jpg",
+      "images/animals/tartaruga-3.jpg"
+    ],
     "sounds": [
-      "audio/sounds/tartaruga.mp3"
+      "audio/sounds/tartaruga-1.mp3"
     ],
     "videos": []
   },
@@ -506,87 +651,14 @@
       "videos/words/vovo-1.mp4"
     ]
   },
-  "baleia": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/baleia.mp3"
-    ],
-    "videos": []
-  },
-  "cabra": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/cabra.mp3"
-    ],
-    "videos": []
-  },
-  "cervo": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/cervo.mp3"
-    ],
-    "videos": []
-  },
-  "coala": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/coala.mp3"
-    ],
-    "videos": []
-  },
-  "esquilo": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/esquilo.mp3"
-    ],
-    "videos": []
-  },
-  "girafa": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/girafa.mp3"
-    ],
-    "videos": []
-  },
-  "golfinho": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/golfinho.mp3"
-    ],
-    "videos": []
-  },
-  "lhama": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/lhama.mp3"
-    ],
-    "videos": []
-  },
-  "panda": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/panda.mp3"
-    ],
-    "videos": []
-  },
-  "polvo": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/polvo.mp3"
-    ],
-    "videos": []
-  },
-  "rato": {
-    "images": [],
-    "sounds": [
-      "audio/sounds/rato.mp3"
-    ],
-    "videos": []
-  },
   "zebra": {
-    "images": [],
+    "images": [
+      "images/animals/zebra-1.jpg",
+      "images/animals/zebra-2.jpg",
+      "images/animals/zebra-3.jpg"
+    ],
     "sounds": [
-      "audio/sounds/zebra.mp3"
+      "audio/sounds/zebra-1.mp3"
     ],
     "videos": []
   }

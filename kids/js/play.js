@@ -3,6 +3,7 @@
   const burstLayer = document.getElementById("burst-layer");
   const hint = document.getElementById("hint");
   const configPanel = document.getElementById("config-panel");
+  const configOpenBtn = document.getElementById("config-open");
   const holdProgress = document.getElementById("hold-progress");
   const animalListEl = document.getElementById("cfg-animal-list");
 
@@ -133,7 +134,14 @@
 
   function animalImages(id) {
     const list = variants[id]?.images;
-    return list?.length ? list : [`images/animals/${id}.jpg`];
+    if (list?.length) return list;
+    return [`images/animals/${id}.jpg`, `images/animals/${id}-1.jpg`];
+  }
+
+  function animalIllustrationFallback(id) {
+    return window.TecladinhoIllus?.animal?.(id)
+      || window.TecladinhoIllus?.fallback?.("animal", id)
+      || null;
   }
 
   function animalSounds(id) {
@@ -194,6 +202,11 @@
         <img src="${animalImages(animal.id)[0]}" alt="" width="48" height="48" loading="lazy">
         <span>${animal.label}</span>
       `;
+      const thumb = label.querySelector("img");
+      thumb?.addEventListener("error", () => {
+        const fb = animalIllustrationFallback(animal.id);
+        if (fb && thumb.src !== fb) thumb.src = fb;
+      }, { once: true });
       label.querySelector("input").addEventListener("change", (e) => {
         config.animals[animal.id] = e.target.checked;
         saveConfig();
@@ -305,14 +318,14 @@
     let path;
     if (type === "animal") {
       const animal = ANIMALS_BY_ID[content];
-      path = `audio/words/${wordToFile(animal.name)}.mp3`;
+      path = `audio/words/${wordToFile(animal?.id || content)}.mp3`;
     } else if (/[0-9]/.test(content)) {
       const word = NUMBER_NAMES[content];
       path = `audio/numbers/${wordToFile(word)}.mp3`;
     } else {
       path = `audio/letters/${content.toLowerCase()}.mp3`;
     }
-    return new URL(path, window.location.href).href;
+    return assetUrl(path);
   }
 
   function getAnimalSoundSrc(animalId, soundPath) {
@@ -444,9 +457,13 @@
 
     const img = document.createElement("img");
     const soundPath = pickAnimalSound(animal.id);
-    img.src = pickAnimalImage(animal.id);
+    img.src = assetUrl(pickAnimalImage(animal.id));
     img.alt = animal.label;
     img.draggable = false;
+    img.addEventListener("error", () => {
+      const fb = animalIllustrationFallback(animal.id);
+      if (fb && img.src !== fb) img.src = fb;
+    }, { once: true });
     el.appendChild(img);
 
     stage.appendChild(el);
@@ -497,6 +514,11 @@
   }
 
   document.getElementById("config-close").addEventListener("click", closeConfig);
+  configOpenBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openConfig();
+  });
+
   configPanel.addEventListener("click", (e) => {
     if (e.target === configPanel) closeConfig();
   });

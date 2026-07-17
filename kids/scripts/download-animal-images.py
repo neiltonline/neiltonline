@@ -122,6 +122,91 @@ WIKI_IMAGES = {
         "Barbary macaque (Macaca sylvanus).jpg",
         "Chimpanzee (Pan troglodytes).jpg",
     ],
+    "coelho": [
+        "Oryctolagus cuniculus Tasmanië 2.jpg",
+        "Domestic rabbit.jpg",
+        "Young rabbit.jpg",
+    ],
+    "peixe": [
+        "Clown fish in the Andaman Coral Reef.jpg",
+        "Goldfish - Osaka, Japan - panoramio.jpg",
+        "Betta splendens male.jpg",
+    ],
+    "pinguim": [
+        "Aptenodytes forsteri -Snow Hill Island, Antarctica -adults and chick-8.jpg",
+        "Pygoscelis antarctica -Cooper Bay, South Georgia Island.jpg",
+        "Gentoo Penguin at Cooper Bay, South Georgia.jpg",
+    ],
+    "tartaruga": [
+        "Chelonia mydas is going for the air.jpg",
+        "Green turtle swimming over coral reefs in Kofiau.jpg",
+        "Testudo hermanni hermanni MHNT.jpg",
+    ],
+    "borboleta": [
+        "Monarch Butterfly Danaus plexippus Female 2664px.jpg",
+        "Papilio machaon.jpg",
+        "Morpho peleides.jpg",
+    ],
+    "coala": [
+        "Koala climbing tree.jpg",
+        "Koala in tree.jpg",
+        "Phascolarctos cinereus - Lone Pine Koala Sanctuary.jpg",
+    ],
+    "panda": [
+        "Grosser Panda.JPG",
+        "Giant Panda 2004-03-2.jpg",
+        "Ailuropoda melanoleuca at the National Zoo.jpg",
+    ],
+    "girafa": [
+        "Giraffe standing.jpg",
+        "Giraffa camelopardalis tippelskirchi.jpg",
+        "Masai Giraffe mother and young.jpg",
+    ],
+    "polvo": [
+        "Octopus vulgaris 2.jpg",
+        "Common octopus (Octopus vulgaris).jpg",
+        "Octopus cyanea.jpg",
+    ],
+    "esquilo": [
+        "Sciurus vulgaris -tree-8a.jpg",
+        "Eastern Grey Squirrel in St James's Park, London - Diliff.jpg",
+        "Sciurus carolinensis.jpg",
+    ],
+    "zebra": [
+        "Equus quagga.jpg",
+        "Plains Zebra Equus quagga.jpg",
+        "Zebra Botswana.jpg",
+    ],
+    "golfinho": [
+        "Tursiops truncatus 01.jpg",
+        "Bottlenose Dolphin.jpg",
+        "Common Bottlenose Dolphin.jpg",
+    ],
+    "baleia": [
+        "Humpback whale underwater.jpg",
+        "Humpback Whale Megaptera novaeangliae.jpg",
+        "Southern right whale.jpg",
+    ],
+    "cabra": [
+        "Goat portrait.jpg",
+        "Domestic goat.jpg",
+        "Capra aegagrus hircus.jpg",
+    ],
+    "lhama": [
+        "Llama at Laguna Colorada.jpg",
+        "Lama glama 001.jpg",
+        "Llama face.jpg",
+    ],
+    "cervo": [
+        "Cervus elaphus Luc.jpeg",
+        "Red deer stag.jpg",
+        "White-tailed deer.jpg",
+    ],
+    "rato": [
+        "House mouse.jpg",
+        "Apodemus sylvaticus.jpg",
+        "Brown rat.jpg",
+    ],
 }
 
 

@@ -99,6 +99,74 @@ SOUND_VARIANTS = {
     "macaco": [
         ("url", "https://www.orangefreesounds.com/wp-content/uploads/2015/05/Mp3-monkey.mp3"),
     ],
+    "coelho": [
+        ("wiki", "Rabbit eating.ogg"),
+        ("url", "https://freesound.org/data/previews/341/341695_5121236-lq.mp3"),
+    ],
+    "peixe": [
+        ("wiki", "Bubbles.ogg"),
+        ("url", "https://freesound.org/data/previews/263/263133_2064400-lq.mp3"),
+    ],
+    "pinguim": [
+        ("url", "https://freesound.org/data/previews/705/705839_14319337-lq.mp3"),
+        ("wiki", "Gentoo Penguin (Pygoscelis papua) (W1CDR0001533 BD6).ogg"),
+    ],
+    "tartaruga": [
+        ("wiki", "Sea turtle swimming underwater (loop).ogg"),
+        ("url", "https://freesound.org/data/previews/341/341695_5121236-lq.mp3"),
+    ],
+    "borboleta": [
+        ("url", "https://freesound.org/data/previews/415/415209_5121236-lq.mp3"),
+        ("wiki", "Butterfly wings.ogg"),
+    ],
+    "coala": [
+        ("wiki", "Koala bellowing.ogg"),
+        ("url", "https://freesound.org/data/previews/316/316847_5121236-lq.mp3"),
+    ],
+    "panda": [
+        ("wiki", "Giant panda chewing.ogg"),
+        ("url", "https://freesound.org/data/previews/316/316847_5121236-lq.mp3"),
+    ],
+    "girafa": [
+        ("wiki", "Giraffe snort.ogg"),
+        ("url", "https://freesound.org/data/previews/521/521974_10388085-lq.mp3"),
+    ],
+    "polvo": [
+        ("wiki", "Bubbles.ogg"),
+        ("url", "https://freesound.org/data/previews/263/263133_2064400-lq.mp3"),
+    ],
+    "esquilo": [
+        ("wiki", "Eastern gray squirrel.ogg"),
+        ("url", "https://freesound.org/data/previews/415/415209_5121236-lq.mp3"),
+    ],
+    "zebra": [
+        ("wiki", "Zebra braying.ogg"),
+        ("url", "https://freesound.org/data/previews/521/521974_10388085-lq.mp3"),
+    ],
+    "golfinho": [
+        ("wiki", "Bottlenose dolphin.ogg"),
+        ("url", "https://freesound.org/data/previews/316/316908_5121236-lq.mp3"),
+    ],
+    "baleia": [
+        ("wiki", "Humpback Whale Song.ogg"),
+        ("url", "https://freesound.org/data/previews/531/531947_10388085-lq.mp3"),
+    ],
+    "cabra": [
+        ("wiki", "Goat.ogg"),
+        ("url", "https://freesound.org/data/previews/316/316847_5121236-lq.mp3"),
+    ],
+    "lhama": [
+        ("wiki", "Llama.ogg"),
+        ("url", "https://freesound.org/data/previews/521/521974_10388085-lq.mp3"),
+    ],
+    "cervo": [
+        ("wiki", "Red deer roar.ogg"),
+        ("url", "https://freesound.org/data/previews/521/521974_10388085-lq.mp3"),
+    ],
+    "rato": [
+        ("wiki", "Mouse squeak.ogg"),
+        ("url", "https://freesound.org/data/previews/415/415209_5121236-lq.mp3"),
+    ],
 }
 
 

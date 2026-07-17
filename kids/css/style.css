@@ -228,6 +228,36 @@ body.mode-single .char.is-leaving {
   }
 }
 
+.config-open-btn {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 40;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.config-open-btn:hover {
+  background: #fff;
+  transform: scale(1.05);
+}
+
+.config-open-btn:active {
+  transform: scale(0.96);
+}
+
+body.config-open .config-open-btn {
+  visibility: hidden;
+}
+
 .hint {
   position: fixed;
   bottom: max(24px, env(safe-area-inset-bottom));

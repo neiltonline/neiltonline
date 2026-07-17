@@ -7,14 +7,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#ff6b9d">
     <title>Tecladinho 🎈</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <link rel="stylesheet" href="./css/style.css?v=18">
 </head>
 
 <body>
+    <button type="button" id="config-open" class="config-open-btn" aria-label="Abrir configurações" title="Configurações">⚙️</button>
     <div id="stage" aria-live="polite" aria-label="Área de brincadeira"></div>
     <div id="burst-layer" aria-hidden="true"></div>
     <div id="hold-progress" class="hold-progress" aria-hidden="true"></div>
-    <p class="hint" id="hint">Toque na tela para brincar! ✨</p>
+    <p class="hint" id="hint">Toque na tela ou aperte uma tecla para brincar! ✨</p>
 
     <div id="config-panel" class="config" aria-hidden="true" role="dialog" aria-label="Configurações">
         <div class="config__card">
@@ -51,13 +53,17 @@
                 <div id="cfg-animal-list" class="config__animal-grid"></div>
             </section>
 
-            <p class="config__hint">Celular: segure dois dedos na tela por 2 segundos. Teclado: segure qualquer tecla por 2 segundos.</p>
-            <p class="config__section-note">Modo Reels (vídeos): <a href="../kids-reels/">kids-reels</a></p>
+            <p class="config__hint">
+                Desktop: clique no ⚙️ no canto superior direito (ou segure qualquer tecla por 2 segundos).<br>
+                Celular: segure dois dedos na tela por 2 segundos.
+            </p>
+            <p class="config__section-note">Modo Reels (vídeos): <a href="../kids-reels/">kids-reels</a> · Ache!: <a href="../kids-ache/">kids-ache</a></p>
             <button type="button" class="config__close" id="config-close">Fechar</button>
         </div>
     </div>
 
-    <script src="./js/play.js"></script>
+    <script src="/kids-reels/js/fluent-illus.js?v=26"></script>
+    <script src="./js/play.js?v=18"></script>
 </body>
 
 </html>
